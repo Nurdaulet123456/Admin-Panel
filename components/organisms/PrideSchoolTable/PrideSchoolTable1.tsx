@@ -4,6 +4,8 @@ import { Table, Td, Th, Thead, Tr } from "../../atoms/UI/Tables/Table";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import { useEffect } from "react";
 import { getSchoolSportThunk } from "@/store/thunks/pride.thunk";
+import { instance } from "@/api/axios.instance";
+import { getTokenInLocalStorage } from "@/utils/assets.utils";
 
 const PrideSchoolTable1 = () => {
   const dispatch = useAppDispatch();
@@ -15,7 +17,22 @@ const PrideSchoolTable1 = () => {
     }
   }, [dispatch]);
 
-  console.log(sport);
+  const handleDeleteItems = async (id?: number) => {
+    await instance
+      .delete(`/api/Sport_SuccessApi/${id}`, {
+        headers: {
+          Authorization: `Token ${getTokenInLocalStorage()}`,
+        },
+      })
+      .then((res) => {
+        if (res) {
+          console.log(res);
+        }
+      })
+      .catch((e) => console.log(e));
+    dispatch(getSchoolSportThunk());
+  };
+
   return (
     <div className="main_table">
       <div className="main_table-title">Спорт</div>
@@ -46,7 +63,7 @@ const PrideSchoolTable1 = () => {
                     <PenIcons />
                   </div>
 
-                  <div>
+                  <div onClick={() => handleDeleteItems(item.id)}>
                     <DeleteIcons />
                   </div>
                 </Td>

@@ -1,11 +1,11 @@
 import { PlusIcons } from "@/components/atoms/Icons";
 import { Button } from "@/components/atoms/UI/Buttons/Button";
-import TypeLessonsTableBlock from "@/components/molecules/TypeLessonsTableBlock";
-import TypeLessonsTable from "@/components/organisms/TypeLessonsTable";
+import ClassTableBlock from "@/components/molecules/ClassTableBlock";
+import CallsTable from "@/components/organisms/CallsTable/CallsTable1";
 import MainLayouts from "@/layouts/MainLayouts";
 import { useState } from "react";
 
-const TypeLessonsPage = () => {
+const CallsPage = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
   return (
     <MainLayouts>
@@ -33,11 +33,11 @@ const TypeLessonsPage = () => {
         </Button>
       </div>
 
-      {showActive && <TypeLessonsTableBlock onReject={setShowActive}/>}
+      {showActive && <ClassTableBlock />}
 
-      <TypeLessonsTable />
+      <CallsTable />
     </MainLayouts>
   );
 };
 
-export default TypeLessonsPage;
+export default CallsPage;

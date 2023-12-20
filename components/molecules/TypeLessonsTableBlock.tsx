@@ -1,6 +1,12 @@
+import { Dispatch, FC, SetStateAction, useState } from "react";
 import { ColorBlock } from "../atoms/UI/Blocks/Block";
 import { Button } from "../atoms/UI/Buttons/Button";
-import { Input, TextArea } from "../atoms/UI/Inputs/Input";
+import { Input } from "../atoms/UI/Inputs/Input";
+import { instance } from "@/api/axios.instance";
+import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { getExtraThunk } from "@/store/thunks/pride.thunk";
+import { ColorCheckIcons } from "../atoms/Icons";
 
 const typeColor = [
   "#27AE60",
@@ -17,7 +23,41 @@ const typeColor = [
   "#1E293B",
 ];
 
-const TypeLessonsTableBlock = () => {
+interface IProps {
+  onReject?: Dispatch<SetStateAction<boolean>>;
+}
+
+const TypeLessonsTableBlock: FC<IProps> = ({ onReject }) => {
+  const dispatch = useAppDispatch();
+  const [updateInput, setUpdateInput] = useState<string>("");
+  const [chooseColor, setChooseColor] = useState<string>("");
+
+  const onSave = async () => {
+    if (updateInput && chooseColor) {
+      await instance
+        .post(
+          "/api/extra_lesson/",
+          {
+            type_full_name: updateInput,
+            type_color: chooseColor,
+          },
+          {
+            headers: {
+              Authorization: `Token ${getTokenInLocalStorage()}`,
+            },
+          }
+        )
+        .then((res) => {
+          if (res) {
+            dispatch(getExtraThunk());
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+
   return (
     <div className="main_table-modal">
       <div className="login_forms-label_pink">Тип занятий</div>
@@ -25,7 +65,13 @@ const TypeLessonsTableBlock = () => {
         <div className="forms">
           <div className="login_forms-label_pink">Тип занятий</div>
 
-          <Input type="text" placeholder="Тип занятий" name="type" />
+          <Input
+            type="text"
+            placeholder="Тип занятий"
+            name="type"
+            value={updateInput}
+            onChange={(e) => setUpdateInput(e.target.value)}
+          />
         </div>
 
         <div className="login_forms-label_pink">Цвет</div>
@@ -40,7 +86,13 @@ const TypeLessonsTableBlock = () => {
           }}
         >
           {typeColor.map((item) => (
-            <ColorBlock color={item} key={item} />
+            <ColorBlock
+              color={item}
+              key={item}
+              onClick={() => setChooseColor(item)}
+            >
+              {chooseColor === item && <ColorCheckIcons />}
+            </ColorBlock>
           ))}
         </div>
       </div>
@@ -49,10 +101,15 @@ const TypeLessonsTableBlock = () => {
         className="flex"
         style={{ justifyContent: "flex-end", gap: "1.6rem" }}
       >
-        <Button background="#CACACA" color="#645C5C" style={{ width: "auto" }}>
+        <Button
+          background="#CACACA"
+          color="#645C5C"
+          style={{ width: "auto" }}
+          onClick={() => onReject && onReject(false)}
+        >
           Удалить
         </Button>
-        <Button background="#27AE60" style={{ width: "auto" }}>
+        <Button background="#27AE60" style={{ width: "auto" }} onClick={onSave}>
           Сохранить
         </Button>
       </div>

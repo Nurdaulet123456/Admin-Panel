@@ -1,6 +1,6 @@
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { instance } from "./axios.instance";
-import { IKruzhok, IMenu, IClassRoom, ISchoolInfo, IUsers, ISchoolAdmin, ISchoolPassport, ISchoolPhotos, ISchoolSocialMedia, ISchoolSport, ISchoolAltyn, ISchoolAtest, ISchoolOlimp, ISchoolOner, ILessons } from "@/types/assets.type";
+import { IKruzhok, IMenu, ICalls,IClassRoom, ISchoolInfo, IUsers, ISchoolAdmin, ISchoolPassport, ISchoolPhotos, ISchoolSocialMedia, ISchoolSport, ISchoolAltyn, ISchoolAtest, ISchoolOlimp, ISchoolOner, ILessons, IExtraLessons } from "@/types/assets.type";
 
 export const assetsApi = {
     async getKruzhok(): Promise<IKruzhok[]> {
@@ -121,6 +121,34 @@ export const assetsApi = {
 
     async getLessons(): Promise<any> {
         return await instance.get('/api/subject/', {
+            headers: {
+                'Authorization': `Token ${getTokenInLocalStorage()}`
+            }
+        })
+    },
+
+    // Extra Lessons
+    
+    async getExtraLessons(): Promise<IExtraLessons[]> {
+        return await instance.get('/api/extra_lesson/', {
+            headers: {
+                'Authorization': `Token ${getTokenInLocalStorage()}`
+            }
+        })
+    },
+
+    // Calls
+
+    async getCallsDop(): Promise<ICalls[]> {
+        return await instance.get('/api/DopUrokRingApi/', {
+            headers: {
+                'Authorization': `Token ${getTokenInLocalStorage()}`
+            }
+        })
+    },
+
+    async getCallsOS(): Promise<ICalls[]> {
+        return await instance.get('/api/ringApi/', {
             headers: {
                 'Authorization': `Token ${getTokenInLocalStorage()}`
             }

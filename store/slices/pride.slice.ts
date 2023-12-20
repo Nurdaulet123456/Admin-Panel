@@ -1,7 +1,10 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { initaialStatePrideInfo } from "../types/pride.system";
 import {
+    getDopThunk,
+    getExtraThunk,
     getLessonsThunk,
+    getOSThunk,
     getSchoolAltynThunk,
     getSchoolAtestThunk,
     getSchoolOlimpThunk,
@@ -9,6 +12,8 @@ import {
     getSchoolSportThunk,
 } from "../thunks/pride.thunk";
 import {
+    ICalls,
+    IExtraLessons,
     ILessons,
     ISchoolAltyn,
     ISchoolAtest,
@@ -89,6 +94,39 @@ export const pridelInfoSlice = createSlice({
                         return {
                             ...state,
                             lessons: action.payload,
+                        };
+                    }
+                    return state;
+                }
+            ).addCase(
+                getExtraThunk.fulfilled,
+                (state, action: PayloadAction<IExtraLessons[]>) => {
+                    if (action.payload) {
+                        return {
+                            ...state,
+                            extra: action.payload,
+                        };
+                    }
+                    return state;
+                }
+            ).addCase(
+                getDopThunk.fulfilled,
+                (state, action: PayloadAction<ICalls[]>) => {
+                    if (action.payload) {
+                        return {
+                            ...state,
+                            dop: action.payload,
+                        };
+                    }
+                    return state;
+                }
+            ).addCase(
+                getOSThunk.fulfilled,
+                (state, action: PayloadAction<ICalls[]>) => {
+                    if (action.payload) {
+                        return {
+                            ...state,
+                            os: action.payload,
                         };
                     }
                     return state;

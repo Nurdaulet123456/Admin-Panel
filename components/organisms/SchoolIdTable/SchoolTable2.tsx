@@ -4,6 +4,8 @@ import { Table, Td, Th, Thead, Tr } from "../../atoms/UI/Tables/Table";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import { useEffect } from "react";
 import { getSchoolPhotosThunk } from "@/store/thunks/schoolnfo.thunk";
+import { instance } from "@/api/axios.instance";
+import { getTokenInLocalStorage } from "@/utils/assets.utils";
 
 const SchoolTable2 = () => {
   const disptach = useAppDispatch();
@@ -15,7 +17,22 @@ const SchoolTable2 = () => {
     }
   }, [disptach]);
 
-  console.log(photos);
+  const handleDeleteItems = async (id?: number) => {
+    await instance
+      .delete(`/api/slider/${id}`, {
+        headers: {
+          Authorization: `Token ${getTokenInLocalStorage()}`,
+        },
+      })
+      .then((res) => {
+        if (res) {
+          console.log(res);
+        }
+      })
+      .catch((e) => console.log(e));
+    disptach(getSchoolPhotosThunk());
+  };
+
   return (
     <div className="main_table">
       <div className="main_table-title">Фото-суреттер</div>
@@ -42,7 +59,7 @@ const SchoolTable2 = () => {
                     <PenIcons />
                   </div>
 
-                  <div>
+                  <div onClick={() => handleDeleteItems(item.id)}>
                     <DeleteIcons />
                   </div>
                 </Td>

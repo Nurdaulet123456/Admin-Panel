@@ -1,4 +1,4 @@
-import { ILessons, ISchoolAltyn, ISchoolAtest, ISchoolOlimp, ISchoolOner, ISchoolSport } from "@/types/assets.type"
+import { ICalls, IExtraLessons, ILessons, ISchoolAltyn, ISchoolAtest, ISchoolOlimp, ISchoolOner, ISchoolSport } from "@/types/assets.type"
 
 export interface IPrideInfo {
     sport?: ISchoolSport[]
@@ -7,6 +7,9 @@ export interface IPrideInfo {
     altyn?: ISchoolAltyn[]
     oner?: ISchoolOner[]
     lessons?: any[]
+    extra?: IExtraLessons[]
+    dop?: ICalls[]
+    os?: ICalls[]
 }
 
 export const initaialStatePrideInfo: IPrideInfo = {
@@ -15,5 +18,8 @@ export const initaialStatePrideInfo: IPrideInfo = {
     atest: [],
     altyn: [],
     oner: [],
-    lessons: []
+    lessons: [],
+    extra: [],
+    dop: [],
+    os: [],
 }

@@ -197,3 +197,24 @@ export interface ILessons {
     type?: string
     school?: any
 }
+
+// Extra Lessons 
+
+export interface IExtraLessons {
+    id?: number
+    type_full_name?: string
+    type_color?: string
+    school?: number
+}
+
+// Calls 
+
+export interface ICalls {
+    id?: number
+    plan?: number
+    smena?: number
+    number?: number
+    start_time?: string
+    end_time?: string
+    school?: number
+}

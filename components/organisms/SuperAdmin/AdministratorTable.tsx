@@ -2,12 +2,34 @@ import { IUsers } from "@/types/assets.type";
 import { DeleteIcons, PenIcons } from "../../atoms/Icons";
 import { Table, Td, Th, Thead, Tr } from "../../atoms/UI/Tables/Table";
 import { FC } from "react";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { instance } from "@/api/axios.instance";
+import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import { getUsersThunk } from "@/store/thunks/schoolnfo.thunk";
 
 interface IProps {
   users?: IUsers[];
 }
 
 const AdministratorTable: FC<IProps> = ({ users }) => {
+  const dispatch = useAppDispatch();
+
+  const handleDeleteItems = async (id?: number) => {
+    await instance
+      .delete(`/auth/users/${id}`, {
+        headers: {
+          Authorization: `Token ${getTokenInLocalStorage()}`,
+        },
+      })
+      .then((res) => {
+        if (res) {
+          console.log(res);
+        }
+      })
+      .catch((e) => console.log(e));
+    dispatch(getUsersThunk());
+  };
+
   return (
     <div className="main_table">
       <div className="main_table-title">Школы</div>
@@ -26,7 +48,7 @@ const AdministratorTable: FC<IProps> = ({ users }) => {
 
           {users &&
             users.map((item, index) => (
-              <Tr>
+              <Tr key={item.id}>
                 <Td>{index + 1}</Td>
                 <Td>{item.email}</Td>
                 <Td>Content</Td>
@@ -36,7 +58,7 @@ const AdministratorTable: FC<IProps> = ({ users }) => {
                     <PenIcons />
                   </div>
 
-                  <div>
+                  <div onClick={() => handleDeleteItems(item.id)}>
                     <DeleteIcons />
                   </div>
                 </Td>

@@ -11,14 +11,18 @@ import { getMenuThunk } from "@/store/thunks/schoolnfo.thunk";
 
 const MenuPage = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
+  const [del, setDel] = useState<boolean>(false)
   const dispatch = useAppDispatch();
   const menu = useTypedSelector((state) => state.system.menu);
 
+
   useEffect(() => {
-    if (menu) {
+    if (menu || del) {
       dispatch(getMenuThunk());
+
+      setDel(false); 
     }
-  }, [dispatch]);
+  }, [dispatch, del]);
 
   return (
     <MainLayouts>
@@ -46,9 +50,9 @@ const MenuPage = () => {
         </Button>
       </div>
 
-      {showActive && <MenuTableBlock onReject={setShowActive}/>}
+      {showActive && <MenuTableBlock onReject={setShowActive} />}
 
-      <MenuTable menu={menu} />
+      <MenuTable menu={menu} setDel={setDel} del={del}/>
     </MainLayouts>
   );
 };

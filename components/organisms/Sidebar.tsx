@@ -103,7 +103,7 @@ const sidebar: IType[] = [
   {
     id: 12,
     type: "Звонки",
-    link: "calls",
+    link: "calls/1",
   },
 ];
 

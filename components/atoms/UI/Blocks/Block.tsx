@@ -13,6 +13,11 @@ export const ColorBlock = styled.div<ColorBlockProps>`
     background-color: ${props => props.color};
     cursor: pointer;
 
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    
+
     ${props => props.circle && `
         width: 30px;
         height: 30px;

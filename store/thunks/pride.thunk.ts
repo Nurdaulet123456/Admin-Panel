@@ -30,3 +30,18 @@ export const getLessonsThunk = createAsyncThunk(
     'getLessonsThunk',
     async () => (await assetsApi.getLessons())
 )
+
+export const getExtraThunk = createAsyncThunk(
+    'getExtraThunk',
+    async () => (await assetsApi.getExtraLessons())
+)
+
+export const getDopThunk = createAsyncThunk(
+    'getDopThunk',
+    async () => (await assetsApi.getCallsDop())
+)
+
+export const getOSThunk = createAsyncThunk(
+    'getOSThunk',
+    async () => (await assetsApi.getCallsOS())
+)

@@ -4,6 +4,8 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import { useEffect } from "react";
 import { getSchoolOnerThunk } from "@/store/thunks/pride.thunk";
+import { instance } from "@/api/axios.instance";
+import { getTokenInLocalStorage } from "@/utils/assets.utils";
 
 const PrideSchoolTable2 = () => {
   const dispatch = useAppDispatch();
@@ -14,6 +16,22 @@ const PrideSchoolTable2 = () => {
       dispatch(getSchoolOnerThunk());
     }
   }, [dispatch]);
+
+  const handleDeleteItems = async (id?: number) => {
+    await instance
+      .delete(`/api/Oner_SuccessApi/${id}`, {
+        headers: {
+          Authorization: `Token ${getTokenInLocalStorage()}`,
+        },
+      })
+      .then((res) => {
+        if (res) {
+          console.log(res);
+        }
+      })
+      .catch((e) => console.log(e));
+    dispatch(getSchoolOnerThunk());
+  };
 
   return (
     <div className="main_table">
@@ -45,7 +63,7 @@ const PrideSchoolTable2 = () => {
                     <PenIcons />
                   </div>
 
-                  <div>
+                  <div onClick={() => handleDeleteItems(item.id)}>
                     <DeleteIcons />
                   </div>
                 </Td>

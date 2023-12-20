@@ -12,6 +12,7 @@ interface IUpdateInput {
   teacher?: string;
   goal?: string;
   times: Record<string, string>;
+  file?: any;
 }
 
 interface ITimeSlot {
@@ -37,6 +38,7 @@ const MainTableBlock: FC<IProps> = ({ onReject }) => {
       Пятница: "",
       Суббота: "",
     },
+    file: null,
   });
 
   const handleUpdate = (
@@ -52,6 +54,13 @@ const MainTableBlock: FC<IProps> = ({ onReject }) => {
           ...prevInput.times,
           [day]: value,
         },
+      }));
+    } else if (name === "file") {
+      const fileInput = e.target as HTMLInputElement;
+      const file = (fileInput.files && fileInput.files[0]) || null;
+      setUpdateInput((prevInput) => ({
+        ...prevInput,
+        file,
       }));
     } else {
       setUpdateInput({
@@ -79,24 +88,28 @@ const MainTableBlock: FC<IProps> = ({ onReject }) => {
       updateInput.teacher &&
       updateInput.goal
     ) {
+      const formData = new FormData();
+      formData.append("file", updateInput.file); // Добавляем файл в FormData
+      formData.append("kruzhok_name", updateInput.name);
+      formData.append("teacher", updateInput.teacher);
+      formData.append("purpose", updateInput.goal);
+
+      formData.append("lessons", JSON.stringify(timeSlots));
+
       await instance
-        .post(
-          "/api/kruzhok/",
-          {
-            kruzhok_name: updateInput.name,
-            purpose: updateInput.goal,
-            lessons: timeSlots,
+        .post("/api/kruzhok/", formData, {
+          headers: {
+            Authorization: `Token ${getTokenInLocalStorage()}`,
+            "Content-Type": "multipart/form-data",
           },
-          {
-            headers: {
-              Authorization: `Token ${getTokenInLocalStorage()}`,
-            },
-          }
-        )
+        })
         .then((res) => {
           if (res) {
             dispatch(getKruzhokInfoThunk());
           }
+        })
+        .catch((e) => {
+          console.log(e);
         });
     }
   };
@@ -105,9 +118,10 @@ const MainTableBlock: FC<IProps> = ({ onReject }) => {
     <div className="main_table-modal">
       <div className="main_table-modal_title">Үйірме</div>
 
-      <div className="main_table-modal_flex">
+      <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
         <div className="main_table-modal_upload">
           <div className="login_forms-label_pink">Фото *</div>
+          <Input type="file" name="file" onChange={(e) => handleUpdate(e)} />
         </div>
 
         <div className="main_table-modal_forms">

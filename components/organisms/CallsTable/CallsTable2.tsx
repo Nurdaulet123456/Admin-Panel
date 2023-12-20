@@ -3,23 +3,23 @@ import { DeleteIcons, PenIcons } from "../../atoms/Icons";
 import { Table, Td, Th, Thead, Tr } from "../../atoms/UI/Tables/Table";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import { useEffect } from "react";
-import { getSchoolAtestThunk } from "@/store/thunks/pride.thunk";
+import { getDopThunk } from "@/store/thunks/pride.thunk";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 
-const PrideSchoolTable5 = () => {
+const CallsTable2 = () => {
   const dispatch = useAppDispatch();
-  const atest = useTypedSelector((state) => state.pride.atest);
+  const dop = useTypedSelector((state) => state.pride.dop);
 
   useEffect(() => {
-    if (atest) {
-      dispatch(getSchoolAtestThunk());
+    if (dop) {
+      dispatch(getDopThunk());
     }
   }, [dispatch]);
 
   const handleDeleteItems = async (id?: number) => {
     await instance
-      .delete(`/api/School_RedCertificateApi/${id}`, {
+      .delete(`/api/DopUrokRingApi/${id}`, {
         headers: {
           Authorization: `Token ${getTokenInLocalStorage()}`,
         },
@@ -30,34 +30,36 @@ const PrideSchoolTable5 = () => {
         }
       })
       .catch((e) => console.log(e));
-    dispatch(getSchoolAtestThunk());
+    dispatch(getDopThunk());
   };
 
   return (
     <div className="main_table">
-      <div className="main_table-title">Қызыл аттестат</div>
+      <div className="main_table-title">Доп.урок </div>
 
       <div className="main_table-block">
         <Table>
           <Thead>
             <tr>
               <Th>No</Th>
-              <Th>Фото</Th>
-              <Th>ФИО</Th>
-              <Th>Текст</Th>
-              <Th>Год</Th>
+              <Th>План звонков</Th>
+              <Th>Номер урока</Th>
+              <Th>Смена</Th>
+              <Th>Смена начало</Th>
+              <Th>Смена конец</Th>
               <Th>Действие</Th>
             </tr>
           </Thead>
 
-          {atest &&
-            atest.map((item, index) => (
-              <Tr>
+          {dop &&
+            dop.map((item, index) => (
+              <Tr key={item.plan}>
                 <Td>{index + 1}</Td>
-                <Td>Content</Td>
-                <Td>{item.fullname}</Td>
-                <Td>{item.student_success}</Td>
-                <Td>{item.endyear}</Td>
+                <Td>{item.plan}</Td>
+                <Td>{item.number}</Td>
+                <Td>{item.smena}</Td>
+                <Td>{item.start_time}</Td>
+                <Td>{item.end_time}</Td>
                 <Td>
                   <div>
                     <PenIcons />
@@ -75,4 +77,4 @@ const PrideSchoolTable5 = () => {
   );
 };
 
-export default PrideSchoolTable5;
+export default CallsTable2;
