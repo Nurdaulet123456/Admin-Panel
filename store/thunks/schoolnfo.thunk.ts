@@ -6,6 +6,11 @@ export const getKruzhokInfoThunk = createAsyncThunk(
     async () => (await assetsApi.getKruzhok())
 )
 
+export const getKruzhokTeachersInfoThunk = createAsyncThunk(
+    'getKruzhokTeachersInfoThunk',
+    async () => (await assetsApi.getKruzhokTeacher())
+)
+
 export const getMenuThunk = createAsyncThunk(
     'getMenuThunk',
     async () => (await assetsApi.getMenu())

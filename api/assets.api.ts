@@ -11,6 +11,14 @@ export const assetsApi = {
         })
     },
 
+    async getKruzhokTeacher(): Promise<any[]> {
+        return await instance.get('/api/kruzhok/available_teachers/', {
+            headers: {
+                'Authorization': `Token ${getTokenInLocalStorage()}`
+            }
+        })
+    },
+
     async getMenu(): Promise<IMenu[]> {
         return await instance.get('/api/menu/', {
             headers: {

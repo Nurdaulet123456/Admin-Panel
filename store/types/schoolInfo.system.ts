@@ -2,6 +2,7 @@ import { IClassRoom, IKruzhok, IMenu, ISchoolInfo as ISchool, ISchoolAdmin, ISch
 
 export interface ISchoolInfo {
     kruzhok?: IKruzhok[],
+    teachers?: any[],
     menu?: IMenu[],
     classroom?: IClassRoom[],
     school?: ISchool[],
@@ -21,5 +22,6 @@ export const initaialStateSchoolInfo: ISchoolInfo = {
     schooladmin: [],
     schoolpassport: [],
     schoolphotos: [],
-    schoolsocial: []
+    schoolsocial: [],
+    teachers: []
 }

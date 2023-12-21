@@ -1,11 +1,16 @@
-import { Dispatch, FC, SetStateAction, useState } from "react";
+import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 
 import { Button } from "../atoms/UI/Buttons/Button";
 import { Input, TextArea } from "../atoms/UI/Inputs/Input";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage, getWeekDayNumber } from "@/utils/assets.utils";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { getKruzhokInfoThunk } from "@/store/thunks/schoolnfo.thunk";
+import {
+  getKruzhokInfoThunk,
+  getKruzhokTeachersInfoThunk,
+} from "@/store/thunks/schoolnfo.thunk";
+import TypeModal from "../modals/TypeModal";
+import { useTypedSelector } from "@/hooks/useTypedSelector";
 
 interface IUpdateInput {
   name?: string;
@@ -26,6 +31,9 @@ interface IProps {
 
 const MainTableBlock: FC<IProps> = ({ onReject }) => {
   const dispatch = useAppDispatch();
+  const teachers = useTypedSelector((state) => state.system.teachers);
+  const [showActive, setShowActive] = useState<boolean>(false);
+  const [text, setText] = useState<string>("");
   const [updateInput, setUpdateInput] = useState<IUpdateInput>({
     name: "",
     teacher: "",
@@ -85,13 +93,13 @@ const MainTableBlock: FC<IProps> = ({ onReject }) => {
     if (
       timeSlots &&
       updateInput.name &&
-      updateInput.teacher &&
+      text &&
       updateInput.goal
     ) {
       const formData = new FormData();
-      formData.append("file", updateInput.file); // Добавляем файл в FormData
+      formData.append("file", updateInput.file);
       formData.append("kruzhok_name", updateInput.name);
-      formData.append("teacher", updateInput.teacher);
+      formData.append("teacher", text);
       formData.append("purpose", updateInput.goal);
 
       formData.append("lessons", JSON.stringify(timeSlots));
@@ -113,6 +121,12 @@ const MainTableBlock: FC<IProps> = ({ onReject }) => {
         });
     }
   };
+
+  useEffect(() => {
+    if (teachers) {
+      dispatch(getKruzhokTeachersInfoThunk());
+    }
+  }, [dispatch]);
 
   return (
     <div className="main_table-modal">
@@ -142,11 +156,25 @@ const MainTableBlock: FC<IProps> = ({ onReject }) => {
 
             <Input
               type="text"
-              placeholder="мұғалім аты"
               name="teacher"
-              value={updateInput.teacher}
-              onChange={(e) => handleUpdate(e)}
+              readOnly={true}
+              style={{ cursor: "pointer" }}
+              onClick={() => setShowActive(!showActive)}
+              value={text}
             />
+
+            <div className="main_table-modal-active-block">
+              {showActive && (
+                <TypeModal
+                  setText={setText}
+                  setShowActive={setShowActive}
+                  timeArr={(teachers as any[])?.map((item, index) => ({
+                    id: index + 1,
+                    type: item.full_name,
+                  }))}
+                />
+              )}
+            </div>
           </div>
 
           <div className="forms">

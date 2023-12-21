@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { initaialStateSchoolInfo } from "../types/schoolInfo.system";
-import { getClassRoomThunk, getKruzhokInfoThunk, getMenuThunk, getSchoolAdminThunk, getSchoolPassportThunk, getSchoolPhotosThunk, getSchoolSocialThunk, getSchoolThunk, getUsersThunk } from "../thunks/schoolnfo.thunk";
+import { getClassRoomThunk, getKruzhokInfoThunk, getKruzhokTeachersInfoThunk, getMenuThunk, getSchoolAdminThunk, getSchoolPassportThunk, getSchoolPhotosThunk, getSchoolSocialThunk, getSchoolThunk, getUsersThunk } from "../thunks/schoolnfo.thunk";
 import { IClassRoom, IKruzhok, IMenu, ISchoolAdmin, ISchoolInfo, ISchoolPassport, ISchoolPhotos, ISchoolSocialMedia, IUsers } from "@/types/assets.type";
 
 export const schoolInfoSlice = createSlice({
@@ -95,6 +95,16 @@ export const schoolInfoSlice = createSlice({
                     return {
                         ...state,
                         schoolsocial: action.payload
+                    }
+                }
+            }
+        ).addCase(
+            getKruzhokTeachersInfoThunk.fulfilled,
+            (state, action: PayloadAction<any[]>) => {
+                if (action.payload) {
+                    return {
+                        ...state,
+                        teachers: action.payload
                     }
                 }
             }

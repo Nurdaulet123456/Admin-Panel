@@ -11,6 +11,7 @@ import SchoolTableBlock1 from "@/components/molecules/SchoolTableId/SchoolTableB
 import SchoolTableBlock2 from "@/components/molecules/SchoolTableId/SchoolTableBlock2";
 import SchoolTableBlock4 from "@/components/molecules/SchoolTableId/SchoolTableBlock4";
 import { ITabs } from "@/types/assets.type";
+import SchoolTableBlock3 from "@/components/molecules/SchoolTableId/SchoolTableBlock3";
 
 const SchoolComponents = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
@@ -44,6 +45,7 @@ const SchoolComponents = () => {
       </div>
 
       {showActive && router.query.id === "1" && <SchoolTableBlock1 onReject={setShowActive}/>}
+      {router.query.id === "2" && <SchoolTableBlock3 />}
       {showActive && router.query.id === "3" && <SchoolTableBlock2 onReject={setShowActive}/>}
       {showActive && router.query.id === "4" && <SchoolTableBlock4 onReject={setShowActive}/>}
 
