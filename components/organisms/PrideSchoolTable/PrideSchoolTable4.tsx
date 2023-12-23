@@ -2,12 +2,16 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { DeleteIcons, PenIcons } from "../../atoms/Icons";
 import { Table, Td, Th, Thead, Tr } from "../../atoms/UI/Tables/Table";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
-import { useEffect } from "react";
+import { FC, useEffect } from "react";
 import { getSchoolAltynThunk } from "@/store/thunks/pride.thunk";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 
-const PrideSchoolTable4 = () => {
+interface IProps {
+  handleClickGetIdAltyn?: (id?: number) => void;
+}
+
+const PrideSchoolTable4: FC<IProps> = ({ handleClickGetIdAltyn }) => {
   const dispatch = useAppDispatch();
   const altyn = useTypedSelector((state) => state.pride.altyn);
 
@@ -54,12 +58,20 @@ const PrideSchoolTable4 = () => {
             altyn.map((item, index) => (
               <Tr>
                 <Td>{index + 1}</Td>
-                <Td>Content</Td>
+                <Td>
+                  <div className="img-block">
+                    <img src={item.photo} alt={item.photo} />
+                  </div>
+                </Td>
                 <Td>{item.fullname}</Td>
                 <Td>{item.student_success}</Td>
                 <Td>{item.endyear}</Td>
                 <Td>
-                  <div>
+                  <div
+                    onClick={() =>
+                      handleClickGetIdAltyn && handleClickGetIdAltyn(item.id)
+                    }
+                  >
                     <PenIcons />
                   </div>
 

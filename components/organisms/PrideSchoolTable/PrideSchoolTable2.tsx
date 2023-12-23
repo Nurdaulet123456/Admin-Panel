@@ -2,12 +2,16 @@ import { DeleteIcons, PenIcons } from "../../atoms/Icons";
 import { Table, Td, Th, Thead, Tr } from "../../atoms/UI/Tables/Table";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
-import { useEffect } from "react";
+import { FC, useEffect } from "react";
 import { getSchoolOnerThunk } from "@/store/thunks/pride.thunk";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 
-const PrideSchoolTable2 = () => {
+interface IProps {
+  handleClickGetIdOner?: (id?: number) => void;
+}
+
+const PrideSchoolTable2: FC<IProps> = ({ handleClickGetIdOner }) => {
   const dispatch = useAppDispatch();
   const oner = useTypedSelector((state) => state.pride.oner);
 
@@ -54,12 +58,20 @@ const PrideSchoolTable2 = () => {
             oner.map((item, index) => (
               <Tr>
                 <Td>{index + 1}</Td>
-                <Td>Content</Td>
+                <Td>
+                  <div className="img-block">
+                    <img src={item.photo} alt={item.photo} />
+                  </div>
+                </Td>
                 <Td>{item.fullname}</Td>
                 <Td>{item.student_success}</Td>
                 <Td>{item.classl} класс</Td>
                 <Td>
-                  <div>
+                  <div
+                    onClick={() =>
+                      handleClickGetIdOner && handleClickGetIdOner(item.id)
+                    }
+                  >
                     <PenIcons />
                   </div>
 

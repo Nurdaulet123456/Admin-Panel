@@ -1,10 +1,23 @@
-import { ChangeEvent, Dispatch, FC, SetStateAction, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  FC,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { Button } from "../../atoms/UI/Buttons/Button";
 import { Input } from "../../atoms/UI/Inputs/Input";
 import { instance } from "@/api/axios.instance";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { getSchoolOlimpThunk } from "@/store/thunks/pride.thunk";
+import {
+  getClassNameThunk,
+  getSchoolOlimpThunk,
+} from "@/store/thunks/pride.thunk";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import { ISchoolOlimp } from "@/types/assets.type";
+import { useTypedSelector } from "@/hooks/useTypedSelector";
+import ClassNamesModal from "@/components/modals/ClassNames";
 
 interface UpdateInputProps {
   fullname: string;
@@ -14,11 +27,23 @@ interface UpdateInputProps {
 }
 
 interface IProps {
-    onReject?: Dispatch<SetStateAction<boolean>>;
+  onReject?: Dispatch<SetStateAction<boolean>>;
+  onEdit?: Dispatch<SetStateAction<boolean>>;
+  olimpid?: ISchoolOlimp;
+  getId?: number;
 }
 
-const PrideSchoolTableBlock3: FC<IProps> = ({onReject}) => {
+const PrideSchoolTableBlock3: FC<IProps> = ({
+  onReject,
+  onEdit,
+  olimpid,
+  getId,
+}) => {
   const dispatch = useAppDispatch();
+  const clasname = useTypedSelector((state) => state.pride.classname);
+  const [showActive, setShowActive] = useState<boolean>(false);
+  const [text, setText] = useState<string>("");
+  const [id, setId] = useState<number>();
   const [updateInput, setUpdateInput] = useState<UpdateInputProps>({
     fullname: "",
     text: "",
@@ -42,36 +67,69 @@ const PrideSchoolTableBlock3: FC<IProps> = ({onReject}) => {
     }
   };
 
+  useEffect(() => {
+    if (olimpid) {
+      setUpdateInput({
+        fullname: olimpid.fullname || "",
+        file: null,
+        text: olimpid.student_success || "",
+        class: olimpid.classl || "",
+      });
+
+      setText(olimpid.classl || "");
+    }
+  }, [olimpid]);
+
   const onSave = async () => {
-    if (
-      updateInput.fullname &&
-      updateInput.text &&
-      updateInput.class &&
-      updateInput.file
-    ) {
+    if (updateInput.fullname && updateInput.text && id && updateInput.file) {
       const formData = new FormData();
       formData.append("fullname", updateInput.fullname);
       formData.append("photo", updateInput.file);
       formData.append("student_success", updateInput.text);
-      formData.append("classl", updateInput.class);
+      formData.append("classl", String(id));
 
-      await instance
-        .post("/api/PandikOlimpiadaApi/", formData, {
-          headers: {
-            Authorization: `Token ${getTokenInLocalStorage()}`,
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        .then((res) => {
-          if (res) {
-            dispatch(getSchoolOlimpThunk());
-          }
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+      if (!getId) {
+        await instance
+          .post("/api/PandikOlimpiadaApi/", formData, {
+            headers: {
+              Authorization: `Token ${getTokenInLocalStorage()}`,
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then((res) => {
+            if (res) {
+              dispatch(getSchoolOlimpThunk());
+            }
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      } else {
+        await instance
+          .put(`/api/PandikOlimpiadaApi/${getId}/`, formData, {
+            headers: {
+              Authorization: `Token ${getTokenInLocalStorage()}`,
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then((res) => {
+            if (res) {
+              dispatch(getSchoolOlimpThunk());
+            }
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
     }
   };
+
+  useEffect(() => {
+    if (clasname) {
+      dispatch(getClassNameThunk());
+    }
+  }, [dispatch]);
+
   return (
     <div className="main_table-modal">
       <div className="main_table-modal_title">Должность</div>
@@ -115,12 +173,27 @@ const PrideSchoolTableBlock3: FC<IProps> = ({onReject}) => {
             <div className="login_forms-label_pink">Класс</div>
 
             <Input
-              type="number"
-              placeholder="класс"
-              name="class"
-              value={updateInput.class}
-              onChange={(e) => onChangeUpdateInput(e)}
+              type="text"
+              name="teacher"
+              readOnly={true}
+              style={{ cursor: "pointer" }}
+              onClick={() => setShowActive(!showActive)}
+              value={text}
             />
+
+            <div className="main_table-modal-active-block">
+              {showActive && (
+                <ClassNamesModal
+                  setText={setText}
+                  setShowActive={setShowActive}
+                  setId={setId}
+                  timeArr={(clasname as any[])?.map((item, index) => ({
+                    id: item.id,
+                    type: item.class_name,
+                  }))}
+                />
+              )}
+            </div>
           </div>
 
           <div
@@ -131,7 +204,9 @@ const PrideSchoolTableBlock3: FC<IProps> = ({onReject}) => {
               background="#CACACA"
               color="#645C5C"
               style={{ width: "auto" }}
-              onClick={() => onReject && onReject(false)}
+              onClick={() =>
+                getId ? onEdit && onEdit(false) : onReject && onReject(false)
+              }
             >
               Удалить
             </Button>

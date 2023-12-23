@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction, useState } from "react";
+import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { ColorBlock } from "../atoms/UI/Blocks/Block";
 import { Button } from "../atoms/UI/Buttons/Button";
 import { Input } from "../atoms/UI/Inputs/Input";
@@ -7,6 +7,7 @@ import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getExtraThunk } from "@/store/thunks/pride.thunk";
 import { ColorCheckIcons } from "../atoms/Icons";
+import { IExtraLessons } from "@/types/assets.type";
 
 const typeColor = [
   "#27AE60",
@@ -25,36 +26,75 @@ const typeColor = [
 
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
+  onEdit?: Dispatch<SetStateAction<boolean>>;
+  extraid?: IExtraLessons;
+  getId?: number;
 }
 
-const TypeLessonsTableBlock: FC<IProps> = ({ onReject }) => {
+const TypeLessonsTableBlock: FC<IProps> = ({
+  onReject,
+  onEdit,
+  extraid,
+  getId,
+}) => {
   const dispatch = useAppDispatch();
   const [updateInput, setUpdateInput] = useState<string>("");
   const [chooseColor, setChooseColor] = useState<string>("");
 
+  useEffect(() => {
+    if (extraid) {
+      setUpdateInput((extraid?.type_full_name as string) || "");
+      setChooseColor((extraid?.type_color as string) || "");
+    }
+  }, [extraid]);
+
   const onSave = async () => {
     if (updateInput && chooseColor) {
-      await instance
-        .post(
-          "/api/extra_lesson/",
-          {
-            type_full_name: updateInput,
-            type_color: chooseColor,
-          },
-          {
-            headers: {
-              Authorization: `Token ${getTokenInLocalStorage()}`,
+      if (!getId) {
+        await instance
+          .post(
+            "/api/extra_lesson/",
+            {
+              type_full_name: updateInput,
+              type_color: chooseColor,
             },
-          }
-        )
-        .then((res) => {
-          if (res) {
-            dispatch(getExtraThunk());
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res) {
+              dispatch(getExtraThunk());
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else {
+        await instance
+          .put(
+            `/api/extra_lesson/${getId}/`,
+            {
+              type_full_name: updateInput,
+              type_color: chooseColor,
+            },
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res) {
+              dispatch(getExtraThunk());
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
     }
   };
 

@@ -8,13 +8,32 @@ import MainLayouts from "@/layouts/MainLayouts";
 import { useState } from "react";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
-import { getKruzhokInfoThunk } from "@/store/thunks/schoolnfo.thunk";
+import { getKruzhokInfoIdThunk, getKruzhokInfoThunk } from "@/store/thunks/schoolnfo.thunk";
 
 const MainPage = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
 
+  const [editActive, setEditActive] = useState<boolean>(false);
+  const [getId, setId] = useState<number>();
+
   const dispatch = useAppDispatch();
   const kruzhok = useTypedSelector((state) => state.system.kruzhok);
+  const kruzhokid = useTypedSelector((state) => state.system.kruzhokid);
+
+  const handleClickGetId = (id?: number) => {
+    setEditActive(true);
+
+    setId(id);
+
+    if (id) {
+      dispatch(getKruzhokInfoIdThunk(id));
+    }
+  };
+
+  const handleAddButtonClick = () => {
+    setEditActive(false);
+    setShowActive(!showActive);
+  };
 
   useEffect(() => {
     if (kruzhok) {
@@ -41,16 +60,16 @@ const MainPage = () => {
             alignItems: "center",
             gap: ".8rem",
           }}
-          onClick={() => setShowActive(!showActive)}
+          onClick={handleAddButtonClick}
         >
           <PlusIcons />
           Добавить
         </Button>
       </div>
 
-      {showActive && <MainTableBlock onReject={setShowActive} />}
+      {(showActive || editActive) && <MainTableBlock onReject={setShowActive} kruzhokid={kruzhokid} getId={getId} onEdit={setEditActive}/>}
 
-      <MainTable kruzhok={kruzhok && kruzhok} />
+      <MainTable kruzhok={kruzhok && kruzhok} handleClickGetId={handleClickGetId}/>
     </MainLayouts>
   );
 };

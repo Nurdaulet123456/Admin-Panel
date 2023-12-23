@@ -54,3 +54,29 @@ export function getWeekDayNumber(day: string): string {
     };
     return weekDayMap[day] || "";
 };
+
+export function getWeekDayString(day: string): string {
+
+    const weekDayMap: Record<string, string> = {
+        "1": "Дүйсенбі",
+        "2": "Серсенбі",
+        "3": "Сейсенбі",
+        "4": "Бейсенбі",
+        "5": "Жұма",
+        "6": "Сенбі"
+    };
+    return weekDayMap[day] || "";
+};
+
+export function getWeekRussianDayString(day: string): string {
+
+    const weekDayMap: Record<string, string> = {
+        "1": "Понедельник",
+        "2": "Вторник",
+        "3": "Среда",
+        "4": "Четверг",
+        "5": "Пятница",
+        "6": "Суббота"
+    };
+    return weekDayMap[day] || "";
+};

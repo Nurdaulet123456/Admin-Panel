@@ -1,10 +1,18 @@
-import { ChangeEvent, Dispatch, FC, SetStateAction, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  FC,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { Button } from "../../atoms/UI/Buttons/Button";
 import { Input } from "../../atoms/UI/Inputs/Input";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getSchoolPhotosThunk } from "@/store/thunks/schoolnfo.thunk";
+import { ISchoolPhotos } from "@/types/assets.type";
 
 interface UpdateInputProps {
   name?: string;
@@ -13,9 +21,17 @@ interface UpdateInputProps {
 
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
+  onEdit?: Dispatch<SetStateAction<boolean>>;
+  photosid?: ISchoolPhotos;
+  getId?: number;
 }
 
-const SchoolTableBlock2: FC<IProps> = ({ onReject }) => {
+const SchoolTableBlock2: FC<IProps> = ({
+  onReject,
+  onEdit,
+  photosid,
+  getId,
+}) => {
   const dispatch = useAppDispatch();
 
   const [updateInput, setUpdateInput] = useState<UpdateInputProps>({
@@ -39,27 +55,54 @@ const SchoolTableBlock2: FC<IProps> = ({ onReject }) => {
     }
   };
 
+  useEffect(() => {
+    if (photosid) {
+      setUpdateInput({
+        name: photosid.slider_name || "",
+        file: null,
+      });
+    }
+  }, [photosid]);
+
   const onSave = async () => {
     if (updateInput.name && updateInput.file) {
       const formData = new FormData();
       formData.append("slider_name", updateInput.name);
       formData.append("slider_photo", updateInput.file);
 
-      await instance
-        .post("/api/slider/", formData, {
-          headers: {
-            Authorization: `Token ${getTokenInLocalStorage()}`,
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        .then((res) => {
-          if (res) {
-            dispatch(getSchoolPhotosThunk());
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+      if (!getId) {
+        await instance
+          .post("/api/slider/", formData, {
+            headers: {
+              Authorization: `Token ${getTokenInLocalStorage()}`,
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then((res) => {
+            if (res) {
+              dispatch(getSchoolPhotosThunk());
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else {
+        await instance
+          .put(`/api/slider/${getId}/`, formData, {
+            headers: {
+              Authorization: `Token ${getTokenInLocalStorage()}`,
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then((res) => {
+            if (res) {
+              dispatch(getSchoolPhotosThunk());
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
     }
   };
 
@@ -100,7 +143,9 @@ const SchoolTableBlock2: FC<IProps> = ({ onReject }) => {
           background="#CACACA"
           color="#645C5C"
           style={{ width: "auto" }}
-          onClick={() => onReject && onReject(false)}
+          onClick={() =>
+            getId ? onEdit && onEdit(false) : onReject && onReject(false)
+          }
         >
           Удалить
         </Button>

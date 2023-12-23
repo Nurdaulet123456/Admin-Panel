@@ -1,10 +1,18 @@
-import { ChangeEvent, Dispatch, FC, SetStateAction, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  FC,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { Button } from "../../atoms/UI/Buttons/Button";
 import { Input } from "../../atoms/UI/Inputs/Input";
 import { instance } from "@/api/axios.instance";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getSchoolAtestThunk } from "@/store/thunks/pride.thunk";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import { ISchoolAtest } from "@/types/assets.type";
 
 interface UpdateInputProps {
   fullname: string;
@@ -15,9 +23,17 @@ interface UpdateInputProps {
 
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
+  onEdit?: Dispatch<SetStateAction<boolean>>;
+  atestid?: ISchoolAtest;
+  getId?: number;
 }
 
-const PrideSchoolTableBlock5: FC<IProps> = ({ onReject }) => {
+const PrideSchoolTableBlock5: FC<IProps> = ({
+  onReject,
+  onEdit,
+  atestid,
+  getId,
+}) => {
   const dispatch = useAppDispatch();
   const [updateInput, setUpdateInput] = useState<UpdateInputProps>({
     fullname: "",
@@ -42,6 +58,17 @@ const PrideSchoolTableBlock5: FC<IProps> = ({ onReject }) => {
     }
   };
 
+  useEffect(() => {
+    if (atestid) {
+      setUpdateInput({
+        fullname: atestid.fullname || "",
+        file: null,
+        text: atestid.student_success || "",
+        class: atestid.endyear || "",
+      });
+    }
+  }, [atestid]);
+
   const onSave = async () => {
     if (
       updateInput.fullname &&
@@ -55,21 +82,23 @@ const PrideSchoolTableBlock5: FC<IProps> = ({ onReject }) => {
       formData.append("student_success", updateInput.text);
       formData.append("endyear", updateInput.class);
 
-      await instance
-        .post("/api/School_RedCertificateApi/", formData, {
-          headers: {
-            Authorization: `Token ${getTokenInLocalStorage()}`,
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        .then((res) => {
-          if (res) {
-            dispatch(getSchoolAtestThunk());
-          }
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+      if (!getId) {
+        await instance
+          .put(`/api/School_RedCertificateApi/${getId}/`, formData, {
+            headers: {
+              Authorization: `Token ${getTokenInLocalStorage()}`,
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then((res) => {
+            if (res) {
+              dispatch(getSchoolAtestThunk());
+            }
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
     }
   };
   return (
@@ -131,7 +160,9 @@ const PrideSchoolTableBlock5: FC<IProps> = ({ onReject }) => {
               background="#CACACA"
               color="#645C5C"
               style={{ width: "auto" }}
-              onClick={() => onReject && onReject(false)}
+              onClick={() =>
+                getId ? onEdit && onEdit(false) : onReject && onReject(false)
+              }
             >
               Удалить
             </Button>

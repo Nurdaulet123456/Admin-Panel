@@ -1,4 +1,11 @@
-import { ChangeEvent, Dispatch, FC, SetStateAction, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  FC,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { Button } from "../../atoms/UI/Buttons/Button";
 import { Input } from "../../atoms/UI/Inputs/Input";
 import TypeModal from "../../modals/TypeModal";
@@ -6,6 +13,7 @@ import { instance } from "@/api/axios.instance";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getSchoolSocialThunk } from "@/store/thunks/schoolnfo.thunk";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import { ISchoolSocialMedia } from "@/types/assets.type";
 
 interface UpdateInputProps {
   url?: string;
@@ -14,9 +22,17 @@ interface UpdateInputProps {
 
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
+  onEdit?: Dispatch<SetStateAction<boolean>>;
+  socialid?: ISchoolSocialMedia;
+  getId?: number;
 }
 
-const SchoolTableBlock4: FC<IProps> = ({ onReject }) => {
+const SchoolTableBlock4: FC<IProps> = ({
+  onReject,
+  socialid,
+  getId,
+  onEdit,
+}) => {
   const dispatch = useAppDispatch();
   const [showActive, setShowActive] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
@@ -25,6 +41,17 @@ const SchoolTableBlock4: FC<IProps> = ({ onReject }) => {
     url: "",
     name: "",
   });
+
+  useEffect(() => {
+    if (socialid) {
+      setUpdateInput({
+        url: "",
+        name: socialid.account_name || "",
+      });
+
+      setText((socialid.type as string) || "");
+    }
+  }, [socialid]);
 
   const onChangeUpdateInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -37,32 +64,51 @@ const SchoolTableBlock4: FC<IProps> = ({ onReject }) => {
 
   const onSave = async () => {
     if (updateInput.name && updateInput.url) {
-      await instance
-        .post(
-          "/api/School_SocialMediaApi/",
-          {
-            account_name: updateInput.name,
-            type: text.toLowerCase(),
-          },
-          {
-            headers: {
-              Authorization: `Token ${getTokenInLocalStorage()}`,
+      if (!getId) {
+        await instance
+          .post(
+            "/api/School_SocialMediaApi/",
+            {
+              account_name: updateInput.name,
+              type: text.toLowerCase(),
             },
-          }
-        )
-        .then((res) => {
-          if (res) {
-            dispatch(getSchoolSocialThunk());
-
-            setUpdateInput({
-              name: "",
-              url: "",
-            });
-          }
-        })
-        .catch((e) => {
-          console.log(e.message);
-        });
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res) {
+              dispatch(getSchoolSocialThunk());
+            }
+          })
+          .catch((e) => {
+            console.log(e.message);
+          });
+      } else {
+        await instance
+          .put(
+            `/api/School_SocialMediaApi/${getId}/`,
+            {
+              account_name: updateInput.name,
+              type: text.toLowerCase(),
+            },
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res) {
+              dispatch(getSchoolSocialThunk());
+            }
+          })
+          .catch((e) => {
+            console.log(e.message);
+          });
+      }
     }
   };
 
@@ -139,7 +185,9 @@ const SchoolTableBlock4: FC<IProps> = ({ onReject }) => {
               background="#CACACA"
               color="#645C5C"
               style={{ width: "auto" }}
-              onClick={() => onReject && onReject(false)}
+              onClick={() =>
+                getId ? onEdit && onEdit(false) : onReject && onReject(false)
+              }
             >
               Удалить
             </Button>

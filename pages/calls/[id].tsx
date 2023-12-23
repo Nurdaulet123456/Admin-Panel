@@ -9,10 +9,45 @@ import CallsTable from "@/components/organisms/CallsTable/CallsTable1";
 import CallsTable2 from "@/components/organisms/CallsTable/CallsTable2";
 import CallsTableBlock1 from "@/components/molecules/Calls/CallsTableBlock1";
 import CallsTableBlock2 from "@/components/molecules/Calls/CallsTableBlock2";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { useTypedSelector } from "@/hooks/useTypedSelector";
+import { getDopIdThunk, getOSIdThunk } from "@/store/thunks/pride.thunk";
 
 const CallsComponents = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
   const router = useRouter();
+
+  const [editActive, setEditActive] = useState<boolean>(false);
+  const [getId, setId] = useState<number>();
+
+  const dispatch = useAppDispatch();
+  const dopid = useTypedSelector((state) => state.pride.dopid);
+  const osid = useTypedSelector((state) => state.pride.osid);
+
+  const handleAddButtonClick = () => {
+    setEditActive(false);
+    setShowActive(!showActive);
+  };
+
+  const handleClickGetIdDop = (id?: number) => {
+    setEditActive(true);
+
+    setId(id);
+
+    if (id) {
+      dispatch(getDopIdThunk(id));
+    }
+  };
+
+  const handleClickGetIdOS = (id?: number) => {
+    setEditActive(true);
+
+    setId(id);
+
+    if (id) {
+      dispatch(getOSIdThunk(id));
+    }
+  };
 
   return (
     <MainLayouts>
@@ -24,7 +59,7 @@ const CallsComponents = () => {
           marginBottom: "1.6rem",
         }}
       >
-        <div style={{ width: "100%", display: "flex", gap: '2.4rem' }}>
+        <div style={{ width: "100%", display: "flex", gap: "2.4rem" }}>
           <Tabs link="calls" tabs={tabs} />
         </div>
         <Button
@@ -36,18 +71,22 @@ const CallsComponents = () => {
             alignItems: "center",
             gap: ".8rem",
           }}
-          onClick={() => setShowActive(!showActive)}
+          onClick={handleAddButtonClick}
         >
           <PlusIcons />
           Добавить
         </Button>
       </div>
 
-      {showActive && router.query.id === "1" && <CallsTableBlock1 onReject={setShowActive}/>}
-      {showActive && router.query.id === "2" && <CallsTableBlock2 onReject={setShowActive}/>}
+      {(showActive || editActive) && router.query.id === "1" && (
+        <CallsTableBlock1 onReject={setShowActive} osid={osid} onEdit={setEditActive}/>
+      )}
+      {(showActive || editActive) && router.query.id === "2" && (
+        <CallsTableBlock2 onReject={setShowActive} dopid={dopid} getId={getId} onEdit={setEditActive}/>
+      )}
 
-      {router.query.id === "1" && <CallsTable />}
-      {router.query.id === "2" && <CallsTable2 />}
+      {router.query.id === "1" && <CallsTable handleClickGetIdOS={handleClickGetIdOS}/>}
+      {router.query.id === "2" && <CallsTable2 handleClickGetIdDop={handleClickGetIdDop}/>}
     </MainLayouts>
   );
 };

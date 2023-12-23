@@ -3,7 +3,11 @@ import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { Button } from "../atoms/UI/Buttons/Button";
 import { Input, TextArea } from "../atoms/UI/Inputs/Input";
 import { instance } from "@/api/axios.instance";
-import { getTokenInLocalStorage, getWeekDayNumber } from "@/utils/assets.utils";
+import {
+  getTokenInLocalStorage,
+  getWeekDayNumber,
+  getWeekRussianDayString,
+} from "@/utils/assets.utils";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import {
   getKruzhokInfoThunk,
@@ -11,6 +15,8 @@ import {
 } from "@/store/thunks/schoolnfo.thunk";
 import TypeModal from "../modals/TypeModal";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
+import { BASE_URL } from "@/config/config";
+import { IKruzhok } from "@/types/assets.type";
 
 interface IUpdateInput {
   name?: string;
@@ -27,13 +33,17 @@ interface ITimeSlot {
 
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
+  kruzhokid?: IKruzhok;
+  getId?: number;
+  onEdit?: Dispatch<SetStateAction<boolean>>;
 }
 
-const MainTableBlock: FC<IProps> = ({ onReject }) => {
+const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
   const dispatch = useAppDispatch();
   const teachers = useTypedSelector((state) => state.system.teachers);
   const [showActive, setShowActive] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
+  const [id, setId] = useState<number>();
   const [updateInput, setUpdateInput] = useState<IUpdateInput>({
     name: "",
     teacher: "",
@@ -48,6 +58,26 @@ const MainTableBlock: FC<IProps> = ({ onReject }) => {
     },
     file: null,
   });
+
+  useEffect(() => {
+    if (kruzhokid) {
+      const newTimes = updateInput.times;
+      kruzhokid?.lessons?.forEach((lesson) => {
+        const russianDay = getWeekRussianDayString(lesson?.week_day as string);
+        newTimes[russianDay as string] = lesson?.start_end_time as string;
+      });
+
+      setUpdateInput({
+        name: kruzhokid.kruzhok_name || "",
+        teacher: kruzhokid?.teacher?.full_name || "",
+        goal: kruzhokid.purpose || "",
+        times: newTimes,
+      });
+
+      setText(kruzhokid?.teacher?.full_name || "");
+      setId(kruzhokid?.teacher?.id || "");
+    }
+  }, [kruzhokid]);
 
   const handleUpdate = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -90,35 +120,54 @@ const MainTableBlock: FC<IProps> = ({ onReject }) => {
       }
     });
 
-    if (
-      timeSlots &&
-      updateInput.name &&
-      text &&
-      updateInput.goal
-    ) {
+    if (timeSlots.length > 0 && updateInput.name && id && updateInput.goal) {
       const formData = new FormData();
-      formData.append("file", updateInput.file);
+      formData.append("photo", updateInput.file);
       formData.append("kruzhok_name", updateInput.name);
-      formData.append("teacher", text);
+      formData.append("teacher", String(id));
       formData.append("purpose", updateInput.goal);
 
-      formData.append("lessons", JSON.stringify(timeSlots));
+      timeSlots.forEach((lesson, index) => {
+        formData.append(`lessons[${index}][week_day]`, lesson.week_day);
+        formData.append(
+          `lessons[${index}][start_end_time]`,
+          lesson.start_end_time
+        );
+      });
 
-      await instance
-        .post("/api/kruzhok/", formData, {
-          headers: {
-            Authorization: `Token ${getTokenInLocalStorage()}`,
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        .then((res) => {
-          if (res) {
-            dispatch(getKruzhokInfoThunk());
-          }
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+      if (!getId) {
+        await instance
+          .post("/api/kruzhok/", formData, {
+            headers: {
+              Authorization: `Token ${getTokenInLocalStorage()}`,
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then((res) => {
+            if (res) {
+              dispatch(getKruzhokInfoThunk());
+            }
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      } else {
+        await instance
+          .put(`/api/kruzhok/${getId}/`, formData, {
+            headers: {
+              Authorization: `Token ${getTokenInLocalStorage()}`,
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then((res) => {
+            if (res) {
+              dispatch(getKruzhokInfoThunk());
+            }
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
     }
   };
 
@@ -127,6 +176,16 @@ const MainTableBlock: FC<IProps> = ({ onReject }) => {
       dispatch(getKruzhokTeachersInfoThunk());
     }
   }, [dispatch]);
+
+  const handleGetTime = (id?: number, text?: string) => {
+    if (setId && setShowActive) {
+      setId(id);
+      setShowActive(false);
+      setText(text as string);
+    }
+  };
+
+  
 
   return (
     <div className="main_table-modal">
@@ -164,16 +223,17 @@ const MainTableBlock: FC<IProps> = ({ onReject }) => {
             />
 
             <div className="main_table-modal-active-block">
-              {showActive && (
-                <TypeModal
-                  setText={setText}
-                  setShowActive={setShowActive}
-                  timeArr={(teachers as any[])?.map((item, index) => ({
-                    id: index + 1,
-                    type: item.full_name,
-                  }))}
-                />
-              )}
+              {showActive &&
+                teachers &&
+                teachers.map((item) => (
+                  <div
+                    className="main_table-modal-active"
+                    key={item.id}
+                    onClick={() => handleGetTime(item.id, item.full_name)}
+                  >
+                    {item.full_name}
+                  </div>
+                ))}
             </div>
           </div>
 
@@ -219,7 +279,7 @@ const MainTableBlock: FC<IProps> = ({ onReject }) => {
                     <Input
                       type="text"
                       placeholder="Уақыты"
-                      name="time"
+                      name={`time`}
                       data-day={day}
                       value={updateInput.times[day]}
                       onChange={(e) => handleUpdate(e)}

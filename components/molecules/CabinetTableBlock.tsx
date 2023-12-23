@@ -1,10 +1,18 @@
-import { useState, ChangeEvent, Dispatch, SetStateAction, FC } from "react";
+import {
+  useState,
+  ChangeEvent,
+  Dispatch,
+  SetStateAction,
+  FC,
+  useEffect,
+} from "react";
 import { Button } from "../atoms/UI/Buttons/Button";
 import { Input } from "../atoms/UI/Inputs/Input";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getClassRoomThunk } from "@/store/thunks/schoolnfo.thunk";
+import { IClassRoom } from "@/types/assets.type";
 
 interface IUpdateInputProps {
   name?: string;
@@ -15,9 +23,17 @@ interface IUpdateInputProps {
 
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
+  setEditActive?: Dispatch<SetStateAction<boolean>>;
+  cabinetid?: IClassRoom;
+  getId?: number;
 }
 
-const CabinetTableBlock: FC<IProps> = ({onReject}) => {
+const CabinetTableBlock: FC<IProps> = ({
+  onReject,
+  getId,
+  cabinetid,
+  setEditActive,
+}) => {
   const dispatch = useAppDispatch();
   const [updateInput, setUpdateInput] = useState<IUpdateInputProps>({
     name: "",
@@ -25,6 +41,17 @@ const CabinetTableBlock: FC<IProps> = ({onReject}) => {
     floor: "",
     corpuse: "",
   });
+
+  useEffect(() => {
+    if (cabinetid) {
+      setUpdateInput({
+        name: cabinetid.classroom_name || "",
+        gr: String(cabinetid.classroom_number) || "",
+        floor: String(cabinetid.flat) || "",
+        corpuse: String(cabinetid.korpus) || "",
+      });
+    }
+  }, [cabinetid]);
 
   const onChangeUpdateInput = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -44,36 +71,55 @@ const CabinetTableBlock: FC<IProps> = ({onReject}) => {
       updateInput.corpuse &&
       updateInput.name
     ) {
-      await instance
-        .post(
-          "/api/classroom/",
-          {
-            classroom_name: updateInput.name,
-            classroom_number: Number(updateInput.gr),
-            flat: Number(updateInput.floor),
-            korpus: Number(updateInput.corpuse),
-          },
-          {
-            headers: {
-              Authorization: `Token ${getTokenInLocalStorage()}`,
+      if (!getId) {
+        await instance
+          .post(
+            "/api/classroom/",
+            {
+              classroom_name: updateInput.name,
+              classroom_number: Number(updateInput.gr),
+              flat: Number(updateInput.floor),
+              korpus: Number(updateInput.corpuse),
             },
-          }
-        )
-        .then((res) => {
-          if (res) {
-            dispatch(getClassRoomThunk());
-
-            setUpdateInput({
-              name: "",
-              gr: "",
-              floor: "",
-              corpuse: "",
-            });
-          }
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res) {
+              dispatch(getClassRoomThunk());
+            }
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      } else {
+        await instance
+          .put(
+            `/api/classroom/${getId}/`,
+            {
+              classroom_name: updateInput.name,
+              classroom_number: Number(updateInput.gr),
+              flat: Number(updateInput.floor),
+              korpus: Number(updateInput.corpuse),
+            },
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res) {
+              dispatch(getClassRoomThunk());
+            }
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
     }
   };
 
@@ -134,7 +180,16 @@ const CabinetTableBlock: FC<IProps> = ({onReject}) => {
         className="flex"
         style={{ justifyContent: "flex-end", gap: "1.6rem" }}
       >
-        <Button background="#CACACA" color="#645C5C" style={{ width: "auto" }} onClick={() => onReject && onReject(false)}>
+        <Button
+          background="#CACACA"
+          color="#645C5C"
+          style={{ width: "auto" }}
+          onClick={() =>
+            getId
+              ? setEditActive && setEditActive(false)
+              : onReject && onReject(false)
+          }
+        >
           Удалить
         </Button>
         <Button background="#27AE60" style={{ width: "auto" }} onClick={onSave}>

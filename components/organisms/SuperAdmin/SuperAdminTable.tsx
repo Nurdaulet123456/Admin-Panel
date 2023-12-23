@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { Dispatch, FC, SetStateAction } from "react";
 import { ISchoolInfo } from "@/types/assets.type";
 import { DeleteIcons, PenIcons } from "../../atoms/Icons";
 import { Table, Td, Th, Thead, Tr } from "../../atoms/UI/Tables/Table";
@@ -9,9 +9,10 @@ import { getSchoolThunk } from "@/store/thunks/schoolnfo.thunk";
 
 interface IProps {
   school?: ISchoolInfo[];
+  onEdit?: (id?: number) => void;
 }
 
-const SuperAdminTable: FC<IProps> = ({ school }) => {
+const SuperAdminTable: FC<IProps> = ({ school, onEdit }) => {
   const dispatch = useAppDispatch();
   const handleDeleteItems = async (id?: number) => {
     await instance
@@ -49,7 +50,7 @@ const SuperAdminTable: FC<IProps> = ({ school }) => {
                 <Td>{index + 1}</Td>
                 <Td>{item.school_kz_name}</Td>
                 <Td>
-                  <div>
+                  <div onClick={() => onEdit && onEdit(item.id)}>
                     <PenIcons />
                   </div>
 

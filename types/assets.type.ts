@@ -8,8 +8,8 @@ export interface ITabs {
 export interface IKruzhok {
     id?: number
     kruzhok_name?: string
-    school: number
-    teacher?: number
+    school?: number
+    teacher?: any
     photo?: string
     purpose?: string
     lessons?: ILesson[]
@@ -73,7 +73,7 @@ export interface ISchoolAdmin {
     id?: number
     administrator_name?: string
     phone_number?: string
-    administator_photo: string
+    administator_photo?: string
     position?: string
 }
 
@@ -88,7 +88,7 @@ export interface ISchoolPassport {
     kiz_sany?: number
     school_lang?: string
     status?: string
-    vmestimost?: number 
+    vmestimost?: number
     dayarlyk_class_number?: number
     dayarlyk_student_number?: number
     number_of_students?: number
@@ -141,7 +141,7 @@ export interface ISchoolSport {
     fullname?: string
     photo?: string
     student_success?: string
-    classl?: number
+    classl?: any
     school?: number
 }
 
@@ -152,7 +152,7 @@ export interface ISchoolOner {
     fullname?: string
     photo?: string
     student_success?: string
-    classl?: number
+    classl?: any
     school?: number
 }
 
@@ -163,7 +163,7 @@ export interface ISchoolOlimp {
     fullname?: string
     photo?: string
     student_success?: string
-    classl?: number
+    classl?: any
     school?: number
 }
 
@@ -216,5 +216,63 @@ export interface ICalls {
     number?: number
     start_time?: string
     end_time?: string
+    school?: number
+}
+
+// Class Name
+
+export interface IClassName {
+    id?: number
+    class_name?: string
+}
+
+// Teachers 
+
+export interface ITeachers {
+    id?: number
+    full_name?: string
+    photo3x4?: any
+    subject?: string
+    pedagog?: string
+    school?: number
+    job_history?: IJobHistory[]
+    speciality_history?: ISpecialityHistory[]
+}
+
+interface IJobHistory {
+    start_date?: number
+    end_date?: number
+    job_characteristic?: string
+}
+
+interface ISpecialityHistory {
+    end_date?: number
+    speciality_university?: string
+    degree?: string
+}
+
+// News 
+
+export interface INews {
+    id?: number
+    date?: string
+    text?: string
+    type?: string
+    photos?: string[]
+    school?: number
+}
+
+// Class 
+
+export interface IClass {
+    id?: number
+    class_name?: string
+    language?: string
+    classroom?: any
+    class_teacher?: any
+    osnova_plan?: any
+    osnova_smena?: any
+    dopurok_plan?: any
+    dopurok_smena?: any
     school?: number
 }

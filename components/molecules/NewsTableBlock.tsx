@@ -1,11 +1,118 @@
-import { useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  FC,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { Button } from "../atoms/UI/Buttons/Button";
 import { Input, TextArea } from "../atoms/UI/Inputs/Input";
 import TypeModal from "../modals/TypeModal";
+import { instance } from "@/api/axios.instance";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import { getNewsThunk } from "@/store/thunks/pride.thunk";
+import { INews } from "@/types/assets.type";
 
-const NewsTableBlock = () => {
+interface UpdateInputProps {
+  text?: string;
+  date?: string;
+  file?: any;
+}
+
+interface IProps {
+  onEdit?: Dispatch<SetStateAction<boolean>>;
+  onReject?: Dispatch<SetStateAction<boolean>>;
+  newsid?: INews;
+  getId?: number;
+}
+
+const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
+  const dispatch = useAppDispatch();
   const [showActive, setShowActive] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
+  const [updateInput, setUpdateInput] = useState<UpdateInputProps>({});
+
+  const onChangeUpdateInput = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value, type } = e.target;
+
+    if (type === "file") {
+      const fileInput = e.target as HTMLInputElement;
+      setUpdateInput({
+        ...updateInput,
+        [name]: Array.from(fileInput.files || []), // Convert FileList to array
+      });
+    } else {
+      setUpdateInput({
+        ...updateInput,
+        [name]: value,
+      });
+    }
+  };
+
+  useEffect(() => {
+    if (newsid) {
+      setUpdateInput({
+        text: newsid.text || "",
+        date: newsid.date || "",
+      });
+
+      setText((newsid.type as string) || "");
+    }
+  }, [newsid]);
+
+  const onSave = async () => {
+    if (updateInput.date && updateInput.text && updateInput.file && text) {
+      if (!getId) {
+        await instance
+          .post(
+            "/api/newsApi/",
+            {
+              type: "manual",
+              photos: updateInput.file,
+              text: updateInput.text,
+              date: updateInput.date,
+            },
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res) {
+              dispatch(getNewsThunk());
+            }
+          })
+          .catch((err) => console.log(err));
+      } else {
+        await instance
+          .put(
+            `/api/newsApi/${getId}/`,
+            {
+              type: "manual",
+              photos: updateInput.file,
+              text: updateInput.text,
+              date: updateInput.date,
+            },
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res) {
+              dispatch(getNewsThunk());
+            }
+          })
+          .catch((err) => console.log(err));
+      }
+    }
+  };
 
   return (
     <div className="main_table-modal">
@@ -48,19 +155,35 @@ const NewsTableBlock = () => {
             </div>
           </div>
           <div className="login_forms-label_pink">Фото *</div>
+          <Input
+            type="file"
+            name="file"
+            onChange={(e) => onChangeUpdateInput(e)}
+          />
         </div>
 
         <div className="main_table-modal_forms">
           <div className="forms">
             <div className="login_forms-label_pink">Уақыты</div>
 
-            <Input type="text" placeholder="курс атауы" name="name" />
+            <Input
+              type="text"
+              placeholder="уақыты"
+              name="date"
+              value={updateInput.date}
+              onChange={(e) => onChangeUpdateInput(e)}
+            />
           </div>
 
           <div className="forms">
             <div className="login_forms-label_pink">Текст</div>
 
-            <TextArea rows={10} name="goal" />
+            <TextArea
+              rows={10}
+              name="text"
+              value={updateInput.text}
+              onChange={(e) => onChangeUpdateInput(e)}
+            />
 
             <div className="length">0/2000</div>
           </div>
@@ -73,10 +196,15 @@ const NewsTableBlock = () => {
               background="#CACACA"
               color="#645C5C"
               style={{ width: "auto" }}
+              onClick={() => getId ? (onEdit && onEdit(false)) : (onReject && onReject(false))}
             >
               Удалить
             </Button>
-            <Button background="#27AE60" style={{ width: "auto" }}>
+            <Button
+              background="#27AE60"
+              style={{ width: "auto" }}
+              onClick={onSave}
+            >
               Сохранить
             </Button>
           </div>

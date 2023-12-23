@@ -1,45 +1,85 @@
-import { Dispatch, FC, SetStateAction, useState } from "react";
+import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { Button } from "../atoms/UI/Buttons/Button";
-import { Input, TextArea } from "../atoms/UI/Inputs/Input";
+import { Input } from "../atoms/UI/Inputs/Input";
 import TypeModal from "../modals/TypeModal";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getLessonsThunk } from "@/store/thunks/pride.thunk";
+import { ILessons } from "@/types/assets.type";
 
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
+  onEdit?: Dispatch<SetStateAction<boolean>>;
+  lessonsid?: ILessons;
+  getId?: number;
 }
 
-const LessonsTableBlock: FC<IProps> = ({ onReject }) => {
+const LessonsTableBlock: FC<IProps> = ({
+  onReject,
+  lessonsid,
+  onEdit,
+  getId,
+}) => {
   const dispatch = useAppDispatch();
   const [showActive, setShowActive] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
   const [updateInput, setUpdateInput] = useState<string>("");
 
+  useEffect(() => {
+    if (lessonsid) {
+      setUpdateInput((lessonsid.full_name as string) || "");
+      setText((lessonsid.type as string) || "");
+    }
+  }, [lessonsid]);
+
   const onSave = async () => {
     if (updateInput && text) {
-      await instance
-        .post(
-          "/api/subject/",
-          {
-            full_name: updateInput,
-            type: text.toUpperCase(),
-          },
-          {
-            headers: {
-              Authorization: `Token ${getTokenInLocalStorage()}`,
+      if (!getId) {
+        await instance
+          .post(
+            "/api/subject/",
+            {
+              full_name: updateInput,
+              type: text.toUpperCase(),
             },
-          }
-        )
-        .then((res) => {
-          if (res) {
-            dispatch(getLessonsThunk());
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res) {
+              dispatch(getLessonsThunk());
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else {
+        await instance
+          .put(
+            `/api/subject/${getId}/`,
+            {
+              full_name: updateInput,
+              type: text.toUpperCase(),
+            },
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res) {
+              dispatch(getLessonsThunk());
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
     }
   };
 
@@ -97,7 +137,9 @@ const LessonsTableBlock: FC<IProps> = ({ onReject }) => {
           background="#CACACA"
           color="#645C5C"
           style={{ width: "auto" }}
-          onClick={() => onReject && onReject(false)}
+          onClick={() =>
+            getId ? onEdit && onEdit(false) : onReject && onReject(false)
+          }
         >
           Удалить
         </Button>

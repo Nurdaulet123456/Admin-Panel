@@ -2,12 +2,16 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { DeleteIcons, PenIcons } from "../../atoms/Icons";
 import { Table, Td, Th, Thead, Tr } from "../../atoms/UI/Tables/Table";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
-import { useEffect } from "react";
+import { FC, useEffect } from "react";
 import { getOSThunk } from "@/store/thunks/pride.thunk";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 
-const CallsTable = () => {
+interface IProps {
+  handleClickGetIdOS?: (id?: number) => void
+}
+
+const CallsTable: FC<IProps> = ({handleClickGetIdOS}) => {
   const dispatch = useAppDispatch();
   const os = useTypedSelector((state) => state.pride.os);
 
@@ -62,7 +66,7 @@ const CallsTable = () => {
                 <Td>{item.start_time}</Td>
                 <Td>{item.end_time}</Td>
                 <Td>
-                  <div>
+                  <div onClick={() => handleClickGetIdOS && handleClickGetIdOS(item.id)}>
                     <PenIcons />
                   </div>
 

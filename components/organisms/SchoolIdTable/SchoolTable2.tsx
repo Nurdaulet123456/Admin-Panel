@@ -2,12 +2,16 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { DeleteIcons, PenIcons } from "../../atoms/Icons";
 import { Table, Td, Th, Thead, Tr } from "../../atoms/UI/Tables/Table";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
-import { useEffect } from "react";
+import { FC, useEffect } from "react";
 import { getSchoolPhotosThunk } from "@/store/thunks/schoolnfo.thunk";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 
-const SchoolTable2 = () => {
+interface IProps{
+  handleClickGetId2?: (id?: number) => void;
+}
+
+const SchoolTable2: FC<IProps> = ({handleClickGetId2}) => {
   const disptach = useAppDispatch();
   const photos = useTypedSelector((state) => state.system.schoolphotos);
 
@@ -52,10 +56,14 @@ const SchoolTable2 = () => {
             photos.map((item, index) => (
               <Tr>
                 <Td>{index + 1}</Td>
-                <Td>Content</Td>
+                <Td>
+                  <div className="img-block">
+                    <img src={item.slider_photo} alt={item.slider_photo} />
+                  </div>
+                </Td>
                 <Td>{item.slider_name}</Td>
                 <Td>
-                  <div>
+                  <div onClick={() => handleClickGetId2 && handleClickGetId2(item.id)}>
                     <PenIcons />
                   </div>
 

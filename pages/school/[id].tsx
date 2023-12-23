@@ -12,10 +12,60 @@ import SchoolTableBlock2 from "@/components/molecules/SchoolTableId/SchoolTableB
 import SchoolTableBlock4 from "@/components/molecules/SchoolTableId/SchoolTableBlock4";
 import { ITabs } from "@/types/assets.type";
 import SchoolTableBlock3 from "@/components/molecules/SchoolTableId/SchoolTableBlock3";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import {
+  getSchoolAdminIdThunk,
+  getSchoolPhotosIdThunk,
+  getSchoolSocialIdThunk,
+} from "@/store/thunks/schoolnfo.thunk";
+import { useTypedSelector } from "@/hooks/useTypedSelector";
 
 const SchoolComponents = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
   const router = useRouter();
+
+  const [editActive, setEditActive] = useState<boolean>(false);
+  const [getId, setId] = useState<number>();
+
+  const dispatch = useAppDispatch();
+  const socialid = useTypedSelector((state) => state.system.schoolsocialid);
+  const adminid = useTypedSelector((state) => state.system.schooladminid);
+  const photosid = useTypedSelector((state) => state.system.schoolphotosid);
+
+  const handleAddButtonClick = () => {
+    setEditActive(false);
+    setShowActive(!showActive);
+  };
+
+  const handleClickGetIdDop = (id?: number) => {
+    setEditActive(true);
+
+    setId(id);
+
+    if (id) {
+      dispatch(getSchoolSocialIdThunk(id));
+    }
+  };
+
+  const handleClickGetId1 = (id?: number) => {
+    setEditActive(true);
+
+    setId(id);
+
+    if (id) {
+      dispatch(getSchoolAdminIdThunk(id));
+    }
+  };
+
+  const handleClickGetId2 = (id?: number) => {
+    setEditActive(true);
+
+    setId(id);
+
+    if (id) {
+      dispatch(getSchoolPhotosIdThunk(id));
+    }
+  };
 
   return (
     <MainLayouts>
@@ -37,21 +87,34 @@ const SchoolComponents = () => {
             alignItems: "center",
             gap: ".8rem",
           }}
-          onClick={() => setShowActive(!showActive)}
+          onClick={handleAddButtonClick}
         >
           <PlusIcons />
           Добавить
         </Button>
       </div>
 
-      {showActive && router.query.id === "1" && <SchoolTableBlock1 onReject={setShowActive}/>}
+      {(showActive || editActive) && router.query.id === "1" && (
+        <SchoolTableBlock1 onReject={setShowActive} adminid={adminid} getId={getId} onEdit={setEditActive}/>
+      )}
       {router.query.id === "2" && <SchoolTableBlock3 />}
-      {showActive && router.query.id === "3" && <SchoolTableBlock2 onReject={setShowActive}/>}
-      {showActive && router.query.id === "4" && <SchoolTableBlock4 onReject={setShowActive}/>}
+      {(showActive || editActive) && router.query.id === "3" && (
+        <SchoolTableBlock2 onReject={setShowActive} photosid={photosid} getId={getId} onEdit={setEditActive}/>
+      )}
+      {(showActive || editActive) && router.query.id === "4" && (
+        <SchoolTableBlock4
+          onReject={setShowActive}
+          socialid={socialid}
+          getId={getId}
+          onEdit={setEditActive}
+        />
+      )}
 
-      {router.query.id === "1" && <SchoolTable />}
-      {router.query.id === "3" && <SchoolTable2 />}
-      {router.query.id === "4" && <SchoolTable3 />}
+      {router.query.id === "1" && <SchoolTable handleClickGetId1={handleClickGetId1}/>}
+      {router.query.id === "3" && <SchoolTable2 handleClickGetId2={handleClickGetId2}/>}
+      {router.query.id === "4" && (
+        <SchoolTable3 handleClickGetIdDop={handleClickGetIdDop} />
+      )}
     </MainLayouts>
   );
 };

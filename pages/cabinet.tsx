@@ -6,21 +6,40 @@ import { Button } from "@/components/atoms/UI/Buttons/Button";
 import CabinetTableBlock from "@/components/molecules/CabinetTableBlock";
 import CabinetTable from "@/components/organisms/CabinetTable";
 import MainLayouts from "@/layouts/MainLayouts";
-import { getClassRoomThunk } from "@/store/thunks/schoolnfo.thunk";
+import {
+  getClassRoomIdThunk,
+  getClassRoomThunk,
+} from "@/store/thunks/schoolnfo.thunk";
 
 const CabinetPage = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
+  const [editActive, setEditActive] = useState<boolean>(false);
+  const [getId, setId] = useState<number>();
 
-  const dispatch = useAppDispatch()
-  const cabinet = useTypedSelector(state => state.system.classroom)
+  const dispatch = useAppDispatch();
+  const cabinet = useTypedSelector((state) => state.system.classroom);
+  const cabinetid = useTypedSelector((state) => state.system.classroomid);
 
   useEffect(() => {
-
     if (cabinet) {
-      dispatch(getClassRoomThunk())
+      dispatch(getClassRoomThunk());
     }
+  }, [dispatch]);
 
-  }, [dispatch])
+  const handleAddButtonClick = () => {
+    setEditActive(false);
+    setShowActive(!showActive);
+  };
+
+  const handleClickGetId = (id?: number) => {
+    setEditActive(true);
+
+    setId(id);
+
+    if (id) {
+      dispatch(getClassRoomIdThunk(id));
+    }
+  };
 
   return (
     <MainLayouts>
@@ -41,16 +60,18 @@ const CabinetPage = () => {
             alignItems: "center",
             gap: ".8rem",
           }}
-          onClick={() => setShowActive(!showActive)}
+          onClick={handleAddButtonClick}
         >
           <PlusIcons />
           Добавить
         </Button>
       </div>
 
-      {showActive && <CabinetTableBlock onReject={setShowActive}/>}
+      {(showActive || editActive) && (
+        <CabinetTableBlock onReject={setShowActive} cabinetid={cabinetid} getId={getId} setEditActive={setEditActive}/>
+      )}
 
-      <CabinetTable cabinet={cabinet}/>
+      <CabinetTable cabinet={cabinet} handleClickGetId={handleClickGetId} />
     </MainLayouts>
   );
 };

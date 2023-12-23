@@ -2,12 +2,16 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { DeleteIcons, PenIcons } from "../../atoms/Icons";
 import { Table, Td, Th, Thead, Tr } from "../../atoms/UI/Tables/Table";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
-import { useEffect } from "react";
+import { FC, useEffect } from "react";
 import { getSchoolSocialThunk } from "@/store/thunks/schoolnfo.thunk";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 
-const SchoolTable3 = () => {
+interface IProps {
+  handleClickGetIdDop?: (id?: number) => void
+}
+
+const SchoolTable3: FC<IProps> = ({handleClickGetIdDop}) => {
   const dispatch = useAppDispatch();
   const media = useTypedSelector((state) => state.system.schoolsocial);
 
@@ -57,7 +61,7 @@ const SchoolTable3 = () => {
                 <Td>Content</Td>
                 <Td>{item.account_name}</Td>
                 <Td>
-                  <div>
+                  <div onClick={() => handleClickGetIdDop && handleClickGetIdDop(item.id)}>
                     <PenIcons />
                   </div>
 

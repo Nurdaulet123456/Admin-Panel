@@ -1,4 +1,11 @@
-import { ChangeEvent, Dispatch, FC, SetStateAction, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  FC,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { Button } from "../../atoms/UI/Buttons/Button";
 import { Input } from "../../atoms/UI/Inputs/Input";
 import NumberModal from "@/components/modals/NumberModal";
@@ -6,6 +13,7 @@ import { instance } from "@/api/axios.instance";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getOSThunk } from "@/store/thunks/pride.thunk";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import { ICalls } from "@/types/assets.type";
 
 interface UpdateInputProps {
   start?: string;
@@ -14,9 +22,12 @@ interface UpdateInputProps {
 
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
+  onEdit?: Dispatch<SetStateAction<boolean>>;
+  osid?: ICalls;
+  getId?: number;
 }
 
-const CallsTableBlock1: FC<IProps> = ({ onReject }) => {
+const CallsTableBlock1: FC<IProps> = ({ onReject, osid, getId, onEdit }) => {
   const dispatch = useAppDispatch();
   const [show, setShow] = useState([false, false, false]);
   const [text1, setText1] = useState<string>("");
@@ -46,32 +57,72 @@ const CallsTableBlock1: FC<IProps> = ({ onReject }) => {
     });
   };
 
+  useEffect(() => {
+    if (osid) {
+      setUpdateInput({
+        start: osid.start_time || "",
+        end: osid.end_time || "",
+      });
+
+      setText1((String(osid.plan) as string) || "");
+      setText2((String(osid.number) as string) || "");
+      setText3((String(osid.smena) as string) || "");
+    }
+  }, [osid]);
+
   const onSave = async () => {
     if (updateInput.start && updateInput.end && text1 && text2 && text3) {
-      await instance
-        .post(
-          "/api/ringApi/",
-          {
-            plan: Number(text1),
-            number: Number(text2),
-            smena: Number(text3),
-            start_time: updateInput.start,
-            end_time: updateInput.end,
-          },
-          {
-            headers: {
-              Authorization: `Token ${getTokenInLocalStorage()}`,
+      if (!getId) {
+        await instance
+          .post(
+            "/api/ringApi/",
+            {
+              plan: String(text1),
+              number: String(text2),
+              smena: String(text3),
+              start_time: updateInput.start,
+              end_time: updateInput.end,
             },
-          }
-        )
-        .then((res) => {
-          if (res) {
-            dispatch(getOSThunk());
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res) {
+              dispatch(getOSThunk());
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else {
+        await instance
+          .put(
+            `/api/ringApi/${getId}/`,
+            {
+              plan: Number(text1),
+              number: Number(text2),
+              smena: Number(text3),
+              start_time: updateInput.start,
+              end_time: updateInput.end,
+            },
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res) {
+              dispatch(getOSThunk());
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
     }
   };
 
@@ -216,7 +267,9 @@ const CallsTableBlock1: FC<IProps> = ({ onReject }) => {
           background="#CACACA"
           color="#645C5C"
           style={{ width: "auto" }}
-          onClick={() => onReject && onReject(false)}
+          onClick={() =>
+            getId ? onEdit && onEdit(false) : onReject && onReject(false)
+          }
         >
           Удалить
         </Button>

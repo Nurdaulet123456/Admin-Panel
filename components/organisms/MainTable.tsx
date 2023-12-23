@@ -10,24 +10,24 @@ import { getKruzhokInfoThunk } from "@/store/thunks/schoolnfo.thunk";
 
 interface IProps {
   kruzhok: IKruzhok[] | undefined;
+  handleClickGetId?: (id?: number) => void;
 }
 
-const MainTable: FC<IProps> = ({ kruzhok }) => {
-  // const dispatch = useAppDispatch();
+const MainTable: FC<IProps> = ({ kruzhok, handleClickGetId }) => {
+  const dispatch = useAppDispatch();
 
-  // const handleDeleteItems = async (id?: number) => {
-  //   await instance
-  //     .delete(`/api/kruzhok/${id}`, {
-  //       headers: {
-  //         Authorization: `Token ${getTokenInLocalStorage()}`,
-  //       },
-  //     })
-  //     .then((res) => {
-  //       if (res) {
-  //         dispatch(getKruzhokInfoThunk());
-  //       }
-  //     });
-  // };
+  const handleDeleteItems = async (id?: number) => {
+    await instance
+      .delete(`/api/kruzhok/${id}/`, {
+        headers: {
+          Authorization: `Token ${getTokenInLocalStorage()}`,
+        },
+      })
+      .then((res) => {
+        if (res) {}
+      });
+      dispatch(getKruzhokInfoThunk());
+  };
 
   return (
     <div className="main_table">
@@ -63,11 +63,11 @@ const MainTable: FC<IProps> = ({ kruzhok }) => {
                   ))}
                 </Td>
                 <Td>
-                  <div>
+                  <div onClick={() => handleClickGetId && handleClickGetId(item.id)}>
                     <PenIcons />
                   </div>
 
-                  <div>
+                  <div onClick={() => handleDeleteItems(item.id)}>
                     <DeleteIcons />
                   </div>
                 </Td>

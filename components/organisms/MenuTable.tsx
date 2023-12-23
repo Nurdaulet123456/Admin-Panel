@@ -11,9 +11,10 @@ interface IProps {
   menu: IMenu[] | undefined;
   setDel?: any;
   del?: boolean;
+  handleClickGetId?: (id?: number) => void;
 }
 
-const MenuTable: FC<IProps> = ({ menu, setDel, del }) => {
+const MenuTable: FC<IProps> = ({ menu, setDel, del, handleClickGetId }) => {
   const dispatch = useAppDispatch();
 
   const handleDeleteItems = async (id?: number) => {
@@ -58,7 +59,7 @@ const MenuTable: FC<IProps> = ({ menu, setDel, del }) => {
                 <Td>{item.food_sostav}</Td>
                 <Td>{item.vihod_1}</Td>
                 <Td>
-                  <div>
+                  <div onClick={() => handleClickGetId && handleClickGetId(item.id)}>
                     <PenIcons />
                   </div>
 

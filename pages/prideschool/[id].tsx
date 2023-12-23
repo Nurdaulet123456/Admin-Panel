@@ -15,10 +15,85 @@ import PrideSchoolTableBlock2 from "@/components/molecules/PrideSchoolTableBlock
 import PrideSchoolTableBlock3 from "@/components/molecules/PrideSchoolTableBlockId/PrideSchoolTableBlock3";
 import PrideSchoolTableBlock4 from "@/components/molecules/PrideSchoolTableBlockId/PrideSchoolTableBlock4";
 import PrideSchoolTableBlock5 from "@/components/molecules/PrideSchoolTableBlockId/PrideSchoolTableBlock5";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { useTypedSelector } from "@/hooks/useTypedSelector";
+import {
+  getSchoolAltynIdThunk,
+  getSchoolAtestIdThunk,
+  getSchoolOlimpIdThunk,
+  getSchoolOnerIdThunk,
+  getSchoolSportIdThunk,
+} from "@/store/thunks/pride.thunk";
 
 const PrideSchoolComponents = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
   const router = useRouter();
+
+  const [editActive, setEditActive] = useState<boolean>(false);
+  const [getId, setId] = useState<number>();
+
+  const dispatch = useAppDispatch();
+
+  const sportid = useTypedSelector((state) => state.pride.sportid);
+  const onerid = useTypedSelector((state) => state.pride.onerid);
+  const altynid = useTypedSelector((state) => state.pride.altynid);
+  const atestid = useTypedSelector((state) => state.pride.atestid);
+  const olimpid = useTypedSelector((state) => state.pride.olimpid);
+
+  const handleAddButtonClick = () => {
+    setEditActive(false);
+    setShowActive(!showActive);
+  };
+
+  const handleClickGetIdSport = (id?: number) => {
+    setEditActive(true);
+
+    setId(id);
+
+    if (id) {
+      dispatch(getSchoolSportIdThunk(id));
+    }
+  };
+
+  const handleClickGetIdAltyn = (id?: number) => {
+    setEditActive(true);
+
+    setId(id);
+
+    if (id) {
+      dispatch(getSchoolAltynIdThunk(id));
+    }
+  };
+
+  const handleClickGetIdOner = (id?: number) => {
+    setEditActive(true);
+
+    setId(id);
+
+    if (id) {
+      dispatch(getSchoolOnerIdThunk(id));
+    }
+  };
+
+  const handleClickGetIdOlimp = (id?: number) => {
+    setEditActive(true);
+
+    setId(id);
+
+    if (id) {
+      dispatch(getSchoolOlimpIdThunk(id));
+    }
+  };
+
+  const handleClickGetIdAtest = (id?: number) => {
+    setEditActive(true);
+
+    setId(id);
+
+    if (id) {
+      dispatch(getSchoolAtestIdThunk(id));
+    }
+  };
 
   return (
     <MainLayouts>
@@ -40,24 +115,69 @@ const PrideSchoolComponents = () => {
             alignItems: "center",
             gap: ".8rem",
           }}
-          onClick={() => setShowActive(!showActive)}
+          onClick={handleAddButtonClick}
         >
           <PlusIcons />
           Добавить
         </Button>
       </div>
 
-      {showActive && router.query.id === "1" && <PrideSchoolTableBlock1 onReject={setShowActive}/>}
-      {showActive && router.query.id === "2" && <PrideSchoolTableBlock2 onReject={setShowActive}/>}
-      {showActive && router.query.id === "3" && <PrideSchoolTableBlock3 onReject={setShowActive}/>}
-      {showActive && router.query.id === "4" && <PrideSchoolTableBlock4 onReject={setShowActive}/>}
-      {showActive && router.query.id === "5" && <PrideSchoolTableBlock5 onReject={setShowActive}/>}
+      {(showActive || editActive) && router.query.id === "1" && (
+        <PrideSchoolTableBlock1
+          onReject={setShowActive}
+          sportid={sportid}
+          getId={getId}
+          onEdit={setEditActive}
+        />
+      )}
+      {(showActive || editActive) && router.query.id === "2" && (
+        <PrideSchoolTableBlock2
+          onReject={setShowActive}
+          onerid={onerid}
+          getId={getId}
+          onEdit={setEditActive}
+        />
+      )}
+      {(showActive || editActive) && router.query.id === "3" && (
+        <PrideSchoolTableBlock3
+          onReject={setShowActive}
+          olimpid={olimpid}
+          getId={getId}
+          onEdit={setEditActive}
+        />
+      )}
+      {(showActive || editActive) && router.query.id === "4" && (
+        <PrideSchoolTableBlock4
+          onReject={setShowActive}
+          altynid={altynid}
+          getId={getId}
+          onEdit={setEditActive}
+        />
+      )}
+      {(showActive || editActive) && router.query.id === "5" && (
+        <PrideSchoolTableBlock5
+          onReject={setShowActive}
+          atestid={atestid}
+          getId={getId}
+          onEdit={setEditActive}
+        />
+      )}
 
-      {router.query.id === "1" && <PrideSchoolTable1 />}
-      {router.query.id === "2" && <PrideSchoolTable2 />}
-      {router.query.id === "3" && <PrideSchoolTable3 />}
-      {router.query.id === "4" && <PrideSchoolTable4 />}
-      {router.query.id === "5" && <PrideSchoolTable5 />}
+      {router.query.id === "1" && (
+        <PrideSchoolTable1 handleClickGetIdSport={handleClickGetIdSport} />
+      )}
+      {router.query.id === "2" && (
+        <PrideSchoolTable2 handleClickGetIdOner={handleClickGetIdOner} />
+      )}
+      {router.query.id === "3" && (
+        <PrideSchoolTable3 handleClickGetIdOlimp={handleClickGetIdOlimp} />
+      )}
+      {router.query.id === "4" && (
+        <PrideSchoolTable4 handleClickGetIdAltyn={handleClickGetIdAltyn} />
+      )}
+      {router.query.id === "5" && (
+        <PrideSchoolTable5 handleClickGetIdAtest={handleClickGetIdAtest} />
+      )}
     </MainLayouts>
   );
 };

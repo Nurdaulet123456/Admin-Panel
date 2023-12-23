@@ -1,11 +1,19 @@
-import { ChangeEvent, Dispatch, FC, SetStateAction, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  FC,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { Button } from "../../atoms/UI/Buttons/Button";
 import { Input } from "../../atoms/UI/Inputs/Input";
 import NumberModal from "@/components/modals/NumberModal";
 import { instance } from "@/api/axios.instance";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { getDopThunk } from "@/store/thunks/pride.thunk";
+import { getDopThunk, getOSThunk } from "@/store/thunks/pride.thunk";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import { ICalls } from "@/types/assets.type";
 
 interface UpdateInputProps {
   start?: string;
@@ -14,9 +22,12 @@ interface UpdateInputProps {
 
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
+  onEdit?: Dispatch<SetStateAction<boolean>>;
+  dopid?: ICalls
+  getId?: number
 }
 
-const CallsTableBlock2: FC<IProps> = ({ onReject }) => {
+const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
   const dispatch = useAppDispatch();
   const [show, setShow] = useState([false, false, false]);
   const [text1, setText1] = useState<string>("");
@@ -46,38 +57,78 @@ const CallsTableBlock2: FC<IProps> = ({ onReject }) => {
     });
   };
 
+  useEffect(() => {
+    if (dopid) {
+      setUpdateInput({
+        start: dopid.start_time || "",
+        end: dopid.end_time || "",
+      });
+
+      setText1((String(dopid.plan) as string) || "");
+      setText2((String(dopid.number) as string) || "");
+      setText3((String(dopid.smena) as string) || "");
+    }
+  }, [dopid]);
+
   const onSave = async () => {
     if (updateInput.start && updateInput.end && text1 && text2 && text3) {
-      await instance
-        .post(
-          "/api/DopUrokRingApi/",
-          {
-            plan: Number(text1),
-            number: Number(text2),
-            smena: Number(text3),
-            start_time: updateInput.start,
-            end_time: updateInput.end,
-          },
-          {
-            headers: {
-              Authorization: `Token ${getTokenInLocalStorage()}`,
+      if (!getId) {
+        await instance
+          .post(
+            "/api/DopUrokRingApi/",
+            {
+              plan: Number(text1),
+              number: Number(text2),
+              smena: Number(text3),
+              start_time: updateInput.start,
+              end_time: updateInput.end,
             },
-          }
-        )
-        .then((res) => {
-          if (res) {
-            dispatch(getDopThunk());
-          }
-        })
-        .catch((err) => {
-          console.log(err);
-        });
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res) {
+              dispatch(getDopThunk());
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      } else {
+        await instance
+          .put(
+            `/api/DopUrokRingApi/${getId}/`,
+            {
+              plan: Number(text1),
+              number: Number(text2),
+              smena: Number(text3),
+              start_time: updateInput.start,
+              end_time: updateInput.end,
+            },
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res) {
+              dispatch(getDopThunk());
+            }
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
     }
   };
 
   return (
     <div className="main_table-modal">
-      <div className="login_forms-label_pink">Доп.урок</div>
+      <div className="login_forms-label_pink">Основной урок</div>
       <div className="main_table-modal_forms">
         <div
           className="forms flex"
@@ -216,7 +267,9 @@ const CallsTableBlock2: FC<IProps> = ({ onReject }) => {
           background="#CACACA"
           color="#645C5C"
           style={{ width: "auto" }}
-          onClick={() => onReject && onReject(false)}
+          onClick={() =>
+            getId ? onEdit && onEdit(false) : onReject && onReject(false)
+          }
         >
           Удалить
         </Button>

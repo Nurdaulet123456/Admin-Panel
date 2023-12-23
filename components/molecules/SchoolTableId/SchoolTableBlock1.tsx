@@ -1,10 +1,18 @@
-import { ChangeEvent, Dispatch, FC, SetStateAction, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  FC,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { Button } from "../../atoms/UI/Buttons/Button";
 import { Input } from "../../atoms/UI/Inputs/Input";
 import { instance } from "@/api/axios.instance";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getSchoolAdminThunk } from "@/store/thunks/schoolnfo.thunk";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import { ISchoolAdmin } from "@/types/assets.type";
 
 interface UpdateInputProps {
   name?: string;
@@ -14,10 +22,18 @@ interface UpdateInputProps {
 }
 
 interface IProps {
-    onReject?: Dispatch<SetStateAction<boolean>>
+  onReject?: Dispatch<SetStateAction<boolean>>;
+  onEdit?: Dispatch<SetStateAction<boolean>>;
+  adminid?: ISchoolAdmin;
+  getId?: number;
 }
 
-const SchoolTableBlock1: FC<IProps> = ({onReject}) => {
+const SchoolTableBlock1: FC<IProps> = ({
+  onReject,
+  onEdit,
+  adminid,
+  getId,
+}) => {
   const dispatch = useAppDispatch();
 
   const [updateInput, setUpdateInput] = useState<UpdateInputProps>({
@@ -33,7 +49,7 @@ const SchoolTableBlock1: FC<IProps> = ({onReject}) => {
     if (name === "file") {
       setUpdateInput({
         ...updateInput,
-        file: files?.[0] || null, 
+        file: files?.[0] || null,
       });
     } else {
       setUpdateInput({
@@ -42,6 +58,17 @@ const SchoolTableBlock1: FC<IProps> = ({onReject}) => {
       });
     }
   };
+
+  useEffect(() => {
+    if (adminid) {
+      setUpdateInput({
+        name: adminid.administrator_name || "",
+        tel: adminid.phone_number || "",
+        prof: adminid.position || "",
+        file: null,
+      });
+    }
+  }, [adminid]);
 
   const onSave = async () => {
     if (
@@ -56,28 +83,39 @@ const SchoolTableBlock1: FC<IProps> = ({onReject}) => {
       formData.append("position", updateInput.prof);
       formData.append("administator_photo", updateInput.file);
 
-      await instance
-        .post("/api/school_administration/", formData, {
-          headers: {
-            Authorization: `Token ${getTokenInLocalStorage()}`,
-            "Content-Type": "multipart/form-data",
-          },
-        })
-        .then((res) => {
-          if (res) {
-            dispatch(getSchoolAdminThunk());
-
-            setUpdateInput({
-              name: "",
-              tel: "",
-              prof: "",
-              file: null,
-            });
-          }
-        })
-        .catch((e) => {
-          console.log(e.message);
-        });
+      if (!getId) {
+        await instance
+          .post("/api/school_administration/", formData, {
+            headers: {
+              Authorization: `Token ${getTokenInLocalStorage()}`,
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then((res) => {
+            if (res) {
+              dispatch(getSchoolAdminThunk());
+            }
+          })
+          .catch((e) => {
+            console.log(e.message);
+          });
+      } else {
+        await instance
+          .put(`/api/school_administration/${getId}/`, formData, {
+            headers: {
+              Authorization: `Token ${getTokenInLocalStorage()}`,
+              "Content-Type": "multipart/form-data",
+            },
+          })
+          .then((res) => {
+            if (res) {
+              dispatch(getSchoolAdminThunk());
+            }
+          })
+          .catch((e) => {
+            console.log(e.message);
+          });
+      }
     }
   };
 
@@ -140,7 +178,7 @@ const SchoolTableBlock1: FC<IProps> = ({onReject}) => {
               background="#CACACA"
               color="#645C5C"
               style={{ width: "auto" }}
-              onClick={() => onReject && onReject(false)}
+              onClick={() => getId ? (onEdit && onEdit(false)) : (onReject && onReject(false))}
             >
               Удалить
             </Button>

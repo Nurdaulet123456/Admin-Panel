@@ -3,12 +3,17 @@ import { DeleteIcons, PenIcons } from "../atoms/Icons";
 import { ColorBlock } from "../atoms/UI/Blocks/Block";
 import { Table, Td, Th, Thead, Tr } from "../atoms/UI/Tables/Table";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
-import { useEffect } from "react";
+import { Dispatch, FC, SetStateAction, useEffect } from "react";
 import { getExtraThunk } from "@/store/thunks/pride.thunk";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 
-const TypeLessonsTable = () => {
+interface IProps {
+  onEdit?: Dispatch<SetStateAction<boolean>>
+  handleClickGetId?: (id?: number) => void
+}
+
+const TypeLessonsTable: FC<IProps> = ({onEdit, handleClickGetId}) => {
   const dispatch = useAppDispatch();
   const extra = useTypedSelector((state) => state.pride.extra);
 
@@ -59,7 +64,7 @@ const TypeLessonsTable = () => {
                   <ColorBlock color={item.type_color} circle />
                 </Td>
                 <Td>
-                  <div>
+                  <div onClick={() => handleClickGetId && handleClickGetId(item.id)}>
                     <PenIcons />
                   </div>
 

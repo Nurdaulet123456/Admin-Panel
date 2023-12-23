@@ -2,12 +2,16 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { DeleteIcons, PenIcons } from "../../atoms/Icons";
 import { Table, Td, Th, Thead, Tr } from "../../atoms/UI/Tables/Table";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
-import { useEffect } from "react";
+import { FC, useEffect } from "react";
 import { getSchoolAdminThunk } from "@/store/thunks/schoolnfo.thunk";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 
-const SchoolTable = () => {
+interface IProps {
+  handleClickGetId1?: (id?: number) => void;
+}
+
+const SchoolTable: FC<IProps> = ({ handleClickGetId1 }) => {
   const dispatch = useAppDispatch();
   const admin = useTypedSelector((state) => state.system.schooladmin);
 
@@ -59,7 +63,11 @@ const SchoolTable = () => {
                 <Td>{item.position}</Td>
                 <Td>{item.phone_number}</Td>
                 <Td>
-                  <div>
+                  <div
+                    onClick={() =>
+                      handleClickGetId1 && handleClickGetId1(item.id)
+                    }
+                  >
                     <PenIcons />
                   </div>
 

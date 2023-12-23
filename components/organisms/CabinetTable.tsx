@@ -9,9 +9,10 @@ import { getClassRoomThunk } from "@/store/thunks/schoolnfo.thunk";
 
 interface IProps {
   cabinet?: IClassRoom[];
+  handleClickGetId?: (id?: number) => void;
 }
 
-const CabinetTable: FC<IProps> = ({ cabinet }) => {
+const CabinetTable: FC<IProps> = ({ cabinet, handleClickGetId }) => {
   const dispatch = useAppDispatch();
   const handleDeleteItems = async (id?: number) => {
     await instance
@@ -54,7 +55,11 @@ const CabinetTable: FC<IProps> = ({ cabinet }) => {
                 <Td>{item.flat}</Td>
                 <Td>{item.korpus}</Td>
                 <Td>
-                  <div>
+                  <div
+                    onClick={() =>
+                      handleClickGetId && handleClickGetId(item.id)
+                    }
+                  >
                     <PenIcons />
                   </div>
 

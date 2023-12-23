@@ -7,22 +7,38 @@ import MainLayouts from "@/layouts/MainLayouts";
 
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
-import { getMenuThunk } from "@/store/thunks/schoolnfo.thunk";
+import { getMenuIdThunk, getMenuThunk } from "@/store/thunks/schoolnfo.thunk";
 
 const MenuPage = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
-  const [del, setDel] = useState<boolean>(false)
+  const [del, setDel] = useState<boolean>(false);
+  const [editActive, setEditActive] = useState<boolean>(false);
+  const [getId, setId] = useState<number>();
+
   const dispatch = useAppDispatch();
   const menu = useTypedSelector((state) => state.system.menu);
-
+  const menuid = useTypedSelector((state) => state.system.menuid);
 
   useEffect(() => {
-    if (menu || del) {
+    if (menu) {
       dispatch(getMenuThunk());
-
-      setDel(false); 
     }
-  }, [dispatch, del]);
+  }, [dispatch]);
+
+  const handleAddButtonClick = () => {
+    setEditActive(false);
+    setShowActive(!showActive);
+  };
+
+  const handleClickGetId = (id?: number) => {
+    setEditActive(true);
+
+    setId(id);
+
+    if (id) {
+      dispatch(getMenuIdThunk(id));
+    }
+  };
 
   return (
     <MainLayouts>
@@ -43,16 +59,23 @@ const MenuPage = () => {
             alignItems: "center",
             gap: ".8rem",
           }}
-          onClick={() => setShowActive(!showActive)}
+          onClick={handleAddButtonClick}
         >
           <PlusIcons />
           Добавить
         </Button>
       </div>
 
-      {showActive && <MenuTableBlock onReject={setShowActive} />}
+      {(showActive || editActive) && (
+        <MenuTableBlock onReject={setShowActive} getId={getId} menuid={menuid} onEdit={setEditActive}/>
+      )}
 
-      <MenuTable menu={menu} setDel={setDel} del={del}/>
+      <MenuTable
+        menu={menu}
+        setDel={setDel}
+        del={del}
+        handleClickGetId={handleClickGetId}
+      />
     </MainLayouts>
   );
 };

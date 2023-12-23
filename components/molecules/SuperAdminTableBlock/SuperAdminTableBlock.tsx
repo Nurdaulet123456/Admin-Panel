@@ -1,13 +1,24 @@
-import { ChangeEvent, Dispatch, FC, SetStateAction, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  FC,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { Button } from "../../atoms/UI/Buttons/Button";
 import { Input } from "../../atoms/UI/Inputs/Input";
 import { instance } from "@/api/axios.instance";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getSchoolThunk } from "@/store/thunks/schoolnfo.thunk";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import { ISchoolInfo } from "@/types/assets.type";
 
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
+  getId?: number;
+  schoolid?: ISchoolInfo;
+  onEdit?: any;
 }
 
 interface IUpdateInputProps {
@@ -19,7 +30,12 @@ interface IUpdateInputProps {
   timezone?: string;
 }
 
-const SuperAdminTableBlock: FC<IProps> = ({ onReject }) => {
+const SuperAdminTableBlock: FC<IProps> = ({
+  onReject,
+  getId,
+  schoolid,
+  onEdit,
+}) => {
   const dispatch = useAppDispatch();
   const [updateInput, setUpdateInput] = useState<IUpdateInputProps>({
     kz: "",
@@ -29,6 +45,19 @@ const SuperAdminTableBlock: FC<IProps> = ({ onReject }) => {
     url: "",
     timezone: "",
   });
+
+  useEffect(() => {
+    if (schoolid) {
+      setUpdateInput({
+        kz: schoolid?.school_kz_name || "",
+        ru: schoolid?.school_ru_name || "",
+        eng: schoolid?.school_eng_name || "",
+        city: schoolid?.city || "",
+        url: schoolid?.url || "",
+        timezone: schoolid?.timezone || "",
+      });
+    }
+  }, [schoolid]);
 
   const onChangeUpdateInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -48,32 +77,61 @@ const SuperAdminTableBlock: FC<IProps> = ({ onReject }) => {
       updateInput.url &&
       updateInput.timezone
     ) {
-      await instance
-        .post(
-          "/api/school/",
-          {
-            school_kz_name: updateInput.kz,
-            school_ru_name: updateInput.ru,
-            school_eng_name: updateInput.eng,
-            url: updateInput.url,
-            city: updateInput.city,
-            timezone: updateInput.timezone,
-          },
-          {
-            headers: {
-              Authorization: `Token ${getTokenInLocalStorage()}`,
+      if (!getId) {
+        await instance
+          .post(
+            `/api/school/`,
+            {
+              school_kz_name: updateInput.kz,
+              school_ru_name: updateInput.ru,
+              school_eng_name: updateInput.eng,
+              url: updateInput.url,
+              city: updateInput.city,
+              timezone: updateInput.timezone,
             },
-          }
-        )
-        .then((res) => {
-          if (res && onReject) {
-            dispatch(getSchoolThunk());
-            onReject(false);
-          }
-        })
-        .catch((e) => {
-          console.log(e);
-        });
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res && onReject) {
+              dispatch(getSchoolThunk());
+              onReject(false);
+            }
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      } else {
+        await instance
+          .put(
+            `/api/school/${getId}/`,
+            {
+              school_kz_name: updateInput.kz,
+              school_ru_name: updateInput.ru,
+              school_eng_name: updateInput.eng,
+              url: updateInput.url,
+              city: updateInput.city,
+              timezone: updateInput.timezone,
+            },
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res && onEdit) {
+              dispatch(getSchoolThunk());
+              onEdit(false);
+            }
+          })
+          .catch((e) => {
+            console.log(e);
+          });
+      }
     }
   };
 
@@ -173,7 +231,9 @@ const SuperAdminTableBlock: FC<IProps> = ({ onReject }) => {
           background="#CACACA"
           color="#645C5C"
           style={{ width: "auto" }}
-          onClick={() => onReject && onReject(false)}
+          onClick={() =>
+            getId ? onEdit && onEdit(false) : onReject && onReject(false)
+          }
         >
           Удалить
         </Button>

@@ -1,11 +1,12 @@
-import { Dispatch, FC, SetStateAction, useState } from "react";
+import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { Button } from "../atoms/UI/Buttons/Button";
 import { Input } from "../atoms/UI/Inputs/Input";
 import TimeModal from "../modals/TimeModal";
 import { instance } from "@/api/axios.instance";
-import { getTokenInLocalStorage, getWeekDayNumber } from "@/utils/assets.utils";
+import { getTokenInLocalStorage, getWeekDayNumber, getWeekDayString } from "@/utils/assets.utils";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getMenuThunk } from "@/store/thunks/schoolnfo.thunk";
+import { IMenu } from "@/types/assets.type";
 
 interface IUpdateInput {
   name?: string;
@@ -14,10 +15,13 @@ interface IUpdateInput {
 }
 
 interface IProps {
-  onReject?: Dispatch<SetStateAction<boolean>>
+  onReject?: Dispatch<SetStateAction<boolean>>;
+  onEdit?: Dispatch<SetStateAction<boolean>>;
+  getId?: any;
+  menuid?: IMenu;
 }
 
-const MenuTableBlock: FC<IProps> = ({onReject}) => {
+const MenuTableBlock: FC<IProps> = ({ onReject, getId, menuid, onEdit }) => {
   const [showActive, setShowActive] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
   const dispatch = useAppDispatch();
@@ -31,6 +35,23 @@ const MenuTableBlock: FC<IProps> = ({onReject}) => {
       gr3: "",
     },
   });
+
+  useEffect(() => {
+    if (menuid) {
+      setUpdateInput((prevInput) => ({
+        ...prevInput,
+        name: menuid.food_name || "",
+        recipe: menuid.food_reti || "",
+        exits: {
+          gr1: menuid.vihod_1 || "",
+          gr2: menuid.vihod_2 || "",
+          gr3: menuid.vihod_3 || "",
+        },
+      }));
+
+      setText(getWeekDayString(menuid.week_day as string) || "")
+    }
+  }, [menuid]);
 
   const handleUpdate = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -56,7 +77,8 @@ const MenuTableBlock: FC<IProps> = ({onReject}) => {
 
   const onSave = async () => {
     if (updateInput.name && updateInput.recipe && updateInput.exits) {
-      await instance
+      if (!getId) {
+        await instance
         .post(
           "/api/menu/",
           {
@@ -66,7 +88,7 @@ const MenuTableBlock: FC<IProps> = ({onReject}) => {
             vihod_2: updateInput.exits.gr2,
             vihod_3: updateInput.exits.gr3,
             week_day: getWeekDayNumber(text),
-            food_reti: updateInput.recipe
+            food_reti: updateInput.recipe,
           },
           {
             headers: {
@@ -79,6 +101,31 @@ const MenuTableBlock: FC<IProps> = ({onReject}) => {
             dispatch(getMenuThunk());
           }
         });
+      } else {
+        await instance
+        .put(
+          `/api/menu/${getId}/`,
+          {
+            food_name: updateInput.name,
+            food_sostav: updateInput.recipe,
+            vihod_1: updateInput.exits.gr1,
+            vihod_2: updateInput.exits.gr2,
+            vihod_3: updateInput.exits.gr3,
+            week_day: getWeekDayNumber(text),
+            food_reti: updateInput.recipe,
+          },
+          {
+            headers: {
+              Authorization: `Token ${getTokenInLocalStorage()}`,
+            },
+          }
+        )
+        .then((res) => {
+          if (res) {
+            dispatch(getMenuThunk());
+          }
+        });
+      }
     }
   };
 
@@ -157,11 +204,15 @@ const MenuTableBlock: FC<IProps> = ({onReject}) => {
               background="#CACACA"
               color="#645C5C"
               style={{ width: "auto" }}
-              onClick={() => onReject && onReject(false)}
+              onClick={() => getId ? (onEdit && onEdit(false)): (onReject && onReject(false))}
             >
               Удалить
             </Button>
-            <Button background="#27AE60" style={{ width: "auto" }} onClick={onSave}>
+            <Button
+              background="#27AE60"
+              style={{ width: "auto" }}
+              onClick={onSave}
+            >
               Сохранить
             </Button>
           </div>
