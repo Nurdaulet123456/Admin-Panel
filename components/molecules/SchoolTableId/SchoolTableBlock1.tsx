@@ -13,6 +13,9 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getSchoolAdminThunk } from "@/store/thunks/schoolnfo.thunk";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { ISchoolAdmin } from "@/types/assets.type";
+import { useModalLogic } from "@/hooks/useModalLogic";
+import ErrorModal from "@/components/modals/ErrorModal";
+import SuccessModal from "@/components/modals/SuccessModal";
 
 interface UpdateInputProps {
   name?: string;
@@ -43,6 +46,15 @@ const SchoolTableBlock1: FC<IProps> = ({
     file: null,
   });
 
+  const {
+    showSuccessModal,
+    showErrorModal,
+    onSuccessModalClose,
+    onErrorModalClose,
+    showSuccess,
+    showError,
+  } = useModalLogic();
+
   const onChangeUpdateInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = e.target;
 
@@ -71,128 +83,163 @@ const SchoolTableBlock1: FC<IProps> = ({
   }, [adminid]);
 
   const onSave = async () => {
-    if (
-      updateInput.name &&
-      updateInput.tel &&
-      updateInput.prof &&
-      updateInput.file
-    ) {
-      const formData = new FormData();
-      formData.append("administrator_name", updateInput.name);
-      formData.append("phone_number", updateInput.tel);
-      formData.append("position", updateInput.prof);
-      formData.append("administator_photo", updateInput.file);
-
-      if (!getId) {
-        await instance
-          .post("/api/school_administration/", formData, {
-            headers: {
-              Authorization: `Token ${getTokenInLocalStorage()}`,
-              "Content-Type": "multipart/form-data",
-            },
-          })
-          .then((res) => {
-            if (res) {
-              dispatch(getSchoolAdminThunk());
-            }
-          })
-          .catch((e) => {
-            console.log(e.message);
-          });
-      } else {
-        await instance
-          .put(`/api/school_administration/${getId}/`, formData, {
-            headers: {
-              Authorization: `Token ${getTokenInLocalStorage()}`,
-              "Content-Type": "multipart/form-data",
-            },
-          })
-          .then((res) => {
-            if (res) {
-              dispatch(getSchoolAdminThunk());
-            }
-          })
-          .catch((e) => {
-            console.log(e.message);
-          });
+    try {
+      if (
+        !updateInput.name ||
+        !updateInput.tel ||
+        !updateInput.prof ||
+        !updateInput.file
+      ) {
+        showError();
+        return;
       }
+
+      if (
+        updateInput.name &&
+        updateInput.tel &&
+        updateInput.prof &&
+        updateInput.file
+      ) {
+        const formData = new FormData();
+        formData.append("administrator_name", updateInput.name);
+        formData.append("phone_number", updateInput.tel);
+        formData.append("position", updateInput.prof);
+        formData.append("administator_photo", updateInput.file);
+
+        if (!getId) {
+          await instance
+            .post("/api/school_administration/", formData, {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+                "Content-Type": "multipart/form-data",
+              },
+            })
+            .then((res) => {
+              if (res) {
+                dispatch(getSchoolAdminThunk());
+                showSuccess();
+                setUpdateInput({
+                  name: "",
+                  prof: "",
+                  tel: "",
+                  file: null,
+                });
+              }
+            })
+            .catch((e) => {
+              console.log(e.message);
+            });
+        } else {
+          await instance
+            .put(`/api/school_administration/${getId}/`, formData, {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+                "Content-Type": "multipart/form-data",
+              },
+            })
+            .then((res) => {
+              if (res) {
+                dispatch(getSchoolAdminThunk());
+                showSuccess();
+                setUpdateInput({
+                  name: "",
+                  prof: "",
+                  tel: "",
+                  file: null,
+                });
+              }
+            })
+            .catch((e) => {
+              console.log(e.message);
+            });
+        }
+      }
+    } catch (error) {
+      showError();
     }
   };
 
   return (
-    <div className="main_table-modal">
-      <div className="main_table-modal_title">Должность</div>
-      <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
-        <div className="main_table-modal_upload">
-          <div className="login_forms-label_pink">Фото *</div>
-          <Input
-            type="file"
-            name="file"
-            accept=".png, .jpg, .jpeg, .svg"
-            onChange={(e) => onChangeUpdateInput(e)}
-          />
-        </div>
+    <>
+      {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
+      {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
 
-        <div className="main_table-modal_forms">
-          <div className="forms">
-            <div className="login_forms-label_pink">ФИО *</div>
-
+      <div className="main_table-modal">
+        <div className="main_table-modal_title">Должность</div>
+        <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
+          <div className="main_table-modal_upload">
+            <div className="login_forms-label_pink">Фото *</div>
             <Input
-              type="text"
-              placeholder="фио"
-              name="name"
-              value={updateInput.name}
+              type="file"
+              name="file"
+              accept=".png, .jpg, .jpeg, .svg"
               onChange={(e) => onChangeUpdateInput(e)}
             />
           </div>
 
-          <div className="forms">
-            <div className="login_forms-label_pink">Должность *</div>
+          <div className="main_table-modal_forms">
+            <div className="forms">
+              <div className="login_forms-label_pink">ФИО *</div>
 
-            <Input
-              type="text"
-              placeholder="Должность"
-              name="prof"
-              value={updateInput.prof}
-              onChange={(e) => onChangeUpdateInput(e)}
-            />
-          </div>
+              <Input
+                type="text"
+                placeholder="фио"
+                name="name"
+                value={updateInput.name}
+                onChange={(e) => onChangeUpdateInput(e)}
+              />
+            </div>
 
-          <div className="forms">
-            <div className="login_forms-label_pink">Номер телефона *</div>
+            <div className="forms">
+              <div className="login_forms-label_pink">Должность *</div>
 
-            <Input
-              type="text"
-              placeholder="+7 777 777 77 77"
-              name="tel"
-              value={updateInput.tel}
-              onChange={(e) => onChangeUpdateInput(e)}
-            />
-          </div>
+              <Input
+                type="text"
+                placeholder="Должность"
+                name="prof"
+                value={updateInput.prof}
+                onChange={(e) => onChangeUpdateInput(e)}
+              />
+            </div>
 
-          <div
-            className="flex"
-            style={{ justifyContent: "flex-end", gap: "1.6rem" }}
-          >
-            <Button
-              background="#CACACA"
-              color="#645C5C"
-              style={{ width: "auto" }}
-              onClick={() => getId ? (onEdit && onEdit(false)) : (onReject && onReject(false))}
+            <div className="forms">
+              <div className="login_forms-label_pink">Номер телефона *</div>
+
+              <Input
+                type="text"
+                placeholder="+7 777 777 77 77"
+                name="tel"
+                value={updateInput.tel}
+                onChange={(e) => onChangeUpdateInput(e)}
+              />
+            </div>
+
+            <div
+              className="flex"
+              style={{ justifyContent: "flex-end", gap: "1.6rem" }}
             >
-              Удалить
-            </Button>
-            <Button
-              background="#27AE60"
-              style={{ width: "auto" }}
-              onClick={onSave}
-            >
-              Сохранить
-            </Button>
+              <Button
+                background="#CACACA"
+                color="#645C5C"
+                style={{ width: "auto" }}
+                onClick={() =>
+                  getId ? onEdit && onEdit(false) : onReject && onReject(false)
+                }
+              >
+                Удалить
+              </Button>
+              <Button
+                background="#27AE60"
+                style={{ width: "auto" }}
+                onClick={onSave}
+              >
+                Сохранить
+              </Button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
