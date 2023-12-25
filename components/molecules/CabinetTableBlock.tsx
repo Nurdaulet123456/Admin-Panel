@@ -13,6 +13,9 @@ import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getClassRoomThunk } from "@/store/thunks/schoolnfo.thunk";
 import { IClassRoom } from "@/types/assets.type";
+import { useModalLogic } from "@/hooks/useModalLogic";
+import ErrorModal from "../modals/ErrorModal";
+import SuccessModal from "../modals/SuccessModal";
 
 interface IUpdateInputProps {
   name?: string;
@@ -42,6 +45,15 @@ const CabinetTableBlock: FC<IProps> = ({
     corpuse: "",
   });
 
+  const {
+    showSuccessModal,
+    showErrorModal,
+    onSuccessModalClose,
+    onErrorModalClose,
+    showSuccess,
+    showError,
+  } = useModalLogic();
+
   useEffect(() => {
     if (cabinetid) {
       setUpdateInput({
@@ -65,133 +77,166 @@ const CabinetTableBlock: FC<IProps> = ({
   };
 
   const onSave = async () => {
-    if (updateInput.gr && updateInput.floor) {
-      if (!getId) {
-        await instance
-          .post(
-            "/api/classroom/",
-            {
-              classroom_name: updateInput.name,
-              classroom_number: Number(updateInput.gr),
-              flat: Number(updateInput.floor),
-              korpus: Number(updateInput.corpuse),
-            },
-            {
-              headers: {
-                Authorization: `Token ${getTokenInLocalStorage()}`,
-              },
-            }
-          )
-          .then((res) => {
-            if (res) {
-              dispatch(getClassRoomThunk());
-            }
-          })
-          .catch((e) => {
-            console.log(e);
-          });
-      } else {
-        await instance
-          .put(
-            `/api/classroom/${getId}/`,
-            {
-              classroom_name: updateInput.name,
-              classroom_number: Number(updateInput.gr),
-              flat: Number(updateInput.floor),
-              korpus: Number(updateInput.corpuse),
-            },
-            {
-              headers: {
-                Authorization: `Token ${getTokenInLocalStorage()}`,
-              },
-            }
-          )
-          .then((res) => {
-            if (res) {
-              dispatch(getClassRoomThunk());
-            }
-          })
-          .catch((e) => {
-            console.log(e);
-          });
+    try {
+      if (!updateInput.gr || !updateInput.floor) {
+        showError();
+        return;
       }
+
+      if (updateInput.gr && updateInput.floor) {
+        if (!getId) {
+          await instance
+            .post(
+              "/api/classroom/",
+              {
+                classroom_name: updateInput.name,
+                classroom_number: Number(updateInput.gr),
+                flat: Number(updateInput.floor),
+                korpus: Number(updateInput.corpuse),
+              },
+              {
+                headers: {
+                  Authorization: `Token ${getTokenInLocalStorage()}`,
+                },
+              }
+            )
+            .then((res) => {
+              if (res) {
+                dispatch(getClassRoomThunk());
+                showSuccess();
+                setUpdateInput({
+                  name: "",
+                  gr: "",
+                  floor: "",
+                  corpuse: "",
+                });
+              }
+            })
+            .catch((e) => {
+              console.log(e);
+            });
+        } else {
+          await instance
+            .put(
+              `/api/classroom/${getId}/`,
+              {
+                classroom_name: updateInput.name,
+                classroom_number: Number(updateInput.gr),
+                flat: Number(updateInput.floor),
+                korpus: Number(updateInput.corpuse),
+              },
+              {
+                headers: {
+                  Authorization: `Token ${getTokenInLocalStorage()}`,
+                },
+              }
+            )
+            .then((res) => {
+              if (res) {
+                dispatch(getClassRoomThunk());
+                showSuccess();
+                setUpdateInput({
+                  name: "",
+                  gr: "",
+                  floor: "",
+                  corpuse: "",
+                });
+              }
+            })
+            .catch((e) => {
+              console.log(e);
+            });
+        }
+      }
+    } catch (error) {
+      showError();
     }
   };
 
   return (
-    <div className="main_table-modal">
-      <div className="main_table-modal_title">Кабинет</div>
+    <>
+      {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
+      {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
+      <div className="main_table-modal">
+        <div className="main_table-modal_title">Кабинет</div>
 
-      <div className="main_table-modal_forms">
-        <div className="forms">
-          <div className="login_forms-label_pink">Наименование *</div>
+        <div className="main_table-modal_forms">
+          <div className="forms">
+            <div className="login_forms-label_pink">Наименование *</div>
 
-          <Input
-            type="text"
-            placeholder="наименование"
-            name="name"
-            value={updateInput.name}
-            onChange={(e) => onChangeUpdateInput(e)}
-          />
+            <Input
+              type="text"
+              placeholder="наименование"
+              name="name"
+              value={updateInput.name}
+              onChange={(e) => onChangeUpdateInput(e)}
+            />
+          </div>
+
+          <div className="flex">
+            <div className="forms">
+              <div className="login_forms-label_pink">
+                Номер (кабинет номері)
+              </div>
+              <Input
+                type="number"
+                placeholder="кабинет номері: пример 305"
+                name="gr"
+                value={updateInput.gr}
+                onChange={(e) => onChangeUpdateInput(e)}
+              />
+            </div>
+
+            <div className="forms">
+              <div className="login_forms-label_pink">Этаж</div>
+              <Input
+                type="number"
+                placeholder="этаж:2"
+                name="floor"
+                value={updateInput.floor}
+                onChange={(e) => onChangeUpdateInput(e)}
+              />
+            </div>
+
+            <div className="forms">
+              <div className="login_forms-label_pink">Корпус</div>
+              <Input
+                type="number"
+                placeholder="корпус:2"
+                name="corpuse"
+                value={updateInput.corpuse}
+                onChange={(e) => onChangeUpdateInput(e)}
+              />
+            </div>
+          </div>
         </div>
 
-        <div className="flex">
-          <div className="forms">
-            <div className="login_forms-label_pink">Номер (кабинет номері)</div>
-            <Input
-              type="number"
-              placeholder="кабинет номері: пример 305"
-              name="gr"
-              value={updateInput.gr}
-              onChange={(e) => onChangeUpdateInput(e)}
-            />
-          </div>
-
-          <div className="forms">
-            <div className="login_forms-label_pink">Этаж</div>
-            <Input
-              type="number"
-              placeholder="этаж:2"
-              name="floor"
-              value={updateInput.floor}
-              onChange={(e) => onChangeUpdateInput(e)}
-            />
-          </div>
-
-          <div className="forms">
-            <div className="login_forms-label_pink">Корпус</div>
-            <Input
-              type="number"
-              placeholder="корпус:2"
-              name="corpuse"
-              value={updateInput.corpuse}
-              onChange={(e) => onChangeUpdateInput(e)}
-            />
-          </div>
-        </div>
-      </div>
-
-      <div
-        className="flex"
-        style={{ justifyContent: "flex-end", gap: "1.6rem" }}
-      >
-        <Button
-          background="#CACACA"
-          color="#645C5C"
-          style={{ width: "auto" }}
-          onClick={() =>
-            getId
-              ? setEditActive && setEditActive(false)
-              : onReject && onReject(false)
-          }
+        <div
+          className="flex"
+          style={{ justifyContent: "flex-end", gap: "1.6rem" }}
         >
-          Удалить
-        </Button>
-        <Button background="#27AE60" style={{ width: "auto" }} onClick={onSave}>
-          Сохранить
-        </Button>
+          <Button
+            background="#CACACA"
+            color="#645C5C"
+            style={{ width: "auto" }}
+            onClick={() =>
+              getId
+                ? setEditActive && setEditActive(false)
+                : onReject && onReject(false)
+            }
+          >
+            Удалить
+          </Button>
+          <Button
+            background="#27AE60"
+            style={{ width: "auto" }}
+            onClick={onSave}
+          >
+            Сохранить
+          </Button>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
