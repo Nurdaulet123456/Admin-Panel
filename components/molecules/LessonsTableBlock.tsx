@@ -7,6 +7,10 @@ import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getLessonsThunk } from "@/store/thunks/pride.thunk";
 import { ILessons } from "@/types/assets.type";
+import SanatyModalModal from "../modals/SanatyModal";
+import { useModalLogic } from "@/hooks/useModalLogic";
+import ErrorModal from "../modals/ErrorModal";
+import SuccessModal from "../modals/SuccessModal";
 
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
@@ -24,7 +28,17 @@ const LessonsTableBlock: FC<IProps> = ({
   const dispatch = useAppDispatch();
   const [showActive, setShowActive] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
+  const [id, setId] = useState<number>();
   const [updateInput, setUpdateInput] = useState<string>("");
+
+  const {
+    showSuccessModal,
+    showErrorModal,
+    onSuccessModalClose,
+    onErrorModalClose,
+    showSuccess,
+    showError,
+  } = useModalLogic();
 
   useEffect(() => {
     if (lessonsid) {
@@ -34,120 +48,148 @@ const LessonsTableBlock: FC<IProps> = ({
   }, [lessonsid]);
 
   const onSave = async () => {
-    if (updateInput && text) {
-      if (!getId) {
-        await instance
-          .post(
-            "/api/subject/",
-            {
-              full_name: updateInput,
-              type: text.toUpperCase(),
-            },
-            {
-              headers: {
-                Authorization: `Token ${getTokenInLocalStorage()}`,
-              },
-            }
-          )
-          .then((res) => {
-            if (res) {
-              dispatch(getLessonsThunk());
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      } else {
-        await instance
-          .put(
-            `/api/subject/${getId}/`,
-            {
-              full_name: updateInput,
-              type: text.toUpperCase(),
-            },
-            {
-              headers: {
-                Authorization: `Token ${getTokenInLocalStorage()}`,
-              },
-            }
-          )
-          .then((res) => {
-            if (res) {
-              dispatch(getLessonsThunk());
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+    try {
+      if (!updateInput || !text) {
+        showError();
+        return;
       }
+
+      if (updateInput && text) {
+        if (!getId) {
+          await instance
+            .post(
+              "/api/subject/",
+              {
+                full_name: updateInput,
+                type: text.toUpperCase(),
+              },
+              {
+                headers: {
+                  Authorization: `Token ${getTokenInLocalStorage()}`,
+                },
+              }
+            )
+            .then((res) => {
+              if (res) {
+                dispatch(getLessonsThunk());
+                showSuccess();
+                setText("");
+                setUpdateInput("");
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        } else {
+          await instance
+            .put(
+              `/api/subject/${getId}/`,
+              {
+                full_name: updateInput,
+                type: text.toUpperCase(),
+              },
+              {
+                headers: {
+                  Authorization: `Token ${getTokenInLocalStorage()}`,
+                },
+              }
+            )
+            .then((res) => {
+              if (res) {
+                dispatch(getLessonsThunk());
+                showSuccess();
+                setText("");
+                setUpdateInput("");
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
+      }
+    } catch (error) {
+      showError();
     }
   };
 
   return (
-    <div className="main_table-modal">
-      <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
-        <div className="main_table-modal_forms">
-          <div className="forms flex" style={{ alignItems: "flex-start" }}>
-            <div style={{ width: "70%" }}>
-              <div className="login_forms-label_pink">Наименование</div>
+    <>
+      {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
+      {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
 
-              <Input
-                type="text"
-                placeholder="оқушы"
-                name="name"
-                value={updateInput}
-                onChange={(e) => setUpdateInput(e.target.value)}
-              />
-            </div>
+      <div className="main_table-modal">
+        <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
+          <div className="main_table-modal_forms">
+            <div className="forms flex" style={{ alignItems: "flex-start" }}>
+              <div style={{ width: "70%" }}>
+                <div className="login_forms-label_pink">Наименование</div>
 
-            <div>
-              <div className="login_forms-label_pink">Сабақ деңгейі</div>
-              <Input
-                type="text"
-                name="eat"
-                readOnly={true}
-                style={{ cursor: "pointer" }}
-                onClick={() => setShowActive(!showActive)}
-                value={text}
-              />
+                <Input
+                  type="text"
+                  placeholder="оқушы"
+                  name="name"
+                  value={updateInput}
+                  onChange={(e) => setUpdateInput(e.target.value)}
+                />
+              </div>
 
-              <div className="main_table-modal-active-block">
-                {showActive && (
-                  <TypeModal
-                    setText={setText}
-                    setShowActive={setShowActive}
-                    timeArr={[
-                      { id: 1, type: "Easy" },
-                      { id: 2, type: "Medium" },
-                      { id: 3, type: "Hard" },
-                    ]}
-                  />
-                )}
+              <div className="sanaty">
+                <div className="login_forms-label_pink">Сабақ деңгейі</div>
+                <Input
+                  type="text"
+                  name="eat"
+                  readOnly={true}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => setShowActive(!showActive)}
+                  value={text}
+                />
+
+                <div
+                  className="sanaty_dropdown"
+                  style={{ textAlign: "center", width: "100%" }}
+                >
+                  {showActive && (
+                    <SanatyModalModal
+                      setText={setText}
+                      setId={setId}
+                      setShowActive={setShowActive}
+                      timeArr={[
+                        { id: 1, type: "Easy" },
+                        { id: 2, type: "Medium" },
+                        { id: 3, type: "Hard" },
+                      ]}
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div
-        className="flex"
-        style={{ justifyContent: "flex-end", gap: "1.6rem" }}
-      >
-        <Button
-          background="#CACACA"
-          color="#645C5C"
-          style={{ width: "auto" }}
-          onClick={() =>
-            getId ? onEdit && onEdit(false) : onReject && onReject(false)
-          }
+        <div
+          className="flex"
+          style={{ justifyContent: "flex-end", gap: "1.6rem" }}
         >
-          Удалить
-        </Button>
-        <Button background="#27AE60" style={{ width: "auto" }} onClick={onSave}>
-          Сохранить
-        </Button>
+          <Button
+            background="#CACACA"
+            color="#645C5C"
+            style={{ width: "auto" }}
+            onClick={() =>
+              getId ? onEdit && onEdit(false) : onReject && onReject(false)
+            }
+          >
+            Удалить
+          </Button>
+          <Button
+            background="#27AE60"
+            style={{ width: "auto" }}
+            onClick={onSave}
+          >
+            Сохранить
+          </Button>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
