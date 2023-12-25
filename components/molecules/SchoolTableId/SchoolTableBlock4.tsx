@@ -14,6 +14,10 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getSchoolSocialThunk } from "@/store/thunks/schoolnfo.thunk";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { ISchoolSocialMedia } from "@/types/assets.type";
+import SanatyModalModal from "@/components/modals/SanatyModal";
+import { useModalLogic } from "@/hooks/useModalLogic";
+import ErrorModal from "@/components/modals/ErrorModal";
+import SuccessModal from "@/components/modals/SuccessModal";
 
 interface UpdateInputProps {
   url?: string;
@@ -36,11 +40,21 @@ const SchoolTableBlock4: FC<IProps> = ({
   const dispatch = useAppDispatch();
   const [showActive, setShowActive] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
+  const [id, setId] = useState<number>();
 
   const [updateInput, setUpdateInput] = useState<UpdateInputProps>({
     url: "",
     name: "",
   });
+
+  const {
+    showSuccessModal,
+    showErrorModal,
+    onSuccessModalClose,
+    onErrorModalClose,
+    showSuccess,
+    showError,
+  } = useModalLogic();
 
   useEffect(() => {
     if (socialid) {
@@ -63,145 +77,175 @@ const SchoolTableBlock4: FC<IProps> = ({
   };
 
   const onSave = async () => {
-    if (updateInput.name && updateInput.url) {
-      if (!getId) {
-        await instance
-          .post(
-            "/api/School_SocialMediaApi/",
-            {
-              account_name: updateInput.name,
-              type: text.toLowerCase(),
-            },
-            {
-              headers: {
-                Authorization: `Token ${getTokenInLocalStorage()}`,
-              },
-            }
-          )
-          .then((res) => {
-            if (res) {
-              dispatch(getSchoolSocialThunk());
-            }
-          })
-          .catch((e) => {
-            console.log(e.message);
-          });
-      } else {
-        await instance
-          .put(
-            `/api/School_SocialMediaApi/${getId}/`,
-            {
-              account_name: updateInput.name,
-              type: text.toLowerCase(),
-            },
-            {
-              headers: {
-                Authorization: `Token ${getTokenInLocalStorage()}`,
-              },
-            }
-          )
-          .then((res) => {
-            if (res) {
-              dispatch(getSchoolSocialThunk());
-            }
-          })
-          .catch((e) => {
-            console.log(e.message);
-          });
+    try {
+      if (!updateInput.name || !updateInput.url || !text) {
+        showError();
+        return;
       }
+
+      if (updateInput.name && updateInput.url) {
+        if (!getId) {
+          await instance
+            .post(
+              "/api/School_SocialMediaApi/",
+              {
+                account_name: updateInput.name,
+                type: text.toLowerCase(),
+              },
+              {
+                headers: {
+                  Authorization: `Token ${getTokenInLocalStorage()}`,
+                },
+              }
+            )
+            .then((res) => {
+              if (res) {
+                dispatch(getSchoolSocialThunk());
+                showSuccess();
+                setText("");
+                setUpdateInput({
+                  name: "",
+                  url: "",
+                });
+              }
+            })
+            .catch((e) => {
+              console.log(e.message);
+            });
+        } else {
+          await instance
+            .put(
+              `/api/School_SocialMediaApi/${getId}/`,
+              {
+                account_name: updateInput.name,
+                type: text.toLowerCase(),
+              },
+              {
+                headers: {
+                  Authorization: `Token ${getTokenInLocalStorage()}`,
+                },
+              }
+            )
+            .then((res) => {
+              if (res) {
+                dispatch(getSchoolSocialThunk());
+                showSuccess();
+                setText("");
+                setUpdateInput({
+                  name: "",
+                  url: "",
+                });
+              }
+            })
+            .catch((e) => {
+              console.log(e.message);
+            });
+        }
+      }
+    } catch (error) {
+      showError();
     }
   };
 
   return (
-    <div className="main_table-modal">
-      <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
-        <div className="main_table-modal_upload">
-          <div className="login_forms-label_pink">Тип</div>
-          <Input
-            type="text"
-            name="eat"
-            readOnly={true}
-            style={{ cursor: "pointer" }}
-            onClick={() => setShowActive(!showActive)}
-            value={text}
-          />
+    <>
+      {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
+      {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
+      
+      <div className="main_table-modal">
+        <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
+          <div className="main_table-modal_upload sanaty">
+            <div className="login_forms-label_pink">Тип</div>
+            <Input
+              type="text"
+              name="eat"
+              readOnly={true}
+              style={{ cursor: "pointer" }}
+              onClick={() => setShowActive(!showActive)}
+              value={text}
+            />
 
-          <div className="main_table-modal-active-block">
-            {showActive && (
-              <TypeModal
-                setText={setText}
-                setShowActive={setShowActive}
-                timeArr={[
-                  {
-                    id: 1,
-                    type: "Instagram",
-                  },
+            <div
+              className="sanaty_dropdown"
+              style={{ textAlign: "center", width: "100%" }}
+            >
+              {showActive && (
+                <SanatyModalModal
+                  setText={setText}
+                  setId={setId}
+                  setShowActive={setShowActive}
+                  timeArr={[
+                    {
+                      id: 1,
+                      type: "Instagram",
+                    },
 
-                  {
-                    id: 2,
-                    type: "Facebook",
-                  },
+                    {
+                      id: 2,
+                      type: "Facebook",
+                    },
 
-                  {
-                    id: 3,
-                    type: "Youtube",
-                  },
-                ]}
+                    {
+                      id: 3,
+                      type: "Youtube",
+                    },
+                  ]}
+                />
+              )}
+            </div>
+          </div>
+
+          <div className="main_table-modal_forms">
+            <div className="forms">
+              <div className="login_forms-label_pink">URL</div>
+
+              <Input
+                type="text"
+                placeholder="url"
+                name="url"
+                value={updateInput.url}
+                onChange={(e) => onChangeUpdateInput(e)}
               />
-            )}
-          </div>
-        </div>
+            </div>
 
-        <div className="main_table-modal_forms">
-          <div className="forms">
-            <div className="login_forms-label_pink">URL</div>
+            <div className="forms">
+              <div className="login_forms-label_pink">Наименование</div>
 
-            <Input
-              type="text"
-              placeholder="url"
-              name="url"
-              value={updateInput.url}
-              onChange={(e) => onChangeUpdateInput(e)}
-            />
-          </div>
+              <Input
+                type="text"
+                placeholder="@fkffk.kd"
+                name="name"
+                value={updateInput.name}
+                onChange={(e) => onChangeUpdateInput(e)}
+              />
+            </div>
 
-          <div className="forms">
-            <div className="login_forms-label_pink">Наименование</div>
-
-            <Input
-              type="text"
-              placeholder="@fkffk.kd"
-              name="name"
-              value={updateInput.name}
-              onChange={(e) => onChangeUpdateInput(e)}
-            />
-          </div>
-
-          <div
-            className="flex"
-            style={{ justifyContent: "flex-end", gap: "1.6rem" }}
-          >
-            <Button
-              background="#CACACA"
-              color="#645C5C"
-              style={{ width: "auto" }}
-              onClick={() =>
-                getId ? onEdit && onEdit(false) : onReject && onReject(false)
-              }
+            <div
+              className="flex"
+              style={{ justifyContent: "flex-end", gap: "1.6rem" }}
             >
-              Удалить
-            </Button>
-            <Button
-              background="#27AE60"
-              style={{ width: "auto" }}
-              onClick={onSave}
-            >
-              Сохранить
-            </Button>
+              <Button
+                background="#CACACA"
+                color="#645C5C"
+                style={{ width: "auto" }}
+                onClick={() =>
+                  getId ? onEdit && onEdit(false) : onReject && onReject(false)
+                }
+              >
+                Удалить
+              </Button>
+              <Button
+                background="#27AE60"
+                style={{ width: "auto" }}
+                onClick={onSave}
+              >
+                Сохранить
+              </Button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

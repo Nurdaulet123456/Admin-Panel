@@ -56,7 +56,7 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
       const fileInput = e.target as HTMLInputElement;
       setUpdateInput({
         ...updateInput,
-        [name]: Array.from(fileInput.files || []), // Convert FileList to array
+        [name]: Array.from(fileInput.files || []),
       });
     } else {
       setUpdateInput({
