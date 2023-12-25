@@ -1,12 +1,19 @@
 import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { Button } from "../atoms/UI/Buttons/Button";
 import { Input } from "../atoms/UI/Inputs/Input";
-import TimeModal from "../modals/TimeModal";
 import { instance } from "@/api/axios.instance";
-import { getTokenInLocalStorage, getWeekDayNumber, getWeekDayString } from "@/utils/assets.utils";
+import {
+  getTokenInLocalStorage,
+  getWeekDayNumber,
+  getWeekDayString,
+} from "@/utils/assets.utils";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getMenuThunk } from "@/store/thunks/schoolnfo.thunk";
 import { IMenu } from "@/types/assets.type";
+import SanatyModalModal from "../modals/SanatyModal";
+import { useModalLogic } from "@/hooks/useModalLogic";
+import ErrorModal from "../modals/ErrorModal";
+import SuccessModal from "../modals/SuccessModal";
 
 interface IUpdateInput {
   name?: string;
@@ -24,6 +31,8 @@ interface IProps {
 const MenuTableBlock: FC<IProps> = ({ onReject, getId, menuid, onEdit }) => {
   const [showActive, setShowActive] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
+  const [id, setId] = useState<number>();
+
   const dispatch = useAppDispatch();
 
   const [updateInput, setUpdateInput] = useState<IUpdateInput>({
@@ -35,6 +44,15 @@ const MenuTableBlock: FC<IProps> = ({ onReject, getId, menuid, onEdit }) => {
       gr3: "",
     },
   });
+
+  const {
+    showSuccessModal,
+    showErrorModal,
+    onSuccessModalClose,
+    onErrorModalClose,
+    showSuccess,
+    showError,
+  } = useModalLogic();
 
   useEffect(() => {
     if (menuid) {
@@ -49,7 +67,7 @@ const MenuTableBlock: FC<IProps> = ({ onReject, getId, menuid, onEdit }) => {
         },
       }));
 
-      setText(getWeekDayString(menuid.week_day as string) || "")
+      setText(getWeekDayString(menuid.week_day as string) || "");
     }
   }, [menuid]);
 
@@ -76,150 +94,232 @@ const MenuTableBlock: FC<IProps> = ({ onReject, getId, menuid, onEdit }) => {
   };
 
   const onSave = async () => {
-    if (updateInput.name && updateInput.recipe && updateInput.exits) {
+    try {
+      if (
+        !updateInput.name ||
+        !updateInput.recipe ||
+        !updateInput.exits.gr1 ||
+        !updateInput.exits.gr2 ||
+        !updateInput.exits.gr3
+      ) {
+        showError();
+        return;
+      }
+
       if (!getId) {
         await instance
-        .post(
-          "/api/menu/",
-          {
-            food_name: updateInput.name,
-            food_sostav: updateInput.recipe,
-            vihod_1: updateInput.exits.gr1,
-            vihod_2: updateInput.exits.gr2,
-            vihod_3: updateInput.exits.gr3,
-            week_day: getWeekDayNumber(text),
-            food_reti: updateInput.recipe,
-          },
-          {
-            headers: {
-              Authorization: `Token ${getTokenInLocalStorage()}`,
+          .post(
+            "/api/menu/",
+            {
+              food_name: updateInput.name,
+              food_sostav: updateInput.recipe,
+              vihod_1: updateInput.exits.gr1,
+              vihod_2: updateInput.exits.gr2,
+              vihod_3: updateInput.exits.gr3,
+              week_day: getWeekDayNumber(text),
+              food_reti: updateInput.recipe,
             },
-          }
-        )
-        .then((res) => {
-          if (res) {
-            dispatch(getMenuThunk());
-          }
-        });
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res) {
+              dispatch(getMenuThunk());
+              showSuccess();
+              setText("");
+              setUpdateInput({
+                name: "",
+                recipe: "",
+                exits: {
+                  gr1: "",
+                  gr2: "",
+                  gr3: "",
+                },
+              });
+            }
+          });
       } else {
         await instance
-        .put(
-          `/api/menu/${getId}/`,
-          {
-            food_name: updateInput.name,
-            food_sostav: updateInput.recipe,
-            vihod_1: updateInput.exits.gr1,
-            vihod_2: updateInput.exits.gr2,
-            vihod_3: updateInput.exits.gr3,
-            week_day: getWeekDayNumber(text),
-            food_reti: updateInput.recipe,
-          },
-          {
-            headers: {
-              Authorization: `Token ${getTokenInLocalStorage()}`,
+          .put(
+            `/api/menu/${getId}/`,
+            {
+              food_name: updateInput.name,
+              food_sostav: updateInput.recipe,
+              vihod_1: updateInput.exits.gr1,
+              vihod_2: updateInput.exits.gr2,
+              vihod_3: updateInput.exits.gr3,
+              week_day: getWeekDayNumber(text),
+              food_reti: updateInput.recipe,
             },
-          }
-        )
-        .then((res) => {
-          if (res) {
-            dispatch(getMenuThunk());
-          }
-        });
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res) {
+              dispatch(getMenuThunk());
+              showSuccess();
+              setText("");
+              setUpdateInput({
+                name: "",
+                recipe: "",
+                exits: {
+                  gr1: "",
+                  gr2: "",
+                  gr3: "",
+                },
+              });
+            }
+          });
       }
+    } catch (error) {
+      showError();
     }
   };
 
   return (
-    <div className="main_table-modal">
-      <div className="main_table-modal_title">Меню</div>
+    <>
+      {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
+      {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
 
-      <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
-        <div className="main_table-modal_upload">
-          <div className="login_forms-label_pink">Күні</div>
-          <Input
-            type="text"
-            name="eat"
-            readOnly={true}
-            style={{ cursor: "pointer" }}
-            onClick={() => setShowActive(!showActive)}
-            value={text}
-          />
+      <div className="main_table-modal">
+        <div className="main_table-modal_title">Меню</div>
 
-          <div className="main_table-modal-active-block">
-            {showActive && (
-              <TimeModal setText={setText} setShowActive={setShowActive} />
-            )}
-          </div>
-        </div>
-
-        <div className="main_table-modal_forms">
-          <div className="forms">
-            <div className="login_forms-label_pink">Тамақ атауы</div>
-
+        <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
+          <div className="main_table-modal_upload sanaty">
+            <div className="login_forms-label_pink">Күні</div>
             <Input
               type="text"
-              placeholder="тамақ ататуы"
-              name="name"
-              value={updateInput.name}
-              onChange={(e) => handleUpdate(e)}
+              name="eat"
+              readOnly={true}
+              style={{ cursor: "pointer" }}
+              onClick={() => setShowActive(!showActive)}
+              value={text}
             />
-          </div>
 
-          <div className="forms">
-            <div className="login_forms-label_pink">Құрамы</div>
-
-            <Input
-              type="text"
-              placeholder="құрамы"
-              name="recipe"
-              value={updateInput.recipe}
-              onChange={(e) => handleUpdate(e)}
-            />
-          </div>
-
-          <div className="forms flex" style={{ gap: "1.6rem" }}>
             <div
-              className="login_forms-label_pink"
-              style={{ marginBottom: "0" }}
+              className="sanaty_dropdown"
+              style={{ textAlign: "center", width: "100%" }}
             >
-              Выход:
+              {showActive && (
+                <SanatyModalModal
+                  setText={setText}
+                  setId={setId}
+                  setShowActive={setShowActive}
+                  timeArr={timeArr}
+                />
+              )}
             </div>
-            {Object.keys(updateInput.exits).map((gr) => (
+          </div>
+
+          <div className="main_table-modal_forms">
+            <div className="forms">
+              <div className="login_forms-label_pink">Тамақ атауы</div>
+
               <Input
                 type="text"
-                placeholder="Уақыты"
-                name="gr"
-                data-day={gr}
-                value={updateInput.exits[gr]}
+                placeholder="тамақ ататуы"
+                name="name"
+                value={updateInput.name}
                 onChange={(e) => handleUpdate(e)}
               />
-            ))}
-          </div>
+            </div>
 
-          <div
-            className="flex"
-            style={{ justifyContent: "flex-end", gap: "1.6rem" }}
-          >
-            <Button
-              background="#CACACA"
-              color="#645C5C"
-              style={{ width: "auto" }}
-              onClick={() => getId ? (onEdit && onEdit(false)): (onReject && onReject(false))}
+            <div className="forms">
+              <div className="login_forms-label_pink">Құрамы</div>
+
+              <Input
+                type="text"
+                placeholder="құрамы"
+                name="recipe"
+                value={updateInput.recipe}
+                onChange={(e) => handleUpdate(e)}
+              />
+            </div>
+
+            <div className="forms flex" style={{ gap: "1.6rem" }}>
+              <div
+                className="login_forms-label_pink"
+                style={{ marginBottom: "0" }}
+              >
+                Выход:
+              </div>
+              {Object.keys(updateInput.exits).map((gr) => (
+                <Input
+                  type="text"
+                  placeholder="Гр"
+                  name="gr"
+                  data-day={gr}
+                  value={updateInput.exits[gr]}
+                  onChange={(e) => handleUpdate(e)}
+                />
+              ))}
+            </div>
+
+            <div
+              className="flex"
+              style={{ justifyContent: "flex-end", gap: "1.6rem" }}
             >
-              Удалить
-            </Button>
-            <Button
-              background="#27AE60"
-              style={{ width: "auto" }}
-              onClick={onSave}
-            >
-              Сохранить
-            </Button>
+              <Button
+                background="#CACACA"
+                color="#645C5C"
+                style={{ width: "auto" }}
+                onClick={() =>
+                  getId ? onEdit && onEdit(false) : onReject && onReject(false)
+                }
+              >
+                Удалить
+              </Button>
+              <Button
+                background="#27AE60"
+                style={{ width: "auto" }}
+                onClick={onSave}
+              >
+                Сохранить
+              </Button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
+
+const timeArr = [
+  {
+    id: 1,
+    type: "Понедельник",
+  },
+
+  {
+    id: 2,
+    type: "Вторник",
+  },
+
+  {
+    id: 3,
+    type: "Среда",
+  },
+
+  {
+    id: 4,
+    type: "Четверг",
+  },
+
+  {
+    id: 5,
+    type: "Пятница",
+  },
+
+  {
+    id: 6,
+    type: "Суббота",
+  },
+];
 
 export default MenuTableBlock;

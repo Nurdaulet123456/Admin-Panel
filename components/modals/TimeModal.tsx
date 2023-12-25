@@ -31,32 +31,32 @@ const TimeModal: FC<IProps> = ({ setText, setShowActive }) => {
 const timeArr = [
   {
     id: 1,
-    time: "Дүйсенбі",
+    time: "Понедельник",
   },
 
   {
     id: 2,
-    time: "Сейсенбі",
+    time: "Вторник",
   },
 
   {
     id: 3,
-    time: "Сәрсенбі",
+    time: "Среда",
   },
 
   {
     id: 4,
-    time: "Бейсінбі",
+    time: "Четверг",
   },
 
   {
     id: 5,
-    time: "Жұма",
+    time: "Пятница",
   },
 
   {
     id: 6,
-    time: "Сенбі",
+    time: "Суббота",
   },
 ];
 

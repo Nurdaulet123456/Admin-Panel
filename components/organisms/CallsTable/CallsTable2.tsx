@@ -5,13 +5,16 @@ import { useTypedSelector } from "@/hooks/useTypedSelector";
 import { FC, useEffect } from "react";
 import { getDopThunk } from "@/store/thunks/pride.thunk";
 import { instance } from "@/api/axios.instance";
-import { getTokenInLocalStorage, removeSecondOfTime } from "@/utils/assets.utils";
+import {
+  getTokenInLocalStorage,
+  removeSecondOfTime,
+} from "@/utils/assets.utils";
 
 interface IProps {
   handleClickGetIdDop?: (id?: number) => void;
 }
 
-const CallsTable2: FC<IProps> = ({handleClickGetIdDop}) => {
+const CallsTable2: FC<IProps> = ({ handleClickGetIdDop }) => {
   const dispatch = useAppDispatch();
   const dop = useTypedSelector((state) => state.pride.dop);
 
@@ -63,7 +66,11 @@ const CallsTable2: FC<IProps> = ({handleClickGetIdDop}) => {
                 <Td>{removeSecondOfTime(item.start_time)}</Td>
                 <Td>{removeSecondOfTime(item.end_time)}</Td>
                 <Td>
-                  <div onClick={() => handleClickGetIdDop && handleClickGetIdDop(item.id)}>
+                  <div
+                    onClick={() =>
+                      handleClickGetIdDop && handleClickGetIdDop(item.id)
+                    }
+                  >
                     <PenIcons />
                   </div>
 

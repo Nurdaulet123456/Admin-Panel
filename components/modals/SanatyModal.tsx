@@ -4,7 +4,7 @@ interface IProps {
   setText?: Dispatch<SetStateAction<string>>;
   setShowActive?: Dispatch<SetStateAction<boolean>>;
   setId?: Dispatch<SetStateAction<number | undefined>>;
-  timeArr: ITimeArr[];
+  timeArr: ITimeArr[] | any[];
 }
 
 interface ITimeArr {
