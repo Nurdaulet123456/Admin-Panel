@@ -18,6 +18,9 @@ import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { ISchoolOlimp } from "@/types/assets.type";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import ClassNamesModal from "@/components/modals/ClassNames";
+import { useModalLogic } from "@/hooks/useModalLogic";
+import ErrorModal from "@/components/modals/ErrorModal";
+import SuccessModal from "@/components/modals/SuccessModal";
 
 interface UpdateInputProps {
   fullname: string;
@@ -51,6 +54,15 @@ const PrideSchoolTableBlock3: FC<IProps> = ({
     file: null,
   });
 
+  const {
+    showSuccessModal,
+    showErrorModal,
+    onSuccessModalClose,
+    onErrorModalClose,
+    showSuccess,
+    showError,
+  } = useModalLogic();
+
   const onChangeUpdateInput = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value, files } = e.target;
 
@@ -81,46 +93,83 @@ const PrideSchoolTableBlock3: FC<IProps> = ({
   }, [olimpid]);
 
   const onSave = async () => {
-    if (updateInput.fullname && updateInput.text && id && updateInput.file) {
-      const formData = new FormData();
-      formData.append("fullname", updateInput.fullname);
-      formData.append("photo", updateInput.file);
-      formData.append("student_success", updateInput.text);
-      formData.append("classl", String(id));
-
-      if (!getId) {
-        await instance
-          .post("/api/PandikOlimpiadaApi/", formData, {
-            headers: {
-              Authorization: `Token ${getTokenInLocalStorage()}`,
-              "Content-Type": "multipart/form-data",
-            },
-          })
-          .then((res) => {
-            if (res) {
-              dispatch(getSchoolOlimpThunk());
-            }
-          })
-          .catch((e) => {
-            console.log(e);
-          });
-      } else {
-        await instance
-          .put(`/api/PandikOlimpiadaApi/${getId}/`, formData, {
-            headers: {
-              Authorization: `Token ${getTokenInLocalStorage()}`,
-              "Content-Type": "multipart/form-data",
-            },
-          })
-          .then((res) => {
-            if (res) {
-              dispatch(getSchoolOlimpThunk());
-            }
-          })
-          .catch((e) => {
-            console.log(e);
-          });
+    try {
+      if (
+        !updateInput.fullname ||
+        !updateInput.text ||
+        !text ||
+        !updateInput.file
+      ) {
+        showError();
+        return;
       }
+
+      if (
+        updateInput.fullname &&
+        updateInput.text &&
+        text &&
+        updateInput.file
+      ) {
+        const formData = new FormData();
+        formData.append("fullname", updateInput.fullname);
+        formData.append("photo", updateInput.file);
+        formData.append("student_success", updateInput.text);
+        formData.append("classl", String(id));
+
+        if (!getId) {
+          await instance
+            .post("/api/PandikOlimpiadaApi/", formData, {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+                "Content-Type": "multipart/form-data",
+              },
+            })
+            .then((res) => {
+              if (res) {
+                dispatch(getSchoolOlimpThunk());
+
+                showSuccess();
+                setUpdateInput({
+                  file: null,
+                  fullname: "",
+                  text: "",
+                });
+
+                setText("");
+              }
+            })
+            .catch((e) => {
+              console.log(e);
+            });
+        } else {
+          await instance
+            .put(`/api/PandikOlimpiadaApi/${getId}/`, formData, {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+                "Content-Type": "multipart/form-data",
+              },
+            })
+            .then((res) => {
+              if (res) {
+                dispatch(getSchoolOlimpThunk());
+
+                showSuccess();
+                setUpdateInput({
+                  file: null,
+                  fullname: "",
+                  text: "",
+                });
+
+                setText("");
+              }
+            })
+            .catch((e) => {
+              console.log(e);
+            });
+        }
+      }
+    } catch (error) {
+      showError();
     }
   };
 
@@ -131,96 +180,86 @@ const PrideSchoolTableBlock3: FC<IProps> = ({
   }, [dispatch]);
 
   return (
-    <div className="main_table-modal">
-      <div className="main_table-modal_title">Должность</div>
-      <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
-        <div className="main_table-modal_upload">
-          <div className="login_forms-label_pink">Фото *</div>
-          <Input
-            type="file"
-            name="file"
-            onChange={(e) => onChangeUpdateInput(e)}
-            accept=".png, .jpg, .jpeg, .svg"
-          />
-        </div>
+    <>
+      {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
+      {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
 
-        <div className="main_table-modal_forms">
-          <div className="forms">
-            <div className="login_forms-label_pink">ФИО *</div>
-
+      <div className="main_table-modal">
+        <div className="main_table-modal_title">Должность</div>
+        <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
+          <div className="main_table-modal_upload">
+            <div className="login_forms-label_pink">Фото *</div>
             <Input
-              type="text"
-              placeholder="ФИО"
-              name="fullname"
-              value={updateInput.fullname}
+              type="file"
+              name="file"
               onChange={(e) => onChangeUpdateInput(e)}
+              accept=".png, .jpg, .jpeg, .svg"
             />
           </div>
 
-          <div className="forms">
-            <div className="login_forms-label_pink">Текст</div>
+          <div className="main_table-modal_forms">
+            <div className="forms">
+              <div className="login_forms-label_pink">ФИО *</div>
 
-            <Input
-              type="text"
-              placeholder="текст"
-              name="text"
-              value={updateInput.text}
-              onChange={(e) => onChangeUpdateInput(e)}
-            />
-          </div>
-
-          <div className="forms">
-            <div className="login_forms-label_pink">Класс</div>
-
-            <Input
-              type="text"
-              name="teacher"
-              readOnly={true}
-              style={{ cursor: "pointer" }}
-              onClick={() => setShowActive(!showActive)}
-              value={text}
-            />
-
-            <div className="main_table-modal-active-block">
-              {showActive && (
-                <ClassNamesModal
-                  setText={setText}
-                  setShowActive={setShowActive}
-                  setId={setId}
-                  timeArr={(clasname as any[])?.map((item, index) => ({
-                    id: item.id,
-                    type: item.class_name,
-                  }))}
-                />
-              )}
+              <Input
+                type="text"
+                placeholder="ФИО"
+                name="fullname"
+                value={updateInput.fullname}
+                onChange={(e) => onChangeUpdateInput(e)}
+              />
             </div>
-          </div>
 
-          <div
-            className="flex"
-            style={{ justifyContent: "flex-end", gap: "1.6rem" }}
-          >
-            <Button
-              background="#CACACA"
-              color="#645C5C"
-              style={{ width: "auto" }}
-              onClick={() =>
-                getId ? onEdit && onEdit(false) : onReject && onReject(false)
-              }
+            <div className="forms">
+              <div className="login_forms-label_pink">Текст</div>
+
+              <Input
+                type="text"
+                placeholder="текст"
+                name="text"
+                value={updateInput.text}
+                onChange={(e) => onChangeUpdateInput(e)}
+              />
+            </div>
+
+            <div className="forms">
+              <div className="login_forms-label_pink">Класс</div>
+
+              <Input
+                type="text"
+                name="text"
+                onChange={(e) => setText(e.target.value)}
+                value={text}
+                placeholder="класс"
+              />
+            </div>
+
+            <div
+              className="flex"
+              style={{ justifyContent: "flex-end", gap: "1.6rem" }}
             >
-              Удалить
-            </Button>
-            <Button
-              background="#27AE60"
-              style={{ width: "auto" }}
-              onClick={onSave}
-            >
-              Сохранить
-            </Button>
+              <Button
+                background="#CACACA"
+                color="#645C5C"
+                style={{ width: "auto" }}
+                onClick={() =>
+                  getId ? onEdit && onEdit(false) : onReject && onReject(false)
+                }
+              >
+                Удалить
+              </Button>
+              <Button
+                background="#27AE60"
+                style={{ width: "auto" }}
+                onClick={onSave}
+              >
+                Сохранить
+              </Button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
