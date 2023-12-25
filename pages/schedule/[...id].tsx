@@ -4,12 +4,35 @@ import TabsClass from "@/components/molecules/Tabs/TabsClass";
 import ScheduleTable from "@/components/organisms/ScheduleTable";
 import MainLayouts from "@/layouts/MainLayouts";
 import { ITabs } from "@/types/assets.type";
+import { ArrowLeftIcons } from "@/components/atoms/Icons";
 
 const ScheduleComponents = () => {
   const router = useRouter();
 
   return (
     <MainLayouts>
+      {router.asPath !== "/schedule/1" && (
+        <div
+          className="flex"
+          style={{
+            justifyContent: "flex-start",
+            gap: "3rem",
+            marginBottom: "3.2rem",
+          }}
+        >
+          <div
+            style={{ cursor: "pointer" }}
+            onClick={() => router.push("/schedule/1")}
+          >
+            <ArrowLeftIcons />
+          </div>
+          <div className="class_name">
+            Класс:{" "}
+            {decodeURIComponent(router.asPath.split("/").at(-1) as string)}
+          </div>
+        </div>
+      )}
+
       <div
         style={{
           width: "100%",
