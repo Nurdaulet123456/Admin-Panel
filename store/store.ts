@@ -1,10 +1,12 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit";
 import schoolInfoSliceReducer from "./slices/schoolInfo.slice";
 import prideInfoSliceReducer from "./slices/pride.slice";
+import availableReducer from "./slices/available.slice";
 
 const combineReducer = combineReducers({
     system: schoolInfoSliceReducer,
-    pride: prideInfoSliceReducer
+    pride: prideInfoSliceReducer,
+    ia: availableReducer
 })
 
 

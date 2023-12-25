@@ -65,12 +65,7 @@ const CabinetTableBlock: FC<IProps> = ({
   };
 
   const onSave = async () => {
-    if (
-      updateInput.gr &&
-      updateInput.floor &&
-      updateInput.corpuse &&
-      updateInput.name
-    ) {
+    if (updateInput.gr && updateInput.floor) {
       if (!getId) {
         await instance
           .post(

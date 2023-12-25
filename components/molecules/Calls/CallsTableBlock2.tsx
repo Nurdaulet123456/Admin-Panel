@@ -14,6 +14,9 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getDopThunk, getOSThunk } from "@/store/thunks/pride.thunk";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { ICalls } from "@/types/assets.type";
+import { useModalLogic } from "@/hooks/useModalLogic";
+import ErrorModal from "@/components/modals/ErrorModal";
+import SuccessModal from "@/components/modals/SuccessModal";
 
 interface UpdateInputProps {
   start?: string;
@@ -23,8 +26,8 @@ interface UpdateInputProps {
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
   onEdit?: Dispatch<SetStateAction<boolean>>;
-  dopid?: ICalls
-  getId?: number
+  dopid?: ICalls;
+  getId?: number;
 }
 
 const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
@@ -38,6 +41,15 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
     start: "",
     end: "",
   });
+
+  const {
+    showSuccessModal,
+    showErrorModal,
+    onSuccessModalClose,
+    onErrorModalClose,
+    showSuccess,
+    showError,
+  } = useModalLogic();
 
   const showModal = (index: number) => {
     const updatedShow = show.map((value, i) => i === index);
@@ -58,23 +70,23 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
   };
 
   useEffect(() => {
-    if (dopid) {
+    if (dopid && dopid?.plan && dopid?.number && dopid?.smena) {
       setUpdateInput({
         start: dopid.start_time || "",
         end: dopid.end_time || "",
       });
 
-      setText1((String(dopid.plan) as string) || "");
-      setText2((String(dopid.number) as string) || "");
-      setText3((String(dopid.smena) as string) || "");
+      setText1((String(dopid?.plan) as string) || "");
+      setText2((String(dopid?.number) as string) || "");
+      setText3((String(dopid?.smena) as string) || "");
     }
   }, [dopid]);
 
   const onSave = async () => {
     if (updateInput.start && updateInput.end && text1 && text2 && text3) {
       if (!getId) {
-        await instance
-          .post(
+        try {
+          await instance.post(
             "/api/DopUrokRingApi/",
             {
               plan: Number(text1),
@@ -88,18 +100,17 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
                 Authorization: `Token ${getTokenInLocalStorage()}`,
               },
             }
-          )
-          .then((res) => {
-            if (res) {
-              dispatch(getDopThunk());
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+          );
+
+          showSuccess();
+          dispatch(getDopThunk());
+        } catch (err) {
+          console.error(err);
+          showError();
+        }
       } else {
-        await instance
-          .put(
+        try {
+          await instance.put(
             `/api/DopUrokRingApi/${getId}/`,
             {
               plan: Number(text1),
@@ -113,103 +124,42 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
                 Authorization: `Token ${getTokenInLocalStorage()}`,
               },
             }
-          )
-          .then((res) => {
-            if (res) {
-              dispatch(getDopThunk());
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+          );
+
+          showSuccess();
+          dispatch(getDopThunk());
+        } catch (err) {
+          console.error(err);
+          showError();
+        }
       }
     }
   };
 
   return (
-    <div className="main_table-modal">
-      <div className="login_forms-label_pink">Основной урок</div>
-      <div className="main_table-modal_forms">
-        <div
-          className="forms flex"
-          style={{
-            alignItems: "flex-start",
-            justifyContent: "flex-start",
-            gap: "5.2rem",
-          }}
-        >
-          <div>
-            <div className="login_forms-label_pink">План звонков</div>
-            <Input
-              type="text"
-              name="cabinet"
-              readOnly={true}
-              style={{ cursor: "pointer" }}
-              onClick={() => showModal(0)}
-              value={text1}
-            />
-
-            {show.map(
-              (isShown, index) =>
-                isShown && (
-                  <NumberModal
-                    key={index}
-                    setText={setText1}
-                    setShowActive={hideModal}
-                    timeArr={
-                      index === 0
-                        ? Array.from({ length: 10 }, (_, i) => ({
-                            id: i + 1,
-                            type: (i + 1).toString(),
-                          }))
-                        : []
-                    }
-                  />
-                )
-            )}
-          </div>
-
-          <div>
-            <div className="login_forms-label_pink">Номер урока</div>
-            <Input
-              type="text"
-              name="lang"
-              readOnly={true}
-              style={{ cursor: "pointer" }}
-              onClick={() => showModal(1)}
-              value={text2}
-            />
-
-            {show.map(
-              (isShown, index) =>
-                isShown && (
-                  <NumberModal
-                    key={index}
-                    setText={setText2}
-                    setShowActive={hideModal}
-                    timeArr={
-                      index === 1
-                        ? Array.from({ length: 10 }, (_, i) => ({
-                            id: i + 1,
-                            type: (i + 1).toString(),
-                          }))
-                        : []
-                    }
-                  />
-                )
-            )}
-          </div>
-
-          <div>
+    <>
+      {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
+      {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
+      <div className="main_table-modal">
+        <div className="login_forms-label_pink">Основной урок</div>
+        <div className="main_table-modal_forms">
+          <div
+            className="forms flex"
+            style={{
+              alignItems: "flex-start",
+              justifyContent: "flex-start",
+              gap: "5.2rem",
+            }}
+          >
             <div>
-              <div className="login_forms-label_pink">Смена</div>
+              <div className="login_forms-label_pink">План звонков</div>
               <Input
                 type="text"
-                name="end"
+                name="cabinet"
                 readOnly={true}
                 style={{ cursor: "pointer" }}
-                onClick={() => showModal(2)}
-                value={text3}
+                onClick={() => showModal(0)}
+                value={text1}
               />
 
               {show.map(
@@ -217,11 +167,11 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
                   isShown && (
                     <NumberModal
                       key={index}
-                      setText={setText3}
+                      setText={setText1}
                       setShowActive={hideModal}
                       timeArr={
-                        index === 2
-                          ? Array.from({ length: 4 }, (_, i) => ({
+                        index === 0
+                          ? Array.from({ length: 10 }, (_, i) => ({
                               id: i + 1,
                               type: (i + 1).toString(),
                             }))
@@ -231,53 +181,121 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
                   )
               )}
             </div>
+
+            <div>
+              <div className="login_forms-label_pink">Номер урока</div>
+              <Input
+                type="text"
+                name="lang"
+                readOnly={true}
+                style={{ cursor: "pointer" }}
+                onClick={() => showModal(1)}
+                value={text2}
+              />
+
+              {show.map(
+                (isShown, index) =>
+                  isShown && (
+                    <NumberModal
+                      key={index}
+                      setText={setText2}
+                      setShowActive={hideModal}
+                      timeArr={
+                        index === 1
+                          ? Array.from({ length: 10 }, (_, i) => ({
+                              id: i + 1,
+                              type: (i + 1).toString(),
+                            }))
+                          : []
+                      }
+                    />
+                  )
+              )}
+            </div>
+
+            <div>
+              <div>
+                <div className="login_forms-label_pink">Смена</div>
+                <Input
+                  type="text"
+                  name="end"
+                  readOnly={true}
+                  style={{ cursor: "pointer" }}
+                  onClick={() => showModal(2)}
+                  value={text3}
+                />
+
+                {show.map(
+                  (isShown, index) =>
+                    isShown && (
+                      <NumberModal
+                        key={index}
+                        setText={setText3}
+                        setShowActive={hideModal}
+                        timeArr={
+                          index === 2
+                            ? Array.from({ length: 4 }, (_, i) => ({
+                                id: i + 1,
+                                type: (i + 1).toString(),
+                              }))
+                            : []
+                        }
+                      />
+                    )
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="forms">
+            <div className="login_forms-label_pink">Смена начало</div>
+
+            <Input
+              type="text"
+              placeholder="смена начало"
+              name="start"
+              value={updateInput.start}
+              onChange={(e) => onChangeUpdateInput(e)}
+            />
+          </div>
+
+          <div className="forms">
+            <div className="login_forms-label_pink">Смена конец</div>
+
+            <Input
+              type="text"
+              placeholder="смена конец"
+              name="end"
+              value={updateInput.end}
+              onChange={(e) => onChangeUpdateInput(e)}
+            />
           </div>
         </div>
 
-        <div className="forms">
-          <div className="login_forms-label_pink">Смена начало</div>
-
-          <Input
-            type="text"
-            placeholder="смена начало"
-            name="start"
-            value={updateInput.start}
-            onChange={(e) => onChangeUpdateInput(e)}
-          />
-        </div>
-
-        <div className="forms">
-          <div className="login_forms-label_pink">Смена конец</div>
-
-          <Input
-            type="text"
-            placeholder="смена конец"
-            name="end"
-            value={updateInput.end}
-            onChange={(e) => onChangeUpdateInput(e)}
-          />
-        </div>
-      </div>
-
-      <div
-        className="flex"
-        style={{ justifyContent: "flex-end", gap: "1.6rem" }}
-      >
-        <Button
-          background="#CACACA"
-          color="#645C5C"
-          style={{ width: "auto" }}
-          onClick={() =>
-            getId ? onEdit && onEdit(false) : onReject && onReject(false)
-          }
+        <div
+          className="flex"
+          style={{ justifyContent: "flex-end", gap: "1.6rem" }}
         >
-          Удалить
-        </Button>
-        <Button background="#27AE60" style={{ width: "auto" }} onClick={onSave}>
-          Сохранить
-        </Button>
+          <Button
+            background="#CACACA"
+            color="#645C5C"
+            style={{ width: "auto" }}
+            onClick={() =>
+              getId ? onEdit && onEdit(false) : onReject && onReject(false)
+            }
+          >
+            Удалить
+          </Button>
+          <Button
+            background="#27AE60"
+            style={{ width: "auto" }}
+            onClick={onSave}
+          >
+            Сохранить
+          </Button>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

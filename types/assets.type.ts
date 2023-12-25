@@ -276,3 +276,41 @@ export interface IClass {
     dopurok_smena?: any
     school?: number
 }
+
+// Avalibale 
+
+export interface IASchool {
+    id?: number
+    school_kz_name?: string
+}
+
+export interface IAClass {
+    id?: number
+    class_name?: string
+    class_number?: string
+}
+
+export interface IAClassRooms {
+    id?: number
+    classroom_name?: string
+    classroom_number?: number
+}
+
+export interface IARing {
+    id?: number
+    start_time?: string
+    end_time?: string
+}
+
+export interface IASubjet {
+    id?: number
+    full_name?: string
+    type?: string
+}
+
+export interface IATypeZ {
+    id?: number
+    type_full_name?: string
+    type_color?: string
+    school?: number
+}

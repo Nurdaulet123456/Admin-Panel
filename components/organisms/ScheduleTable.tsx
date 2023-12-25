@@ -10,12 +10,14 @@ import {
 import ScheduleModal from "../forms/ScheduleModal";
 import { useState } from "react";
 import { useRouter } from "next/router";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
 
 interface IProps {
   schedule?: any[];
 }
 
 const ScheduleTable = ({ schedule }: IProps) => {
+  const dispatch = useAppDispatch()
   const [openModal, setOpenModal] = useState<boolean>(false);
   const [selectedCell, setSelectedCell] = useState<{
     day?: any;

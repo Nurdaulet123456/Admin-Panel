@@ -3,6 +3,7 @@ import { Dispatch, FC, SetStateAction } from "react";
 interface IProps {
   setText?: Dispatch<SetStateAction<string>>;
   setShowActive?: Dispatch<SetStateAction<boolean>>;
+  setId?: Dispatch<SetStateAction<number | undefined>>;
   timeArr: ITimeArr[];
 }
 
@@ -11,11 +12,18 @@ interface ITimeArr {
   type: string;
 }
 
-const SanatyModalModal: FC<IProps> = ({ setText, setShowActive, timeArr }) => {
-  const handleGetTime = (text: string) => {
-    if (setText && setShowActive) {
+const SanatyModalModal: FC<IProps> = ({
+  setText,
+  setShowActive,
+  timeArr,
+  setId,
+}) => {
+  const handleGetTime = (text: string, id?: number) => {
+    if (setText && setShowActive && setId) {
       setText(text);
       setShowActive(false);
+
+      setId(id as number);
     }
   };
 
@@ -26,7 +34,7 @@ const SanatyModalModal: FC<IProps> = ({ setText, setShowActive, timeArr }) => {
           <div
             className="sanaty_block"
             key={item.id}
-            onClick={() => handleGetTime(item.type)}
+            onClick={() => handleGetTime(item.type, item.id)}
           >
             {item.type}
           </div>

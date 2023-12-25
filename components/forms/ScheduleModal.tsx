@@ -1,7 +1,17 @@
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { Button } from "../atoms/UI/Buttons/Button";
 import { Input } from "../atoms/UI/Inputs/Input";
 import { Modal, ModalContent, ModalInner } from "../atoms/UI/Modal/Modal";
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { useTypedSelector } from "@/hooks/useTypedSelector";
+import {
+  getIAClassRoomThunk,
+  getIAClassThunk,
+  getIARingThunk,
+  getIASchoolThunk,
+  getIASubjectThunk,
+  getIATypeZThunk,
+} from "@/store/thunks/available.thunk";
 
 interface IProps {
   onReject?: () => void;
@@ -10,6 +20,25 @@ interface IProps {
 }
 
 const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
+  const dispatch = useAppDispatch();
+  const iaschool = useTypedSelector((state) => state.ia.iaschool);
+  const iaclass = useTypedSelector((state) => state.ia.iaclass);
+  const iaclassrooms = useTypedSelector((state) => state.ia.iaclassrooms);
+  const iatypez = useTypedSelector((state) => state.ia.iatypez);
+  const iaring = useTypedSelector((state) => state.ia.iaring);
+  const iasubject = useTypedSelector((state) => state.ia.iasubject);
+
+  useEffect(() => {
+    if (iaschool && iaclass && iaclassrooms && iatypez && iaring && iasubject) {
+      dispatch(getIASchoolThunk());
+      dispatch(getIAClassRoomThunk());
+      dispatch(getIAClassThunk());
+      dispatch(getIATypeZThunk());
+      dispatch(getIARingThunk());
+      dispatch(getIASubjectThunk());
+    }
+  }, [dispatch]);
+
   return (
     <>
       <Modal>

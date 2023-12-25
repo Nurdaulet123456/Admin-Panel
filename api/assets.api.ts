@@ -1,6 +1,6 @@
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { instance } from "./axios.instance";
-import { IKruzhok, IMenu, ICalls, IClassRoom, IClass, INews, ITeachers, ISchoolInfo, IClassName, IUsers, ISchoolAdmin, ISchoolPassport, ISchoolPhotos, ISchoolSocialMedia, ISchoolSport, ISchoolAltyn, ISchoolAtest, ISchoolOlimp, ISchoolOner, ILessons, IExtraLessons } from "@/types/assets.type";
+import { IKruzhok, IMenu, ICalls, IAClass, IAClassRooms, IARing, IASchool, IASubjet, IATypeZ, IClassRoom, IClass, INews, ITeachers, ISchoolInfo, IClassName, IUsers, ISchoolAdmin, ISchoolPassport, ISchoolPhotos, ISchoolSocialMedia, ISchoolSport, ISchoolAltyn, ISchoolAtest, ISchoolOlimp, ISchoolOner, ILessons, IExtraLessons } from "@/types/assets.type";
 
 export const assetsApi = {
     async getKruzhok(): Promise<IKruzhok[]> {
@@ -334,6 +334,56 @@ export const assetsApi = {
 
     async getNewsId(id?: number): Promise<INews> {
         return await instance.get(`/api/newsApi/${id}`, {
+            headers: {
+                'Authorization': `Token ${getTokenInLocalStorage()}`
+            }
+        })
+    },
+
+    // Avalibale
+
+    async getAvalibaleSchool(): Promise<IASchool[]> {
+        return await instance.get(`/api/available_school/`, {
+            headers: {
+                'Authorization': `Token ${getTokenInLocalStorage()}`
+            }
+        })
+    },
+
+    async getAvalibaleClasses(): Promise<IAClass[]> {
+        return await instance.get(`/api/available_classes/`, {
+            headers: {
+                'Authorization': `Token ${getTokenInLocalStorage()}`
+            }
+        })
+    },
+
+    async getAvalibaleClassRooms(): Promise<IAClassRooms[]> {
+        return await instance.get(`/api/available_classrooms/`, {
+            headers: {
+                'Authorization': `Token ${getTokenInLocalStorage()}`
+            }
+        })
+    },
+
+    async getAvalibaleRing(): Promise<IARing[]> {
+        return await instance.get(`/api/available_ring/`, {
+            headers: {
+                'Authorization': `Token ${getTokenInLocalStorage()}`
+            }
+        })
+    },
+
+    async getAvalibaleSubject(): Promise<IASubjet[]> {
+        return await instance.get(`/api/available_subject/`, {
+            headers: {
+                'Authorization': `Token ${getTokenInLocalStorage()}`
+            }
+        })
+    },
+
+    async getAvalibaleTypez(): Promise<IATypeZ[]> {
+        return await instance.get(`/api/available_typez/`, {
             headers: {
                 'Authorization': `Token ${getTokenInLocalStorage()}`
             }

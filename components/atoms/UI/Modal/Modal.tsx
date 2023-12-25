@@ -44,6 +44,22 @@ export const ModalContent = styled.div`
             color: rgba(0,0,0,0.5);
         }
     }
+
+    &-title, &-subtitle {
+      text-align: center;
+    }
+
+    &-title {
+      color: #54595E;
+      font-size: 2rem;
+      margin-bottom: .8rem;
+      font-weight: 600;
+    }
+
+    &-subtitle {
+      color: #54595E99;
+      font-size: 1.4rem;
+    }
   }
 
   .modal_footer {

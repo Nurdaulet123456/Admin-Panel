@@ -80,3 +80,28 @@ export function getWeekRussianDayString(day: string): string {
     };
     return weekDayMap[day] || "";
 };
+
+export function removeSecondOfTime(time?: string): string {
+    const splitTime: string[] = time?.split(':') as string[]
+    const removeSeconds: string = splitTime?.slice(0, 2).join(':')
+    return removeSeconds
+}
+
+export function formatName(fullName: string): string {
+    const nameParts: string[] = fullName.split(' ');
+    const lastName: string = nameParts[0];
+
+    let firstName: string, middleName: string | undefined;
+    if (nameParts.length === 3) {
+        firstName = nameParts[1];
+        middleName = nameParts[2];
+    } else if (nameParts.length === 2) {
+        firstName = nameParts[1];
+        middleName = undefined;
+    } else {
+        return fullName;
+    }
+
+    const formattedName: string = `${lastName}.${firstName[0]}.${middleName?.[0] || ''}ы`;
+    return formattedName;
+}

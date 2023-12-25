@@ -127,6 +127,8 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
       formData.append("teacher", String(id));
       formData.append("purpose", updateInput.goal);
 
+      console.log(timeSlots)
+
       timeSlots.forEach((lesson, index) => {
         formData.append(`lessons[${index}][week_day]`, lesson.week_day);
         formData.append(

@@ -33,6 +33,7 @@ interface ISpecificationProps {
 const TeachersTableBlock = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
+  const [id, setId] = useState<number>();
   const [updateInput, setUpdateInput] = useState<UpdateInputProps>({});
   const dispatch = useAppDispatch();
 
@@ -185,6 +186,7 @@ const TeachersTableBlock = () => {
                   setText={setText}
                   setShowActive={setShowActive}
                   timeArr={sanatyArr}
+                  setId={setId}
                 />
               )}
             </div>

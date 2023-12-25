@@ -17,6 +17,11 @@ export const Input = styled.input`
   &::placeholder {
     color: #a098ae;
   }
+
+  &:read-only {
+    background: white url(/icons/arrdown.svg) center right 15px no-repeat;
+    
+  } 
 `;
 
 export const TextArea = styled.textarea`

@@ -83,3 +83,68 @@ export const ColorCheckIcons = () => (
     />
   </svg>
 );
+
+export const ArrowDownIcons = () => (
+  <svg
+    width="18"
+    height="9"
+    viewBox="0 0 18 9"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <path
+      d="M16.9201 0.949951L10.4001 7.46995C9.63008 8.23995 8.37008 8.23995 7.60008 7.46995L1.08008 0.949951"
+      stroke="#292D32"
+      strokeWidth="1.5"
+      strokeMiterlimit="10"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+export const SuccesIcons = () => (
+  <svg
+    width="45"
+    height="45"
+    viewBox="0 0 45 45"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle cx="22.5" cy="22.5" r="22.5" fill="#27AE60" />
+    <path
+      d="M18.1594 32.2502C17.7094 32.2502 17.2969 32.1002 16.9594 31.7627L9.49693 24.3002C8.82193 23.6252 8.82193 22.5752 9.49693 21.9002C10.1719 21.2252 11.2219 21.2252 11.8969 21.9002L18.1969 28.1627L33.1594 13.2377C33.8344 12.5627 34.8844 12.5627 35.5594 13.2377C36.2344 13.9127 36.2344 14.9627 35.5594 15.6377L19.3969 31.7627C19.0219 32.1002 18.6094 32.2502 18.1594 32.2502Z"
+      fill="white"
+    />
+  </svg>
+);
+
+export const ErrorIcons = () => (
+  <svg
+    width="45"
+    height="45"
+    viewBox="0 0 45 45"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+  >
+    <circle
+      cx="22.4997"
+      cy="22.4997"
+      r="18.75"
+      transform="rotate(60 22.4997 22.4997)"
+      fill="#EB5757"
+      stroke="#EB5757"
+      strokeWidth="2"
+    />
+    <path
+      d="M31.7809 13.667C31.7809 13.667 30.6208 14.8271 23.1631 22.2849C15.7053 29.7426 13.2194 32.2286 13.2194 32.2286"
+      stroke="white"
+      strokeWidth="2"
+    />
+    <path
+      d="M13.2191 13.667C13.2191 13.667 14.3792 14.8271 21.837 22.2849C29.2948 29.7426 31.7807 32.2286 31.7807 32.2286"
+      stroke="white"
+      strokeWidth="2"
+    />
+  </svg>
+);
