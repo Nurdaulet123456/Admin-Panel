@@ -22,6 +22,10 @@ export const Input = styled.input`
     background: white url(/icons/arrdown.svg) center right 15px no-repeat;
     
   } 
+
+  &[name="file"] {
+    background: none;
+  }
 `;
 
 export const TextArea = styled.textarea`
