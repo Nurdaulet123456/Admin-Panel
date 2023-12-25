@@ -18,9 +18,15 @@ const Tabs: FC<IProps> = ({ tabs, link }) => {
       {tabs?.map((item) => (
         <Link href={`/${link}/${item.id}`} key={item.id}>
           <IdBlock
-            background={router.query.id === String(item.id) ? "#4090FF" : ""}
-            color={router.query.id === String(item.id) ? "#fff" : ""}
-            border={router.query.id === String(item.id) ? "white" : ""}
+            background={
+              router?.asPath?.split("/")[2] === String(item.id) ? "#4090FF" : ""
+            }
+            color={
+              router?.asPath?.split("/")[2] === String(item.id) ? "#fff" : ""
+            }
+            border={
+              router?.asPath?.split("/")[2] === String(item.id) ? "white" : ""
+            }
           >
             {item.type}
           </IdBlock>

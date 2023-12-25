@@ -107,7 +107,7 @@ const SchoolTableBlock3 = () => {
         )
         .then((res) => {
           if (res) {
-            setUpdateInput({})
+            setUpdateInput({});
           }
         })
         .catch((err) => {

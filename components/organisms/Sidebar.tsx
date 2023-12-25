@@ -37,7 +37,7 @@ const sidebar: IType[] = [
   {
     id: 1,
     type: "Расписание",
-    link: "schedule",
+    link: "schedule/1",
   },
 
   {
