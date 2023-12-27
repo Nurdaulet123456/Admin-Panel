@@ -93,7 +93,15 @@ export const assetsApi = {
 
 
     async getUsers(): Promise<IUsers[]> {
-        return await instance.get('/auth/users/', {
+        return await instance.get('/api/admin/', {
+            headers: {
+                'Authorization': `Token ${getTokenInLocalStorage()}`
+            }
+        })
+    },
+
+    async getUsersId(id?: number): Promise<IUsers> {
+        return await instance.get(`/api/admin/${id}`, {
             headers: {
                 'Authorization': `Token ${getTokenInLocalStorage()}`
             }
@@ -318,6 +326,14 @@ export const assetsApi = {
 
     async getTeachers(): Promise<ITeachers[]> {
         return await instance.get('/api/teacher/', {
+            headers: {
+                'Authorization': `Token ${getTokenInLocalStorage()}`
+            }
+        })
+    },
+
+    async getTeachersId(id?: number): Promise<ITeachers> {
+        return await instance.get(`/api/teacher/${id}`, {
             headers: {
                 'Authorization': `Token ${getTokenInLocalStorage()}`
             }

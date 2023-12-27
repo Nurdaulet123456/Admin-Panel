@@ -9,14 +9,15 @@ import { getUsersThunk } from "@/store/thunks/schoolnfo.thunk";
 
 interface IProps {
   users?: IUsers[];
+  handleClickGetId?: (id?: number) => void;
 }
 
-const AdministratorTable: FC<IProps> = ({ users }) => {
+const AdministratorTable: FC<IProps> = ({ users, handleClickGetId }) => {
   const dispatch = useAppDispatch();
 
   const handleDeleteItems = async (id?: number) => {
     await instance
-      .delete(`/auth/users/${id}`, {
+      .delete(`/api/admin/${id}/`, {
         headers: {
           Authorization: `Token ${getTokenInLocalStorage()}`,
         },
@@ -51,10 +52,10 @@ const AdministratorTable: FC<IProps> = ({ users }) => {
               <Tr key={item.id}>
                 <Td>{index + 1}</Td>
                 <Td>{item.email}</Td>
-                <Td>Content</Td>
+                <Td>{item.school || "null"}</Td>
                 <Td>Content</Td>
                 <Td>
-                  <div>
+                  <div onClick={() => handleClickGetId && handleClickGetId(item.id)}>
                     <PenIcons />
                   </div>
 

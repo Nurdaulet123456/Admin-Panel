@@ -1,4 +1,11 @@
-import { ChangeEvent, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  FC,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 import { Button } from "../atoms/UI/Buttons/Button";
 import { Input, TextArea } from "../atoms/UI/Inputs/Input";
 import SanatyModalModal from "../modals/SanatyModal";
@@ -6,6 +13,7 @@ import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getTeachersThunk } from "@/store/thunks/pride.thunk";
+import { ITeachers } from "@/types/assets.type";
 
 interface UpdateInputProps {
   name?: string;
@@ -18,19 +26,31 @@ interface UpdateInputProps {
 }
 
 interface IHistoryProps {
-  start_date?: number;
-  end_date?: number;
+  start_date?: string;
+  end_date?: string;
   job_characteristic?: string;
 }
 
 interface ISpecificationProps {
-  end_date?: number;
+  end_date?: string;
   speciality_university?: string;
   mamandygy?: string;
   degree?: string;
 }
 
-const TeachersTableBlock = () => {
+interface IProps {
+  onReject?: Dispatch<SetStateAction<boolean>>;
+  onEdit?: Dispatch<SetStateAction<boolean>>;
+  getId?: number;
+  teachersid?: ITeachers;
+}
+
+const TeachersTableBlock: FC<IProps> = ({
+  onReject,
+  onEdit,
+  getId,
+  teachersid,
+}) => {
   const [showActive, setShowActive] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
   const [id, setId] = useState<number>();
@@ -39,15 +59,15 @@ const TeachersTableBlock = () => {
 
   const [workExperience, setWorkExperience] = useState<IHistoryProps[]>([
     {
-      start_date: 0,
-      end_date: 0,
+      start_date: "",
+      end_date: "",
       job_characteristic: "",
     },
   ]);
 
   const [mamandygyList, setMamandygyList] = useState<ISpecificationProps[]>([
     {
-      end_date: 0,
+      end_date: "",
       speciality_university: "",
       mamandygy: "",
       degree: "",
@@ -55,6 +75,30 @@ const TeachersTableBlock = () => {
   ]);
 
   const [file, setFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    if (teachersid) {
+      setUpdateInput({
+        name: teachersid.full_name || "",
+        pan: teachersid.subject || "",
+      });
+
+      if (teachersid.job_history && teachersid.job_history.length > 0) {
+        setWorkExperience(teachersid.job_history as IHistoryProps[]);
+      }
+
+      if (
+        teachersid.speciality_history &&
+        teachersid.speciality_history.length > 0
+      ) {
+        setMamandygyList(
+          teachersid.speciality_history as ISpecificationProps[]
+        );
+      }
+
+      setText(teachersid.pedagog as string);
+    }
+  }, [teachersid]);
 
   const onChangeUpdateInput = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -71,8 +115,8 @@ const TeachersTableBlock = () => {
     setWorkExperience((prevExperience) => [
       ...prevExperience,
       {
-        start_date: 0,
-        end_date: 0,
+        start_date: "",
+        end_date: "",
         job_characteristic: "",
       },
     ]);
@@ -94,7 +138,7 @@ const TeachersTableBlock = () => {
     setMamandygyList((prevList) => [
       ...prevList,
       {
-        end_date: 0,
+        end_date: "",
         speciality_university: "",
         mamandygy: "",
         degree: "",
@@ -122,41 +166,59 @@ const TeachersTableBlock = () => {
   };
 
   const onSave = async () => {
-    if (!updateInput.name || !updateInput.pan || !text || !file) {
+    if (!updateInput.name || !updateInput.pan || !text) {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("photo3x4", file as Blob);
-    formData.append("full_name", updateInput.name || "");
-    formData.append("subject", updateInput.pan || "");
-    formData.append("pedagog", "Pedagog  Zertteushy");
-    workExperience.forEach((experience, index) => {
-      Object.entries(experience).forEach(([key, value]) => {
-        formData.append(`job_history[${index}][${key}]`, value);
-      });
-    });
-
-    // Append each item in mamandygyList array
-    mamandygyList.forEach((item, index) => {
-      Object.entries(item).forEach(([key, value]) => {
-        formData.append(`speciality_history[${index}][${key}]`, value);
-      });
-    });
-
-    await instance
-      .post("/api/teacher/", formData, {
-        headers: {
-          Authorization: `Token ${getTokenInLocalStorage()}`,
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((res) => {
-        if (res) {
-          dispatch(getTeachersThunk());
-        }
-      })
-      .catch((err) => console.log(err));
+    if (updateInput.name && updateInput.pan && text) {
+      if (!getId) {
+        await instance
+          .post(
+            "/api/teacher/",
+            {
+              full_name: updateInput.name,
+              subject: updateInput.pan,
+              pedagog: "Pedagog  Zertteushy",
+              job_history: workExperience,
+              speciality_history: mamandygyList,
+            },
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res) {
+              dispatch(getTeachersThunk());
+            }
+          })
+          .catch((err) => console.log(err));
+      } else {
+        await instance
+          .put(
+            `/api/teacher/${getId}/`,
+            {
+              full_name: updateInput.name,
+              subject: updateInput.pan,
+              pedagog: "Pedagog  Zertteushy",
+              job_history: workExperience,
+              speciality_history: mamandygyList,
+            },
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            }
+          )
+          .then((res) => {
+            if (res) {
+              dispatch(getTeachersThunk());
+            }
+          })
+          .catch((err) => console.log(err));
+      }
+    }
   };
 
   return (
@@ -180,7 +242,7 @@ const TeachersTableBlock = () => {
               value={text}
             />
 
-            <div className="sanaty_dropdown">
+            <div className="sanaty_dropdown" style={{ width: "100%" }}>
               {showActive && (
                 <SanatyModalModal
                   setText={setText}
@@ -384,7 +446,14 @@ const TeachersTableBlock = () => {
         className="flex"
         style={{ justifyContent: "flex-end", gap: "1.6rem" }}
       >
-        <Button background="#CACACA" color="#645C5C" style={{ width: "auto" }}>
+        <Button
+          background="#CACACA"
+          color="#645C5C"
+          style={{ width: "auto" }}
+          onClick={() =>
+            getId ? onEdit && onEdit(false) : onReject && onReject(false)
+          }
+        >
           Удалить
         </Button>
         <Button background="#27AE60" style={{ width: "auto" }} onClick={onSave}>
@@ -398,52 +467,42 @@ const TeachersTableBlock = () => {
 const sanatyArr = [
   {
     id: 1,
-    type: "Педагог-шебер",
+    type: "Pedagog Sheber",
   },
 
   {
     id: 2,
-    type: "Педагог-зерттеуші",
+    type: "Pedagog Zertteushy",
   },
 
   {
     id: 3,
-    type: "Педагог-сарапшы",
+    type: "Pedagog Sarapshy",
   },
 
   {
     id: 4,
-    type: "Педагог-модератор",
+    type: "Pedagog Moderator",
   },
 
   {
     id: 5,
-    type: "Педагог-тағылымдамашы",
+    type: "Pedagog Zhogary",
   },
 
   {
     id: 6,
-    type: "Жоғары",
+    type: "Pedagog Stazher",
   },
 
   {
     id: 7,
-    type: "I санатты",
+    type: "Pedagog 1 sanat",
   },
 
   {
     id: 8,
-    type: "I санатты",
-  },
-
-  {
-    id: 9,
-    type: "II санатты",
-  },
-
-  {
-    id: 10,
-    type: "III санатты",
+    type: "Pedagog 2 sanat",
   },
 ];
 

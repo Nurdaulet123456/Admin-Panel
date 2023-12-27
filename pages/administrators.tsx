@@ -7,17 +7,37 @@ import SuperAdminLayouts from "@/layouts/SuperAdminLayouts";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import { getUsersThunk } from "@/store/thunks/schoolnfo.thunk";
+import { getUserIdThunk } from "@/store/thunks/available.thunk";
 
 const MainPage = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
-  const dispatch = useAppDispatch()
-  const users = useTypedSelector(state => state.system.users)
+  const [editActive, setEditActive] = useState<boolean>(false);
+  const dispatch = useAppDispatch();
+  const users = useTypedSelector((state) => state.system.users);
+  const usersid = useTypedSelector((state) => state.ia.userid);
+
+  const [getId, setId] = useState<number>();
 
   useEffect(() => {
     if (users) {
-        dispatch(getUsersThunk())
+      dispatch(getUsersThunk());
     }
-  }, [dispatch])
+  }, [dispatch]);
+
+  const handleAddButtonClick = () => {
+    setEditActive(false);
+    setShowActive(!showActive);
+  };
+
+  const handleClickGetId = (id?: number) => {
+    setEditActive(true);
+
+    setId(id);
+
+    if (id) {
+      dispatch(getUserIdThunk(id));
+    }
+  };
 
   return (
     <SuperAdminLayouts>
@@ -38,16 +58,23 @@ const MainPage = () => {
             alignItems: "center",
             gap: ".8rem",
           }}
-          onClick={() => setShowActive(!showActive)}
+          onClick={handleAddButtonClick}
         >
           <PlusIcons />
           Добавить
         </Button>
       </div>
 
-      {showActive && <AdministratorTableBlock />}
+      {(showActive || editActive) && (
+        <AdministratorTableBlock onReject={setShowActive} usersid={usersid} getId={getId} onEdit={setEditActive}/>
+      )}
 
-      {!showActive && <AdministratorTable users={users && users}/>}
+      {!showActive && !editActive && (
+        <AdministratorTable
+          users={users && users}
+          handleClickGetId={handleClickGetId}
+        />
+      )}
     </SuperAdminLayouts>
   );
 };

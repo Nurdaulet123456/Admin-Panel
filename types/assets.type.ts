@@ -64,6 +64,8 @@ export interface IUsers {
     id?: number
     email?: string
     username?: string
+    password?: string
+    school?: any
     is_superuser?: boolean
 }
 

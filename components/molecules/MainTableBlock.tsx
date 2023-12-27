@@ -114,35 +114,43 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
     Object.entries(updateInput.times).forEach(([day, time]) => {
       if (time.trim() !== "") {
         timeSlots.push({
-          week_day: getWeekDayNumber(day),
-          start_end_time: time,
+          week_day: String(getWeekDayNumber(day)),
+          start_end_time: String(time),
         });
       }
     });
 
     if (timeSlots.length > 0 && updateInput.name && id && updateInput.goal) {
-      const formData = new FormData();
-      formData.append("photo", updateInput.file);
-      formData.append("kruzhok_name", updateInput.name);
-      formData.append("teacher", String(id));
-      formData.append("purpose", updateInput.goal);
+      // const formData = new FormData();
+      // formData.append("photo", updateInput.file);
+      // formData.append("kruzhok_name", updateInput.name);
+      // formData.append("teacher", String(id));
+      // formData.append("purpose", updateInput.goal);
 
-      console.log(timeSlots)
+      // console.log(timeSlots)
 
-      timeSlots.forEach((lesson, index) => {
-        formData.append(`lessons[${index}][week_day]`, lesson.week_day);
-        formData.append(
-          `lessons[${index}][start_end_time]`,
-          lesson.start_end_time
-        );
-      });
+      // timeSlots.forEach((lesson, index) => {
+      //   formData.append(`lessons[${index}][week_day]`, lesson.week_day);
+      //   formData.append(
+      //     `lessons[${index}][start_end_time]`,
+      //     lesson.start_end_time
+      //   );
+      // });
+
+      let formData = {
+        photo: updateInput.file,
+        kruzhok_name: updateInput.name,
+        teacher: String(id),
+        purpose: updateInput.goal,
+        lessons: timeSlots,
+      };
 
       if (!getId) {
         await instance
           .post("/api/kruzhok/", formData, {
             headers: {
               Authorization: `Token ${getTokenInLocalStorage()}`,
-              "Content-Type": "multipart/form-data",
+              "Content-Type": "application/json",
             },
           })
           .then((res) => {
@@ -186,8 +194,6 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
       setText(text as string);
     }
   };
-
-  
 
   return (
     <div className="main_table-modal">

@@ -13,6 +13,9 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getSchoolThunk } from "@/store/thunks/schoolnfo.thunk";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { ISchoolInfo } from "@/types/assets.type";
+import { useModalLogic } from "@/hooks/useModalLogic";
+import ErrorModal from "@/components/modals/ErrorModal";
+import SuccessModal from "@/components/modals/SuccessModal";
 
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
@@ -46,6 +49,15 @@ const SuperAdminTableBlock: FC<IProps> = ({
     timezone: "",
   });
 
+  const {
+    showSuccessModal,
+    showErrorModal,
+    onSuccessModalClose,
+    onErrorModalClose,
+    showSuccess,
+    showError,
+  } = useModalLogic();
+
   useEffect(() => {
     if (schoolid) {
       setUpdateInput({
@@ -69,179 +81,224 @@ const SuperAdminTableBlock: FC<IProps> = ({
   };
 
   const onSave = async () => {
-    if (
-      updateInput.kz &&
-      updateInput.ru &&
-      updateInput.eng &&
-      updateInput.city &&
-      updateInput.url &&
-      updateInput.timezone
-    ) {
-      if (!getId) {
-        await instance
-          .post(
-            `/api/school/`,
-            {
-              school_kz_name: updateInput.kz,
-              school_ru_name: updateInput.ru,
-              school_eng_name: updateInput.eng,
-              url: updateInput.url,
-              city: updateInput.city,
-              timezone: updateInput.timezone,
-            },
-            {
-              headers: {
-                Authorization: `Token ${getTokenInLocalStorage()}`,
-              },
-            }
-          )
-          .then((res) => {
-            if (res && onReject) {
-              dispatch(getSchoolThunk());
-              onReject(false);
-            }
-          })
-          .catch((e) => {
-            console.log(e);
-          });
-      } else {
-        await instance
-          .put(
-            `/api/school/${getId}/`,
-            {
-              school_kz_name: updateInput.kz,
-              school_ru_name: updateInput.ru,
-              school_eng_name: updateInput.eng,
-              url: updateInput.url,
-              city: updateInput.city,
-              timezone: updateInput.timezone,
-            },
-            {
-              headers: {
-                Authorization: `Token ${getTokenInLocalStorage()}`,
-              },
-            }
-          )
-          .then((res) => {
-            if (res && onEdit) {
-              dispatch(getSchoolThunk());
-              onEdit(false);
-            }
-          })
-          .catch((e) => {
-            console.log(e);
-          });
+    try {
+      if (
+        !updateInput.kz ||
+        !updateInput.ru ||
+        !updateInput.eng ||
+        !updateInput.city ||
+        !updateInput.url ||
+        !updateInput.timezone
+      ) {
+        showError();
+        return;
       }
+
+      if (
+        updateInput.kz &&
+        updateInput.ru &&
+        updateInput.eng &&
+        updateInput.city &&
+        updateInput.url &&
+        updateInput.timezone
+      ) {
+        if (!getId) {
+          await instance
+            .post(
+              `/api/school/`,
+              {
+                school_kz_name: updateInput.kz,
+                school_ru_name: updateInput.ru,
+                school_eng_name: updateInput.eng,
+                url: updateInput.url,
+                city: updateInput.city,
+                timezone: updateInput.timezone,
+              },
+              {
+                headers: {
+                  Authorization: `Token ${getTokenInLocalStorage()}`,
+                },
+              }
+            )
+            .then((res) => {
+              if (res && onReject) {
+                dispatch(getSchoolThunk());
+                onReject(false);
+                showSuccess();
+
+                setUpdateInput({
+                  kz: "",
+                  ru: "",
+                  eng: "",
+                  url: "",
+                  city: "",
+                  timezone: "",
+                });
+              }
+            })
+            .catch((e) => {
+              console.log(e);
+            });
+        } else {
+          await instance
+            .put(
+              `/api/school/${getId}/`,
+              {
+                school_kz_name: updateInput.kz,
+                school_ru_name: updateInput.ru,
+                school_eng_name: updateInput.eng,
+                url: updateInput.url,
+                city: updateInput.city,
+                timezone: updateInput.timezone,
+              },
+              {
+                headers: {
+                  Authorization: `Token ${getTokenInLocalStorage()}`,
+                },
+              }
+            )
+            .then((res) => {
+              if (res && onEdit) {
+                dispatch(getSchoolThunk());
+                onEdit(false);
+
+                showSuccess();
+
+                setUpdateInput({
+                  kz: "",
+                  ru: "",
+                  eng: "",
+                  url: "",
+                  city: "",
+                  timezone: "",
+                });
+              }
+            })
+            .catch((e) => {
+              console.log(e);
+            });
+        }
+      }
+    } catch (error) {
+      showError();
     }
   };
 
   return (
-    <div className="main_table-modal">
-      <div className="main_table-modal_title">Школы</div>
+    <>
+      {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
+      {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
+      <div className="main_table-modal">
+        <div className="main_table-modal_title">Школы</div>
 
-      <div className="main_table-modal_flex">
-        <div className="main_table-modal_forms">
-          <div className="forms">
-            <div className="login_forms-label_pink">
-              Наименование школы (KZ)*
-            </div>
-
-            <Input
-              type="text"
-              placeholder="наименование"
-              name="kz"
-              value={updateInput.kz}
-              onChange={(e) => onChangeUpdateInput(e)}
-            />
-          </div>
-
-          <div className="forms">
-            <div className="login_forms-label_pink">
-              Наименование школы (RU)*
-            </div>
-
-            <Input
-              type="text"
-              placeholder="наименование"
-              name="ru"
-              value={updateInput.ru}
-              onChange={(e) => onChangeUpdateInput(e)}
-            />
-          </div>
-
-          <div className="forms">
-            <div className="login_forms-label_pink">
-              Наименование школы (ENG)*
-            </div>
-
-            <Input
-              type="text"
-              placeholder="наименование"
-              name="eng"
-              value={updateInput.eng}
-              onChange={(e) => onChangeUpdateInput(e)}
-            />
-          </div>
-
-          <div className="forms flex">
-            <div>
-              <div className="login_forms-label_pink">Город</div>
+        <div className="main_table-modal_flex">
+          <div className="main_table-modal_forms">
+            <div className="forms">
+              <div className="login_forms-label_pink">
+                Наименование школы (KZ)*
+              </div>
 
               <Input
                 type="text"
-                placeholder="город"
-                name="city"
-                value={updateInput.city}
+                placeholder="наименование"
+                name="kz"
+                value={updateInput.kz}
                 onChange={(e) => onChangeUpdateInput(e)}
               />
             </div>
 
-            <div>
-              <div className="login_forms-label_pink">URL</div>
+            <div className="forms">
+              <div className="login_forms-label_pink">
+                Наименование школы (RU)*
+              </div>
 
               <Input
                 type="text"
-                placeholder="автоматом"
-                name="url"
-                value={updateInput.url}
+                placeholder="наименование"
+                name="ru"
+                value={updateInput.ru}
                 onChange={(e) => onChangeUpdateInput(e)}
               />
             </div>
 
-            <div>
-              <div className="login_forms-label_pink">Тайм-зона</div>
+            <div className="forms">
+              <div className="login_forms-label_pink">
+                Наименование школы (ENG)*
+              </div>
 
               <Input
                 type="text"
-                placeholder="тайм зона"
-                name="timezone"
-                value={updateInput.timezone}
+                placeholder="наименование"
+                name="eng"
+                value={updateInput.eng}
                 onChange={(e) => onChangeUpdateInput(e)}
               />
+            </div>
+
+            <div className="forms flex">
+              <div>
+                <div className="login_forms-label_pink">Город</div>
+
+                <Input
+                  type="text"
+                  placeholder="город"
+                  name="city"
+                  value={updateInput.city}
+                  onChange={(e) => onChangeUpdateInput(e)}
+                />
+              </div>
+
+              <div>
+                <div className="login_forms-label_pink">URL</div>
+
+                <Input
+                  type="text"
+                  placeholder="автоматом"
+                  name="url"
+                  value={updateInput.url}
+                  onChange={(e) => onChangeUpdateInput(e)}
+                />
+              </div>
+
+              <div>
+                <div className="login_forms-label_pink">Тайм-зона</div>
+
+                <Input
+                  type="text"
+                  placeholder="тайм зона"
+                  name="timezone"
+                  value={updateInput.timezone}
+                  onChange={(e) => onChangeUpdateInput(e)}
+                />
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      <div
-        className="flex"
-        style={{ justifyContent: "flex-end", gap: "1.6rem" }}
-      >
-        <Button
-          background="#CACACA"
-          color="#645C5C"
-          style={{ width: "auto" }}
-          onClick={() =>
-            getId ? onEdit && onEdit(false) : onReject && onReject(false)
-          }
+        <div
+          className="flex"
+          style={{ justifyContent: "flex-end", gap: "1.6rem" }}
         >
-          Удалить
-        </Button>
-        <Button background="#27AE60" style={{ width: "auto" }} onClick={onSave}>
-          Сохранить
-        </Button>
+          <Button
+            background="#CACACA"
+            color="#645C5C"
+            style={{ width: "auto" }}
+            onClick={() =>
+              getId ? onEdit && onEdit(false) : onReject && onReject(false)
+            }
+          >
+            Удалить
+          </Button>
+          <Button
+            background="#27AE60"
+            style={{ width: "auto" }}
+            onClick={onSave}
+          >
+            Сохранить
+          </Button>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 

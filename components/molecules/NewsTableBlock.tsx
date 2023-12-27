@@ -97,7 +97,7 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
               {
                 type: "manual",
                 photos: updateInput.file,
-                text: updateInput.text,
+                text: text,
                 date: updateInput.date,
               },
               {

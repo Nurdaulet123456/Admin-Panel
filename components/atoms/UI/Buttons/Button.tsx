@@ -27,3 +27,24 @@ export const Button = styled.button<ButtonProps>`
 
   cursor: pointer;
 `;
+
+export const ButtonLogout = styled.button`
+  display: inline-block;
+
+  background-color: #4090FF;
+  border-radius: 6px;
+
+  border: none;
+
+  padding: 1.5rem 1.9rem;
+
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+
+  color: white;
+  font-weight: 400;
+  font-size: 1.6rem;
+
+  cursor: pointer;
+`

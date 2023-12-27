@@ -8,6 +8,7 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getExtraThunk } from "@/store/thunks/pride.thunk";
 import { ColorCheckIcons } from "../atoms/Icons";
 import { IExtraLessons } from "@/types/assets.type";
+import { useModalLogic } from "@/hooks/useModalLogic";
 
 const typeColor = [
   "#27AE60",
@@ -41,6 +42,15 @@ const TypeLessonsTableBlock: FC<IProps> = ({
   const [updateInput, setUpdateInput] = useState<string>("");
   const [chooseColor, setChooseColor] = useState<string>("");
 
+  const {
+    showSuccessModal,
+    showErrorModal,
+    onSuccessModalClose,
+    onErrorModalClose,
+    showSuccess,
+    showError,
+  } = useModalLogic();
+
   useEffect(() => {
     if (extraid) {
       setUpdateInput((extraid?.type_full_name as string) || "");
@@ -49,52 +59,56 @@ const TypeLessonsTableBlock: FC<IProps> = ({
   }, [extraid]);
 
   const onSave = async () => {
-    if (updateInput && chooseColor) {
-      if (!getId) {
-        await instance
-          .post(
-            "/api/extra_lesson/",
-            {
-              type_full_name: updateInput,
-              type_color: chooseColor,
-            },
-            {
-              headers: {
-                Authorization: `Token ${getTokenInLocalStorage()}`,
+    try {
+      if (updateInput && chooseColor) {
+        if (!getId) {
+          await instance
+            .post(
+              "/api/extra_lesson/",
+              {
+                type_full_name: updateInput,
+                type_color: chooseColor,
               },
-            }
-          )
-          .then((res) => {
-            if (res) {
-              dispatch(getExtraThunk());
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      } else {
-        await instance
-          .put(
-            `/api/extra_lesson/${getId}/`,
-            {
-              type_full_name: updateInput,
-              type_color: chooseColor,
-            },
-            {
-              headers: {
-                Authorization: `Token ${getTokenInLocalStorage()}`,
+              {
+                headers: {
+                  Authorization: `Token ${getTokenInLocalStorage()}`,
+                },
+              }
+            )
+            .then((res) => {
+              if (res) {
+                dispatch(getExtraThunk());
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        } else {
+          await instance
+            .put(
+              `/api/extra_lesson/${getId}/`,
+              {
+                type_full_name: updateInput,
+                type_color: chooseColor,
               },
-            }
-          )
-          .then((res) => {
-            if (res) {
-              dispatch(getExtraThunk());
-            }
-          })
-          .catch((err) => {
-            console.log(err);
-          });
+              {
+                headers: {
+                  Authorization: `Token ${getTokenInLocalStorage()}`,
+                },
+              }
+            )
+            .then((res) => {
+              if (res) {
+                dispatch(getExtraThunk());
+              }
+            })
+            .catch((err) => {
+              console.log(err);
+            });
+        }
       }
+    } catch (error) {
+      
     }
   };
 

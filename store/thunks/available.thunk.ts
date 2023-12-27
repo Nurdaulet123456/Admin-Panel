@@ -30,3 +30,13 @@ export const getIATypeZThunk = createAsyncThunk(
     'getIATypeZThunk',
     async () => (await assetsApi.getAvalibaleTypez())
 )
+
+export const getUserIdThunk = createAsyncThunk(
+    'getUserIdThunk',
+    async (id?: number) => (await assetsApi.getUsersId(id))
+)
+
+export const getTeacherIdThunk = createAsyncThunk(
+    'getTeacherIdThunk',
+    async (id?: number) => (await assetsApi.getTeachersId(id))
+)

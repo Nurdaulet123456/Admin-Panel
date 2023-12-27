@@ -2,12 +2,16 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { DeleteIcons, PenIcons } from "../atoms/Icons";
 import { Table, Td, Th, Thead, Tr } from "../atoms/UI/Tables/Table";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
-import { useEffect } from "react";
+import { FC, useEffect } from "react";
 import { getTeachersThunk } from "@/store/thunks/pride.thunk";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 
-const TeachersTable = () => {
+interface IProps {
+  handleClickGetId?: (id?: number) => void;
+}
+
+const TeachersTable: FC<IProps> = ({ handleClickGetId }) => {
   const disptach = useAppDispatch();
   const teachers = useTypedSelector((state) => state.pride.teachers);
 
@@ -59,7 +63,11 @@ const TeachersTable = () => {
                   </div>
                 </Td>
                 <Td>
-                  <div>
+                  <div
+                    onClick={() =>
+                      handleClickGetId && handleClickGetId(item.id)
+                    }
+                  >
                     <PenIcons />
                   </div>
 
