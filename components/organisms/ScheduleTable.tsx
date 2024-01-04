@@ -11,10 +11,10 @@ import {
 import ScheduleModal from "../forms/ScheduleModal";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { ISchedule } from "@/types/assets.type";
 
 interface IProps {
-  schedule?: any[];
+  schedule?: ISchedule[];
   selectModePaste?: boolean;
   selectMode?: boolean;
   selectedCellsPaste?: any;
@@ -143,7 +143,7 @@ const ScheduleTable = ({
                     schedule.find(
                       (item) =>
                         item.week_day === (dayIndex + 1).toString() &&
-                        item.ring.start_time === timeRange.start_time
+                        item?.ring?.start_time === timeRange.start_time
                     );
 
                   const isSelected = selectedCells.some(
@@ -175,7 +175,7 @@ const ScheduleTable = ({
                               marginBottom: "1.8rem",
                             }}
                           >
-                            {scheduleItem.subject.full_name}
+                            {scheduleItem?.subject?.full_name}
                           </div>
                           <div
                             style={{
@@ -185,7 +185,7 @@ const ScheduleTable = ({
                               marginBottom: "1.8rem",
                             }}
                           >
-                            {scheduleItem.classl.class_name}
+                            {scheduleItem?.classl?.class_name}
                           </div>
                           <div
                             style={{
@@ -194,7 +194,7 @@ const ScheduleTable = ({
                               fontWeight: "500",
                             }}
                           >
-                            {scheduleItem.teacher.full_name}
+                            {scheduleItem?.teacher?.full_name}
                           </div>
 
                           {selectMode && (
@@ -205,12 +205,12 @@ const ScheduleTable = ({
                                   day,
                                   timeRange.start_time,
                                   timeRange.end_time,
-                                  scheduleItem.teacher.id,
-                                  scheduleItem.ring.id,
-                                  scheduleItem.classl.id,
-                                  scheduleItem.subject.id,
-                                  scheduleItem.classroom.id,
-                                  scheduleItem.typez.id
+                                  scheduleItem?.teacher?.id,
+                                  scheduleItem?.ring?.id,
+                                  scheduleItem?.classl?.id,
+                                  scheduleItem?.subject?.id,
+                                  scheduleItem?.classroom?.id,
+                                  scheduleItem?.typez?.id
                                 )
                               }
                             />
