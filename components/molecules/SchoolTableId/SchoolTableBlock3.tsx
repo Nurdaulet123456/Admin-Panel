@@ -105,9 +105,31 @@ const SchoolTableBlock3 = () => {
             },
           }
         )
-        .then((res) => {
+        .then(async (res) => {
           if (res) {
-            setUpdateInput({});
+            const formData = new FormData();
+
+            formData.append("photo", fileInput);
+            formData.append("id", String((res as any).id));
+
+            console.log("adasdasd");
+            try {
+              const uploadPhotoResponse = await instance.post(
+                "/api/schoolpasport/upload_photo/",
+                formData,
+                {
+                  headers: {
+                    Authorization: `Token ${getTokenInLocalStorage()}`,
+                  },
+                }
+              );
+
+              if (uploadPhotoResponse) {
+                setUpdateInput({});
+              }
+            } catch (err) {
+              console.log(err);
+            }
           }
         })
         .catch((err) => {

@@ -3,7 +3,7 @@ import { FC } from "react";
 import { IKruzhok } from "@/types/assets.type";
 import { DeleteIcons, PenIcons } from "../atoms/Icons";
 import { Table, Td, Th, Thead, Tr } from "../atoms/UI/Tables/Table";
-import { formatWeekDay, getTokenInLocalStorage } from "@/utils/assets.utils";
+import { formatName, formatWeekDay, getTokenInLocalStorage } from "@/utils/assets.utils";
 import { instance } from "@/api/axios.instance";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getKruzhokInfoThunk } from "@/store/thunks/schoolnfo.thunk";
@@ -51,7 +51,7 @@ const MainTable: FC<IProps> = ({ kruzhok, handleClickGetId }) => {
               <Tr key={item.id}>
                 <Td>{index + 1}</Td>
                 <Td>{item.kruzhok_name}</Td>
-                <Td>{"Maksat"}</Td>
+                <Td>{formatName(item.teacher.full_name)}</Td>
                 <Td>{item.purpose}</Td>
                 <Td>
                   {item.lessons?.map((i) => (

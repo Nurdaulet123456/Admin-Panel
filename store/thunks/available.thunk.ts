@@ -8,7 +8,7 @@ export const getIASchoolThunk = createAsyncThunk(
 
 export const getIAClassThunk = createAsyncThunk(
     'getIAClassThunk',
-    async () => (await assetsApi.getAvalibaleClasses())
+    async (class_name?: string) => (await assetsApi.getAvalibaleClasses(class_name))
 )
 
 export const getIAClassRoomThunk = createAsyncThunk(
@@ -18,7 +18,7 @@ export const getIAClassRoomThunk = createAsyncThunk(
 
 export const getIARingThunk = createAsyncThunk(
     'getIARingThunk',
-    async () => (await assetsApi.getAvalibaleRing())
+    async (start_time?: string) => (await assetsApi.getAvalibaleRing(start_time))
 )
 
 export const getIASubjectThunk = createAsyncThunk(
@@ -39,4 +39,9 @@ export const getUserIdThunk = createAsyncThunk(
 export const getTeacherIdThunk = createAsyncThunk(
     'getTeacherIdThunk',
     async (id?: number) => (await assetsApi.getTeachersId(id))
+)
+
+export const getScheduleThunk = createAsyncThunk(
+    'getScheduleThunk',
+    async () => (await assetsApi.getSchedule())
 )

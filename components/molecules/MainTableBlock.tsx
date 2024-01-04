@@ -1,4 +1,11 @@
-import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
+import {
+  ChangeEvent,
+  Dispatch,
+  FC,
+  SetStateAction,
+  useEffect,
+  useState,
+} from "react";
 
 import { Button } from "../atoms/UI/Buttons/Button";
 import { Input, TextArea } from "../atoms/UI/Inputs/Input";
@@ -23,7 +30,6 @@ interface IUpdateInput {
   teacher?: string;
   goal?: string;
   times: Record<string, string>;
-  file?: any;
 }
 
 interface ITimeSlot {
@@ -56,8 +62,9 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
       Пятница: "",
       Суббота: "",
     },
-    file: null,
   });
+
+  const [file, setFile] = useState<any>(null);
 
   useEffect(() => {
     if (kruzhokid) {
@@ -83,7 +90,6 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
-
     if (name === "time") {
       const day = e.target.dataset.day as string;
       setUpdateInput((prevInput) => ({
@@ -93,18 +99,19 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
           [day]: value,
         },
       }));
-    } else if (name === "file") {
-      const fileInput = e.target as HTMLInputElement;
-      const file = (fileInput.files && fileInput.files[0]) || null;
-      setUpdateInput((prevInput) => ({
-        ...prevInput,
-        file,
-      }));
     } else {
       setUpdateInput({
         ...updateInput,
         [name]: value,
       });
+    }
+  };
+
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    console.log("Selected File:", selectedFile);
+    if (selectedFile) {
+      setFile(selectedFile);
     }
   };
 
@@ -121,63 +128,68 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
     });
 
     if (timeSlots.length > 0 && updateInput.name && id && updateInput.goal) {
-      // const formData = new FormData();
-      // formData.append("photo", updateInput.file);
-      // formData.append("kruzhok_name", updateInput.name);
-      // formData.append("teacher", String(id));
-      // formData.append("purpose", updateInput.goal);
-
-      // console.log(timeSlots)
-
-      // timeSlots.forEach((lesson, index) => {
-      //   formData.append(`lessons[${index}][week_day]`, lesson.week_day);
-      //   formData.append(
-      //     `lessons[${index}][start_end_time]`,
-      //     lesson.start_end_time
-      //   );
-      // });
-
-      let formData = {
-        photo: updateInput.file,
-        kruzhok_name: updateInput.name,
-        teacher: String(id),
-        purpose: updateInput.goal,
-        lessons: timeSlots,
-      };
-
       if (!getId) {
         await instance
-          .post("/api/kruzhok/", formData, {
-            headers: {
-              Authorization: `Token ${getTokenInLocalStorage()}`,
-              "Content-Type": "application/json",
+          .post(
+            "/api/kruzhok/",
+            {
+              kruzhok_name: updateInput.name,
+              teacher: String(id),
+              purpose: updateInput.goal,
+              lessons: timeSlots,
             },
-          })
-          .then((res) => {
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            }
+          )
+          .then(async (res) => {
             if (res) {
-              dispatch(getKruzhokInfoThunk());
+              const formData = new FormData();
+
+              formData.append("photo", file);
+              formData.append("id", String((res as any).id));
+
+              console.log("adasdasd");
+              try {
+                const uploadPhotoResponse = await instance.post(
+                  "/api/kruzhok/upload_photo/",
+                  formData,
+                  {
+                    headers: {
+                      Authorization: `Token ${getTokenInLocalStorage()}`,
+                    },
+                  }
+                );
+
+                if (uploadPhotoResponse) {
+                  dispatch(getKruzhokInfoThunk());
+                }
+              } catch (err) {
+                console.log(err);
+              }
             }
           })
-          .catch((e) => {
-            console.log(e);
-          });
-      } else {
-        await instance
-          .put(`/api/kruzhok/${getId}/`, formData, {
-            headers: {
-              Authorization: `Token ${getTokenInLocalStorage()}`,
-              "Content-Type": "multipart/form-data",
-            },
-          })
-          .then((res) => {
-            if (res) {
-              dispatch(getKruzhokInfoThunk());
-            }
-          })
-          .catch((e) => {
-            console.log(e);
-          });
+          .catch((err) => console.log(err));
       }
+      // else {
+      //   await instance
+      //     .put(`/api/kruzhok/${getId}/`, formData, {
+      //       headers: {
+      //         Authorization: `Token ${getTokenInLocalStorage()}`,
+      //         "Content-Type": "multipart/form-data",
+      //       },
+      //     })
+      //     .then((res) => {
+      //       if (res) {
+      //         dispatch(getKruzhokInfoThunk());
+      //       }
+      //     })
+      //     .catch((e) => {
+      //       console.log(e);
+      //     });
+      // }
     }
   };
 
@@ -202,7 +214,11 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
       <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
         <div className="main_table-modal_upload">
           <div className="login_forms-label_pink">Фото *</div>
-          <Input type="file" name="file" onChange={(e) => handleUpdate(e)} />
+          <Input
+            type="file"
+            name="file"
+            onChange={(e) => handleFileChange(e)}
+          />
         </div>
 
         <div className="main_table-modal_forms">

@@ -14,6 +14,8 @@ import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getTeachersThunk } from "@/store/thunks/pride.thunk";
 import { ITeachers } from "@/types/assets.type";
+import { AddIcons } from "../atoms/Icons";
+import styled from "@emotion/styled";
 
 interface UpdateInputProps {
   name?: string;
@@ -74,7 +76,7 @@ const TeachersTableBlock: FC<IProps> = ({
     },
   ]);
 
-  const [file, setFile] = useState<File | null>(null);
+  const [file, setFile] = useState<any>(null);
 
   useEffect(() => {
     if (teachersid) {
@@ -160,6 +162,7 @@ const TeachersTableBlock: FC<IProps> = ({
 
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
+    console.log("Selected File:", selectedFile);
     if (selectedFile) {
       setFile(selectedFile);
     }
@@ -178,7 +181,7 @@ const TeachersTableBlock: FC<IProps> = ({
             {
               full_name: updateInput.name,
               subject: updateInput.pan,
-              pedagog: "Pedagog  Zertteushy",
+              pedagog: text,
               job_history: workExperience,
               speciality_history: mamandygyList,
             },
@@ -188,9 +191,31 @@ const TeachersTableBlock: FC<IProps> = ({
               },
             }
           )
-          .then((res) => {
+          .then(async (res) => {
             if (res) {
-              dispatch(getTeachersThunk());
+              const formData = new FormData();
+
+              formData.append("photo3x4", file);
+              formData.append("id", String((res as any).id));
+
+              console.log("adasdasd");
+              try {
+                const uploadPhotoResponse = await instance.post(
+                  "/api/teacher/upload_photo/",
+                  formData,
+                  {
+                    headers: {
+                      Authorization: `Token ${getTokenInLocalStorage()}`,
+                    },
+                  }
+                );
+
+                if (uploadPhotoResponse) {
+                  dispatch(getTeachersThunk());
+                }
+              } catch (err) {
+                console.log(err);
+              }
             }
           })
           .catch((err) => console.log(err));
@@ -201,7 +226,7 @@ const TeachersTableBlock: FC<IProps> = ({
             {
               full_name: updateInput.name,
               subject: updateInput.pan,
-              pedagog: "Pedagog  Zertteushy",
+              pedagog: text,
               job_history: workExperience,
               speciality_history: mamandygyList,
             },
@@ -298,70 +323,83 @@ const TeachersTableBlock: FC<IProps> = ({
         Жұмыс тәжірбиесі
       </div>
 
-      {workExperience.map((experience, index) => (
-        <div key={index}>
-          <div className="forms flex">
+      <div style={{ position: "relative" }}>
+        {workExperience.map((experience, index) => (
+          <div key={index}>
             <div className="forms flex">
-              <div
-                className="login_forms-label_pink mb-0"
-                style={{ width: "100%" }}
-              >
-                Бастаған жылы *
+              <div className="forms flex">
+                <div
+                  className="login_forms-label_pink mb-0"
+                  style={{ width: "100%" }}
+                >
+                  Бастаған жылы *
+                </div>
+                <Input
+                  type="text"
+                  placeholder="лауазымы"
+                  name="start_date"
+                  value={experience.start_date}
+                  onChange={(e) =>
+                    handleWorkExperienceChange(
+                      index,
+                      "start_date",
+                      e.target.value
+                    )
+                  }
+                />
               </div>
-              <Input
-                type="text"
-                placeholder="лауазымы"
-                name="start_date"
-                value={experience.start_date}
+              <div className="forms flex">
+                <div
+                  className="login_forms-label_pink mb-0"
+                  style={{ width: "100%" }}
+                >
+                  Аяқтаған жылы *
+                </div>
+                <Input
+                  type="text"
+                  placeholder="лауазымы"
+                  name="end_date"
+                  value={experience.end_date}
+                  onChange={(e) =>
+                    handleWorkExperienceChange(
+                      index,
+                      "end_date",
+                      e.target.value
+                    )
+                  }
+                />
+              </div>
+            </div>
+
+            <div className="forms" style={{ marginBlock: "3.2rem" }}>
+              <div className="login_forms-label_pink">
+                Жұмыс жасаған аймақ *
+              </div>
+              <TextArea
+                rows={10}
+                name="job_characteristic"
+                value={experience.job_characteristic}
                 onChange={(e) =>
                   handleWorkExperienceChange(
                     index,
-                    "start_date",
+                    "job_characteristic",
                     e.target.value
                   )
                 }
               />
             </div>
-            <div className="forms flex">
-              <div
-                className="login_forms-label_pink mb-0"
-                style={{ width: "100%" }}
-              >
-                Аяқтаған жылы *
-              </div>
-              <Input
-                type="text"
-                placeholder="лауазымы"
-                name="end_date"
-                value={experience.end_date}
-                onChange={(e) =>
-                  handleWorkExperienceChange(index, "end_date", e.target.value)
-                }
-              />
-            </div>
           </div>
+        ))}
 
-          <div className="forms" style={{ marginBlock: "3.2rem" }}>
-            <div className="login_forms-label_pink">Жұмыс жасаған аймақ *</div>
-            <TextArea
-              rows={10}
-              name="job_characteristic"
-              value={experience.job_characteristic}
-              onChange={(e) =>
-                handleWorkExperienceChange(
-                  index,
-                  "job_characteristic",
-                  e.target.value
-                )
-              }
-            />
-          </div>
-        </div>
-      ))}
+        <AddButtton
+          onClick={handleAddWorkExperience}
+          style={{ position: "absolute", bottom: "0", right: "-42px" }}
+        >
+          <AddIcons />
+        </AddButtton>
+      </div>
 
-      <button onClick={handleAddWorkExperience}>add</button>
-
-      <div className="forms">
+      <div className="forms" style={{ position: "relative" }}>
         <div className="login_forms-label_pink" style={{ color: "#E94E29" }}>
           Мамандығы
         </div>
@@ -439,7 +477,12 @@ const TeachersTableBlock: FC<IProps> = ({
           </div>
         ))}
 
-        <button onClick={handleAddMamandygy}>add Mamandygy</button>
+        <AddButtton
+          onClick={handleAddMamandygy}
+          style={{ position: "absolute", bottom: "0", right: "45%" }}
+        >
+          <AddIcons />
+        </AddButtton>
       </div>
 
       <div
@@ -505,5 +548,15 @@ const sanatyArr = [
     type: "Pedagog 2 sanat",
   },
 ];
+
+const AddButtton = styled.button`
+  display: inline-block;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  margin: 0;
+
+  cursor: pointer;
+`;
 
 export default TeachersTableBlock;

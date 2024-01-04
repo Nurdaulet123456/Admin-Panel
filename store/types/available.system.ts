@@ -1,4 +1,4 @@
-import { IAClass, IAClassRooms, IARing, IASchool, IASubjet, IATypeZ, ITeachers, IUsers } from "@/types/assets.type";
+import { IAClass, IAClassRooms, IARing, IASchool, IASubjet, IATypeZ, ISchedule, ITeachers, IUsers } from "@/types/assets.type";
 
 export interface ISchoolInfo {
     iaclass?: IAClass[]
@@ -9,6 +9,7 @@ export interface ISchoolInfo {
     iatypez?: IATypeZ[]
     userid?: IUsers
     teachersid?: ITeachers
+    sch?: ISchedule[]
 }
 
 export const initaialStateIA: ISchoolInfo = {
@@ -19,5 +20,6 @@ export const initaialStateIA: ISchoolInfo = {
     iasubject: [],
     iatypez: [],
     userid: {},
-    teachersid: {}
+    teachersid: {},
+    sch: []
 }

@@ -59,7 +59,11 @@ const SchoolTable: FC<IProps> = ({ handleClickGetId1 }) => {
               <Tr key={index + 1}>
                 <Td>{index + 1}</Td>
                 <Td>{item.administrator_name}</Td>
-                <Td>Content</Td>
+                <Td>
+                  <div className="img-block">
+                    <img className="img" src={item.administator_photo} alt={item.administator_photo} />
+                  </div>
+                </Td>
                 <Td>{item.position}</Td>
                 <Td>{item.phone_number}</Td>
                 <Td>

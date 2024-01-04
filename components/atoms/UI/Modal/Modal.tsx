@@ -22,7 +22,7 @@ export const ModalInner = styled.div`
 export const ModalContent = styled.div`
   background-color: #fff;
   width: 100%;
-  max-width: 400px;
+  max-width: 500px;
   padding: 25px;
   position: relative;
 

@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { IAClass, IAClassRooms, IARing, IASchool, IASubjet, IATypeZ, ITeachers, IUsers } from "@/types/assets.type";
-import { getIAClassRoomThunk, getIAClassThunk, getIARingThunk, getIASchoolThunk, getIASubjectThunk, getIATypeZThunk, getTeacherIdThunk, getUserIdThunk } from "../thunks/available.thunk";
+import { IAClass, IAClassRooms, IARing, IASchool, IASubjet, IATypeZ, ISchedule, ITeachers, IUsers } from "@/types/assets.type";
+import { getIAClassRoomThunk, getIAClassThunk, getIARingThunk, getIASchoolThunk, getIASubjectThunk, getIATypeZThunk, getScheduleThunk, getTeacherIdThunk, getUserIdThunk } from "../thunks/available.thunk";
 import { initaialStateIA } from "../types/available.system";
 
 export const availabelInfoSlice = createSlice({
@@ -93,6 +93,17 @@ export const availabelInfoSlice = createSlice({
                         return {
                             ...state,
                             teachersid: action.payload,
+                        };
+                    }
+                    return state;
+                }
+            ).addCase(
+                getScheduleThunk.fulfilled,
+                (state, action: PayloadAction<ISchedule[]>) => {
+                    if (action.payload) {
+                        return {
+                            ...state,
+                            sch: action.payload,
                         };
                     }
                     return state;

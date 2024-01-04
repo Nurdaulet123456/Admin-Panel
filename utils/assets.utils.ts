@@ -102,6 +102,6 @@ export function formatName(fullName: string): string {
         return fullName;
     }
 
-    const formattedName: string = `${lastName}.${firstName[0]}.${middleName?.[0] || ''}ы`;
+    const formattedName: string = `${lastName}.${firstName[0]}.${middleName?.[0] || ''}`;
     return formattedName;
 }

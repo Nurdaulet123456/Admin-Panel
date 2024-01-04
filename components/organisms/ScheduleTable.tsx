@@ -6,6 +6,7 @@ import {
   TableHead,
   TableRow,
   Paper,
+  Checkbox,
 } from "@mui/material";
 import ScheduleModal from "../forms/ScheduleModal";
 import { useState } from "react";
@@ -14,16 +15,31 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 
 interface IProps {
   schedule?: any[];
+  selectModePaste?: boolean;
+  selectMode?: boolean;
+  selectedCellsPaste?: any;
+  selectedCells?: any;
+  handleCheckboxClick?: any;
+  handleCheckboxClickPaste?: any;
 }
 
-const ScheduleTable = ({ schedule }: IProps) => {
-  const dispatch = useAppDispatch()
+const ScheduleTable = ({
+  schedule,
+  selectModePaste,
+  selectMode,
+  selectedCellsPaste,
+  selectedCells,
+  handleCheckboxClick,
+  handleCheckboxClickPaste,
+}: IProps) => {
   const [openModal, setOpenModal] = useState<boolean>(false);
+
   const [selectedCell, setSelectedCell] = useState<{
     day?: any;
     start_time?: any;
     end_time?: any;
   }>();
+
   const router = useRouter();
 
   const handleCellClick = (day: any, start_time: any, end_time: any) => {
@@ -127,10 +143,23 @@ const ScheduleTable = ({ schedule }: IProps) => {
                     schedule.find(
                       (item) =>
                         item.week_day === (dayIndex + 1).toString() &&
-                        item.ring.start_time === timeRange.start_time &&
-                        item.classl.class_name ===
-                          "7A"
+                        item.ring.start_time === timeRange.start_time
                     );
+
+                  const isSelected = selectedCells.some(
+                    (selectedCell: any) =>
+                      selectedCell.day === day &&
+                      selectedCell.start_time === timeRange.start_time &&
+                      selectedCell.end_time === timeRange.end_time
+                  );
+
+                  const isSelectedPaste = selectedCellsPaste.some(
+                    (selectedCell: any) =>
+                      selectedCell.day === day &&
+                      selectedCell.start_time === timeRange.start_time &&
+                      selectedCell.end_time === timeRange.end_time
+                  );
+
                   return (
                     <TableCell
                       key={dayIndex}
@@ -167,26 +196,60 @@ const ScheduleTable = ({ schedule }: IProps) => {
                           >
                             {scheduleItem.teacher.full_name}
                           </div>
+
+                          {selectMode && (
+                            <Checkbox
+                              defaultChecked={isSelected}
+                              onClick={() =>
+                                handleCheckboxClick(
+                                  day,
+                                  timeRange.start_time,
+                                  timeRange.end_time,
+                                  scheduleItem.teacher.id,
+                                  scheduleItem.ring.id,
+                                  scheduleItem.classl.id,
+                                  scheduleItem.subject.id,
+                                  scheduleItem.classroom.id,
+                                  scheduleItem.typez.id
+                                )
+                              }
+                            />
+                          )}
                         </div>
                       ) : (
-                        <div
-                          style={{
-                            color: "#000000",
-                            fontSize: "2rem",
-                            fontWeight: "500",
-                            textAlign: "center",
-                            cursor: "pointer",
-                          }}
-                          onClick={() =>
-                            handleCellClick(
-                              day,
-                              timeRange.start_time,
-                              timeRange.end_time
-                            )
-                          }
-                        >
-                          +
-                        </div>
+                        <>
+                          <div
+                            style={{
+                              color: "#000000",
+                              fontSize: "2rem",
+                              fontWeight: "500",
+                              textAlign: "center",
+                              cursor: "pointer",
+                            }}
+                            onClick={() =>
+                              handleCellClick(
+                                day,
+                                timeRange.start_time,
+                                timeRange.end_time
+                              )
+                            }
+                          >
+                            +
+                          </div>
+
+                          {selectModePaste && (
+                            <Checkbox
+                              checked={isSelectedPaste}
+                              onClick={() =>
+                                handleCheckboxClickPaste(
+                                  day,
+                                  timeRange.start_time,
+                                  timeRange.end_time
+                                )
+                              }
+                            />
+                          )}
+                        </>
                       )}
                     </TableCell>
                   );

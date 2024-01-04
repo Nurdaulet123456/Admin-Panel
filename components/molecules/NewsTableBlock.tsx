@@ -50,18 +50,21 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
   const onChangeUpdateInput = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
-    const { name, value, type } = e.target;
+    const { name, type } = e.target;
 
     if (type === "file") {
       const fileInput = e.target as HTMLInputElement;
-      setUpdateInput({
-        ...updateInput,
-        [name]: Array.from(fileInput.files || []),
-      });
+      setUpdateInput((prevUpdateInput) => ({
+        ...prevUpdateInput,
+        [name]: [
+          ...(prevUpdateInput[name as keyof UpdateInputProps] || []),
+          ...Array.from(fileInput.files || []),
+        ],
+      }));
     } else {
       setUpdateInput({
         ...updateInput,
-        [name]: value,
+        [name]: e.target.value,
       });
     }
   };
@@ -77,6 +80,8 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
     }
   }, [newsid]);
 
+  console.log(updateInput.file);
+
   const onSave = async () => {
     try {
       if (
@@ -90,22 +95,23 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
       }
 
       if (updateInput.date && updateInput.text && updateInput.file && text) {
+        const formData = new FormData();
+
+        formData.append("type", text.toLowerCase());
+        formData.append("text", updateInput.text);
+        formData.append("date", updateInput.date);
+
+        updateInput.file.forEach((item: any, index: any) => {
+          formData.append(`photos[${index}]`, item);
+        });
+
         if (!getId) {
           await instance
-            .post(
-              "/api/newsApi/",
-              {
-                type: "manual",
-                photos: updateInput.file,
-                text: text,
-                date: updateInput.date,
+            .post("/api/newsApi/", formData, {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
               },
-              {
-                headers: {
-                  Authorization: `Token ${getTokenInLocalStorage()}`,
-                },
-              }
-            )
+            })
             .then((res) => {
               if (res) {
                 dispatch(getNewsThunk());
@@ -120,14 +126,14 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
                 setText("");
               }
             })
-            .catch((err) => console.log(err));
+            .catch((err) => showError());
         } else {
           await instance
             .put(
               `/api/newsApi/${getId}/`,
               {
-                type: "manual",
-                photos: updateInput.file,
+                type: text.toLowerCase(),
+                // photos: updateInput.file,
                 text: updateInput.text,
                 date: updateInput.date,
               },
@@ -151,7 +157,7 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
                 setText("");
               }
             })
-            .catch((err) => console.log(err));
+            .catch((err) => showError());
         }
       }
     } catch (error) {
@@ -199,7 +205,7 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
 
                       {
                         id: 3,
-                        type: "Youtube",
+                        type: "Manual",
                       },
                     ]}
                   />
@@ -212,6 +218,7 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
               name="file"
               readOnly={false}
               onChange={(e) => onChangeUpdateInput(e)}
+              multiple
             />
           </div>
 

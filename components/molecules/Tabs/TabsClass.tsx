@@ -1,18 +1,30 @@
+import { useAppDispatch } from "@/hooks/useAppDispatch";
+import { useTypedSelector } from "@/hooks/useTypedSelector";
+import { getIAClassThunk } from "@/store/thunks/available.thunk";
 import styled from "@emotion/styled";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect } from "react";
 
 const TabsClass = () => {
-    const router = useRouter()
+  const dispatch = useAppDispatch();
+  const classess = useTypedSelector((state) => state.ia.iaclass);
+
+  useEffect(() => {
+    if (classess) {
+      dispatch(getIAClassThunk());
+    }
+  }, [dispatch]);
+
   return (
     <>
       <TabsClassStyled>
-        {Array.from({ length: 50 }, (_, index) => index).map((item) => (
-          <Link href={`/schedule/1/${item + 1}А`}>
-            <TabClassStyled key={item}>{item + 1} A</TabClassStyled>
-          </Link>
-        ))}
+        {classess &&
+          classess?.map((item) => (
+            <Link href={`/schedule/1/${item.class_name}`} key={item.id}>
+              <TabClassStyled>{item.class_name}</TabClassStyled>
+            </Link>
+          ))}
       </TabsClassStyled>
     </>
   );

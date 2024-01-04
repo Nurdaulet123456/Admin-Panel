@@ -15,6 +15,7 @@ import SanatyModalModal from "../modals/SanatyModal";
 import { useModalLogic } from "@/hooks/useModalLogic";
 import ErrorModal from "../modals/ErrorModal";
 import SuccessModal from "../modals/SuccessModal";
+import { getIAClassRoomThunk } from "@/store/thunks/available.thunk";
 
 interface IProps {
   onEdit?: Dispatch<SetStateAction<boolean>>;
@@ -32,6 +33,7 @@ const ClassTableBlock: FC<IProps> = ({
   const dispatch = useAppDispatch();
   const teachers = useTypedSelector((state) => state.system.teachers);
   const classname = useTypedSelector((state) => state.pride.classname);
+  const classroom = useTypedSelector((state) => state.ia.iaclassrooms);
   const [showActive, setShowActive] = useState<boolean>(false);
   const [show, setShow] = useState([false, false, false, false, false, false]);
 
@@ -63,9 +65,10 @@ const ClassTableBlock: FC<IProps> = ({
   } = useModalLogic();
 
   useEffect(() => {
-    if (teachers && classname) {
+    if (teachers && classname && classroom) {
       dispatch(getKruzhokTeachersInfoThunk());
       dispatch(getClassNameThunk());
+      dispatch(getIAClassRoomThunk());
     }
   }, [dispatch]);
 
@@ -116,7 +119,7 @@ const ClassTableBlock: FC<IProps> = ({
               {
                 class_name: text7,
                 language: text2,
-                classroom: Number(text1),
+                classroom: id1,
                 class_teacher: id,
                 osnova_plan: Number(text3),
                 osnova_smena: Number(text4),
@@ -152,7 +155,7 @@ const ClassTableBlock: FC<IProps> = ({
               {
                 class_name: text7,
                 language: text2,
-                classroom: Number(text1),
+                classroom: id1,
                 class_teacher: id,
                 osnova_plan: Number(text3),
                 osnova_smena: Number(text4),
@@ -274,10 +277,10 @@ const ClassTableBlock: FC<IProps> = ({
                         setId={setId1}
                         setShowActive={hideModal}
                         timeArr={
-                          index === 0
-                            ? Array.from({ length: 3 }, (_, i) => ({
-                                id: i + 1,
-                                type: (i + 1).toString(),
+                          index === 0 && classroom
+                            ? classroom?.map((item) => ({
+                                id: item.id as number,
+                                type: item.classroom_name as string,
                               }))
                             : []
                         }

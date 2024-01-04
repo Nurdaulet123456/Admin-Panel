@@ -316,3 +316,53 @@ export interface IATypeZ {
     type_color?: string
     school?: number
 }
+
+// Schedule Id
+
+export interface ISchedule {
+    id?: number
+    week_day?: string
+    school?: number
+    teacher?: ITeacherSch
+    ring?: IRingSchedule
+    classl?: IClasslSch
+    subject?: ISubjectSch
+    classroom?: IClassRoomSch
+    typez?: ITypezSch
+}
+
+interface ITypezSch {
+    id?: number
+    type_full_name?: string
+    type_color?: string
+    school?: number
+}
+
+interface ITeacherSch {
+    id?: number
+    full_name?: string
+}
+
+interface IRingSchedule {
+    id?: number
+    start_time?: string
+    end_time?: string
+}
+
+interface IClasslSch {
+    id?: number
+    class_name?: string
+    class_number?: any
+}
+
+interface ISubjectSch {
+    id?: number
+    full_name?: string
+    type?: string
+}
+
+interface IClassRoomSch {
+    id?: number
+    classroom_name?: string
+    classroom_number?: number
+}

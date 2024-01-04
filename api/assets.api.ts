@@ -1,6 +1,6 @@
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { instance } from "./axios.instance";
-import { IKruzhok, IMenu, ICalls, IAClass, IAClassRooms, IARing, IASchool, IASubjet, IATypeZ, IClassRoom, IClass, INews, ITeachers, ISchoolInfo, IClassName, IUsers, ISchoolAdmin, ISchoolPassport, ISchoolPhotos, ISchoolSocialMedia, ISchoolSport, ISchoolAltyn, ISchoolAtest, ISchoolOlimp, ISchoolOner, ILessons, IExtraLessons } from "@/types/assets.type";
+import { IKruzhok, IMenu, ICalls, IAClass, IAClassRooms, IARing, IASchool, IASubjet, ISchedule, IATypeZ, IClassRoom, IClass, INews, ITeachers, ISchoolInfo, IClassName, IUsers, ISchoolAdmin, ISchoolPassport, ISchoolPhotos, ISchoolSocialMedia, ISchoolSport, ISchoolAltyn, ISchoolAtest, ISchoolOlimp, ISchoolOner, ILessons, IExtraLessons } from "@/types/assets.type";
 
 export const assetsApi = {
     async getKruzhok(): Promise<IKruzhok[]> {
@@ -366,8 +366,11 @@ export const assetsApi = {
         })
     },
 
-    async getAvalibaleClasses(): Promise<IAClass[]> {
+    async getAvalibaleClasses(class_name?: string): Promise<IAClass[]> {
         return await instance.get(`/api/available_classes/`, {
+            params: {
+                class_name
+            },
             headers: {
                 'Authorization': `Token ${getTokenInLocalStorage()}`
             }
@@ -382,10 +385,14 @@ export const assetsApi = {
         })
     },
 
-    async getAvalibaleRing(): Promise<IARing[]> {
+    async getAvalibaleRing(start_time?: string): Promise<IARing[]> {
         return await instance.get(`/api/available_ring/`, {
             headers: {
                 'Authorization': `Token ${getTokenInLocalStorage()}`
+            },
+
+            params: {
+                start_time
             }
         })
     },
@@ -400,6 +407,14 @@ export const assetsApi = {
 
     async getAvalibaleTypez(): Promise<IATypeZ[]> {
         return await instance.get(`/api/available_typez/`, {
+            headers: {
+                'Authorization': `Token ${getTokenInLocalStorage()}`
+            }
+        })
+    },
+
+    async getSchedule(): Promise<ISchedule[]> {
+        return await instance.get(`/api/schedule/`, {
             headers: {
                 'Authorization': `Token ${getTokenInLocalStorage()}`
             }
