@@ -40,6 +40,10 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
   const [showActive2, setShowActive2] = useState<boolean>(false);
   const [showActive3, setShowActive3] = useState<boolean>(false);
   const [showActive4, setShowActive4] = useState<boolean>(false);
+  const [showActive5, setShowActive5] = useState<boolean>(false);
+  const [showActive6, setShowActive6] = useState<boolean>(false);
+  const [showActive7, setShowActive7] = useState<boolean>(false);
+
   const [text, setText] = useState<string>("");
   const [id, setId] = useState<number>();
 
@@ -51,6 +55,15 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
 
   const [text4, setText4] = useState<string>("");
   const [id4, setId4] = useState<number>();
+
+  const [text5, setText5] = useState<string>("");
+  const [id5, setId5] = useState<number>();
+
+  const [text6, setText6] = useState<string>("");
+  const [id6, setId6] = useState<number>();
+
+  const [text7, setText7] = useState<string>("");
+  const [id7, setId7] = useState<number>();
 
   useEffect(() => {
     if (
@@ -76,6 +89,9 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
     setShowActive2(false);
     setShowActive3(false);
     setShowActive4(false);
+    setShowActive5(false);
+    setShowActive6(false);
+    setShowActive7(false);
   };
 
   const handelClickOpen2 = () => {
@@ -83,6 +99,9 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
     setShowActive2(!showActive2);
     setShowActive3(false);
     setShowActive4(false);
+    setShowActive5(false);
+    setShowActive6(false);
+    setShowActive7(false);
   };
 
   const handelClickOpen3 = () => {
@@ -90,6 +109,9 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
     setShowActive2(false);
     setShowActive3(!showActive3);
     setShowActive4(false);
+    setShowActive5(false);
+    setShowActive6(false);
+    setShowActive7(false);
   };
 
   const handelClickOpen4 = () => {
@@ -97,6 +119,39 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
     setShowActive2(false);
     setShowActive3(false);
     setShowActive4(!showActive4);
+    setShowActive5(false);
+    setShowActive6(false);
+    setShowActive7(false);
+  };
+
+  const handelClickOpen5 = () => {
+    setShowActive(false);
+    setShowActive2(false);
+    setShowActive3(false);
+    setShowActive4(false);
+    setShowActive5(!showActive5);
+    setShowActive6(false);
+    setShowActive7(false);
+  };
+
+  const handelClickOpen6 = () => {
+    setShowActive(false);
+    setShowActive2(false);
+    setShowActive3(false);
+    setShowActive4(false);
+    setShowActive5(false);
+    setShowActive6(!showActive6);
+    setShowActive7(false);
+  };
+
+  const handelClickOpen7 = () => {
+    setShowActive(false);
+    setShowActive2(false);
+    setShowActive3(false);
+    setShowActive4(false);
+    setShowActive5(false);
+    setShowActive6(false);
+    setShowActive7(!showActive7);
   };
 
   const onSave = async () => {
@@ -245,6 +300,115 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
                         setText={setText3}
                         setId={setId3}
                         setShowActive={setShowActive3}
+                        timeArr={
+                          iaclassrooms
+                            ? iaclassrooms.map((item) => {
+                                return {
+                                  id: item.id as number,
+                                  type: item.classroom_name as string,
+                                };
+                              })
+                            : []
+                        }
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="forms flex-grid">
+                <div>Предмет2:</div>
+                <div className="sanaty">
+                  <Input
+                    type="text"
+                    name="pred"
+                    readOnly
+                    style={{ cursor: "pointer", paddingBlock: ".8rem" }}
+                    onClick={() => handelClickOpen5()}
+                    value={text5}
+                  />
+
+                  <div
+                    className="sanaty_dropdown"
+                    style={{ textAlign: "center", width: "100%" }}
+                  >
+                    {showActive5 && (
+                      <SanatyModalModal
+                        setText={setText5}
+                        setId={setId5}
+                        setShowActive={setShowActive5}
+                        timeArr={
+                          iasubject
+                            ? iasubject.map((item, index) => ({
+                                id: item.id as number,
+                                type: item.full_name as string,
+                              }))
+                            : []
+                        }
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="forms flex-grid">
+                <div>Преподаватель2:</div>
+                <div className="sanaty">
+                  <Input
+                    type="text"
+                    name="pred"
+                    readOnly
+                    style={{ cursor: "pointer", paddingBlock: ".8rem" }}
+                    onClick={() => handelClickOpen6()}
+                    value={text6}
+                  />
+
+                  <div
+                    className="sanaty_dropdown"
+                    style={{ textAlign: "center", width: "100%" }}
+                  >
+                    {showActive6 && (
+                      <SanatyModalModal
+                        setText={setText6}
+                        setId={setId6}
+                        setShowActive={setShowActive6}
+                        timeArr={
+                          teachers
+                            ? teachers.map((item) => {
+                                return {
+                                  id: item.id as number,
+                                  type: item.full_name as string,
+                                };
+                              })
+                            : []
+                        }
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className="forms flex-grid">
+                <div>Кабинет2:</div>
+                <div className="sanaty">
+                  <Input
+                    type="text"
+                    name="pred"
+                    readOnly
+                    style={{ cursor: "pointer", paddingBlock: ".8rem" }}
+                    onClick={() => handelClickOpen7()}
+                    value={text7}
+                  />
+
+                  <div
+                    className="sanaty_dropdown"
+                    style={{ textAlign: "center", width: "100%" }}
+                  >
+                    {showActive7 && (
+                      <SanatyModalModal
+                        setText={setText7}
+                        setId={setId7}
+                        setShowActive={setShowActive7}
                         timeArr={
                           iaclassrooms
                             ? iaclassrooms.map((item) => {

@@ -76,8 +76,8 @@ const ClassTableBlock: FC<IProps> = ({
     if (classinfoid) {
       setText7((classinfoid.class_name as string) || "");
       setText2((classinfoid.language as string) || "");
-      setText1((classinfoid.classroom as string) || "");
-      setText((classinfoid.class_teacher as string) || "");
+      setText1((classinfoid.classroom.classroom_name as string) || "");
+      setText((classinfoid.class_teacher.full_name as string) || "");
       setText3((classinfoid.osnova_plan as string) || "");
       setText4((classinfoid.osnova_smena as string) || "");
       setText5((classinfoid.dopurok_plan as string) || "");
