@@ -16,14 +16,18 @@ const ClassTable: FC<IProps> = ({ classinfo, handleClickGetId }) => {
   const dispatch = useAppDispatch();
 
   const onDelete = async (id?: number) => {
-    await instance.delete(`/api/class/${id}/`, {
-      headers: {
-        'Authorization': `Token ${getTokenInLocalStorage()}`
-      }
-    }).catch((err) => console.log(err));
+    await instance
+      .delete(`/api/class/${id}/`, {
+        headers: {
+          Authorization: `Token ${getTokenInLocalStorage()}`,
+        },
+      })
+      .catch((err) => console.log(err));
 
     dispatch(getClassThunk());
   };
+
+  console.log(classinfo);
 
   return (
     <div className="main_table">
@@ -42,7 +46,7 @@ const ClassTable: FC<IProps> = ({ classinfo, handleClickGetId }) => {
               <Th>Действие</Th>
             </tr>
           </Thead>
-          {classinfo &&
+          {/* {classinfo &&
             classinfo.map((item, index) => (
               <Tr key={item.id}>
                 <Td>{index + 1}</Td>
@@ -65,7 +69,29 @@ const ClassTable: FC<IProps> = ({ classinfo, handleClickGetId }) => {
                   </div>
                 </Td>
               </Tr>
-            ))}
+            ))} */}
+
+          {classinfo?.map((item, index) => (
+            <Tr key={item.id}>
+              <Td>{index + 1}</Td>
+              <Td>{item.class_name}</Td>
+              <Td>{item.classroom.classroom_name}</Td>
+              <Td>{item.class_teacher.full_name}</Td>
+              <Td>{item.osnova_plan}</Td>
+              <Td>{item.osnova_smena}</Td>
+              <Td>
+                <div
+                  onClick={() => handleClickGetId && handleClickGetId(item.id)}
+                >
+                  <PenIcons />
+                </div>
+
+                <div onClick={() => onDelete(item.id)}>
+                  <DeleteIcons />
+                </div>
+              </Td>
+            </Tr>
+          ))}
         </Table>
       </div>
     </div>

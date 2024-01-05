@@ -11,7 +11,7 @@ import {
 import ScheduleModal from "../forms/ScheduleModal";
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { ISchedule } from "@/types/assets.type";
+import { IARing, ISchedule } from "@/types/assets.type";
 
 interface IProps {
   schedule?: ISchedule[];
@@ -21,6 +21,7 @@ interface IProps {
   selectedCells?: any;
   handleCheckboxClick?: any;
   handleCheckboxClickPaste?: any;
+  iaring?: any;
 }
 
 const ScheduleTable = ({
@@ -30,6 +31,7 @@ const ScheduleTable = ({
   selectedCellsPaste,
   selectedCells,
   handleCheckboxClick,
+  iaring,
   handleCheckboxClickPaste,
 }: IProps) => {
   const [openModal, setOpenModal] = useState<boolean>(false);
@@ -38,18 +40,31 @@ const ScheduleTable = ({
     day?: any;
     start_time?: any;
     end_time?: any;
+    timeId?: any;
   }>();
 
   const router = useRouter();
 
-  const handleCellClick = (day: any, start_time: any, end_time: any) => {
+  const handleCellClick = (
+    day: any,
+    start_time: any,
+    end_time: any,
+    timeId?: any
+  ) => {
     setOpenModal(true);
-    setSelectedCell({ day, start_time, end_time });
+    setSelectedCell({ day, start_time, end_time, timeId });
   };
 
   const handleCloseModal = () => {
     setOpenModal(false);
   };
+
+  const sortArr = [...(iaring || [])].sort((a: IARing, b: IARing) => {
+    const timeA = new Date(`2000-01-01 ${a.start_time}`);
+    const timeB = new Date(`2000-01-01 ${b.start_time}`);
+
+    return timeA.getTime() - timeB.getTime();
+  });
 
   return (
     <>
@@ -111,7 +126,7 @@ const ScheduleTable = ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {time.map((timeRange, timeIndex) => (
+            {sortArr.map((timeRange: any, timeIndex: any) => (
               <TableRow key={timeIndex}>
                 <TableCell
                   style={{ border: "2px solid #4090FF", textAlign: "center" }}
@@ -143,7 +158,9 @@ const ScheduleTable = ({
                     schedule.find(
                       (item) =>
                         item.week_day === (dayIndex + 1).toString() &&
-                        item?.ring?.start_time === timeRange.start_time
+                        item?.ring?.start_time === timeRange.start_time &&
+                        item?.classl?.class_name ===
+                          router.asPath?.split("/")?.at(-1)
                     );
 
                   const isSelected = selectedCells.some(
@@ -230,7 +247,8 @@ const ScheduleTable = ({
                               handleCellClick(
                                 day,
                                 timeRange.start_time,
-                                timeRange.end_time
+                                timeRange.end_time,
+                                timeRange.id
                               )
                             }
                           >
@@ -244,7 +262,8 @@ const ScheduleTable = ({
                                 handleCheckboxClickPaste(
                                   day,
                                   timeRange.start_time,
-                                  timeRange.end_time
+                                  timeRange.end_time,
+                                  timeRange.id
                                 )
                               }
                             />
@@ -262,53 +281,6 @@ const ScheduleTable = ({
     </>
   );
 };
-
-let time = [
-  {
-    start_time: "08:00:00",
-    end_time: "08:50:00",
-  },
-
-  {
-    start_time: "08:55:00",
-    end_time: "09:40:00",
-  },
-
-  {
-    start_time: "09:50:00",
-    end_time: "10:35:00",
-  },
-
-  {
-    start_time: "10:45:00",
-    end_time: "11:35:00",
-  },
-
-  {
-    start_time: "11:40:00",
-    end_time: "12:30:00",
-  },
-
-  {
-    start_time: "12:35:00",
-    end_time: "13:25:00",
-  },
-
-  {
-    start_time: "13:30:00",
-    end_time: "14:10:00",
-  },
-
-  {
-    start_time: "14:15:00",
-    end_time: "15:00:00",
-  },
-
-  {
-    start_time: "15:40:00",
-    end_time: "16:10:00",
-  },
-];
 
 const days = [
   "Понедельник",

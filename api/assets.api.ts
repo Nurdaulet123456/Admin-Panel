@@ -317,7 +317,7 @@ export const assetsApi = {
     },
 
     async getPrideClasses(): Promise<IClassName[]> {
-        return await instance.get('/api/prideofschool/available_classes/', {
+        return await instance.get('/api/available_classes/', {
             headers: {
                 'Authorization': `Token ${getTokenInLocalStorage()}`
             }

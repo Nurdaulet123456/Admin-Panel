@@ -66,7 +66,6 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
       dispatch(getIAClassRoomThunk());
       dispatch(getIAClassThunk(router.asPath?.split("/")?.at(-1)));
       dispatch(getIATypeZThunk());
-      dispatch(getIARingThunk(selectedCell.start_time));
       dispatch(getIASubjectThunk());
       dispatch(getKruzhokTeachersInfoThunk());
     }
@@ -107,7 +106,7 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
         {
           week_day: getWeekDayNumber(selectedCell.day),
           teacher: id2,
-          ring: iaring && iaring[0]?.id,
+          ring: selectedCell.timeId,
           classl: iaclass && iaclass[0].id,
           subject: id,
           classroom: id3,
@@ -120,8 +119,9 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
         }
       )
       .then((res) => {
-        if (res) {
+        if (res && onReject) {
           dispatch(getScheduleThunk());
+          onReject();
         }
       })
       .catch((err) => console.log(err));

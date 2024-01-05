@@ -45,6 +45,7 @@ const ScheduleComponents = () => {
       day?: any;
       start_time?: any;
       end_time?: any;
+      timeId?: any;
     }[]
   >([]);
 
@@ -80,7 +81,7 @@ const ScheduleComponents = () => {
       setSelectedCells([]);
     }
 
-    const isSelected = selectedCellsPaste.some(
+    const isSelected = selectedCells.some(
       (selectedCell) =>
         selectedCell.day === cell.day &&
         selectedCell.start_time === cell.start_time &&
@@ -88,11 +89,13 @@ const ScheduleComponents = () => {
     );
 
     if (isSelected) {
-      const updatedSelection = selectedCellsPaste.filter(
+      const updatedSelection = selectedCells.filter(
         (selectedCell) =>
-          selectedCell.day !== cell.day &&
-          selectedCell.start_time !== cell.start_time &&
-          selectedCell.end_time !== cell.end_time
+          (
+            selectedCell.day !== cell.day &&
+            selectedCell.start_time !== cell.start_time &&
+            selectedCell.end_time !== cell.end_time
+          )
       );
       setSelectedCells(updatedSelection);
     } else {
@@ -103,12 +106,14 @@ const ScheduleComponents = () => {
   const handleCheckboxClickPaste = (
     day: any,
     start_time: any,
-    end_time: any
+    end_time: any,
+    timeId?: any
   ) => {
     const cell = {
       day,
       start_time,
       end_time,
+      timeId,
     };
 
     if (selectModePaste) {
@@ -148,7 +153,7 @@ const ScheduleComponents = () => {
         {
           week_day: getWeekDayNumber(selectedCellsPaste[0]?.day),
           teacher: copiedData[0]?.teacherId,
-          ring: iaring && iaring[0]?.id,
+          ring: selectedCellsPaste[0]?.timeId,
           classl: copiedData[0]?.classlId,
           subject: copiedData[0]?.subjectId,
           classroom: copiedData[0]?.classroomId,
@@ -177,10 +182,10 @@ const ScheduleComponents = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (selectedCellsPaste && iaring) {
-      dispatch(getIARingThunk(selectedCellsPaste[0]?.start_time));
+    if (iaring) {
+      dispatch(getIARingThunk());
     }
-  }, [selectedCellsPaste, dispatch]);
+  }, [dispatch]);
 
   return (
     <MainLayouts>
@@ -278,6 +283,7 @@ const ScheduleComponents = () => {
           selectedCells={selectedCells}
           handleCheckboxClick={handleCheckboxClick}
           handleCheckboxClickPaste={handleCheckboxClickPaste}
+          iaring={iaring}
         />
       )}
     </MainLayouts>

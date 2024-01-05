@@ -21,6 +21,8 @@ import ClassNamesModal from "@/components/modals/ClassNames";
 import { useModalLogic } from "@/hooks/useModalLogic";
 import ErrorModal from "@/components/modals/ErrorModal";
 import SuccessModal from "@/components/modals/SuccessModal";
+import SanatyModalModal from "@/components/modals/SanatyModal";
+import { getIAClassThunk } from "@/store/thunks/available.thunk";
 
 interface UpdateInputProps {
   fullname: string;
@@ -44,6 +46,7 @@ const PrideSchoolTableBlock2: FC<IProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const clasname = useTypedSelector((state) => state.pride.classname);
+  const classess = useTypedSelector((state) => state.ia.iaclass);
   const [showActive, setShowActive] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
   const [id, setId] = useState<number>();
@@ -166,8 +169,9 @@ const PrideSchoolTableBlock2: FC<IProps> = ({
   };
 
   useEffect(() => {
-    if (clasname) {
+    if (clasname && classess) {
       dispatch(getClassNameThunk());
+      dispatch(getIAClassThunk());
     }
   }, [dispatch]);
 
@@ -214,16 +218,37 @@ const PrideSchoolTableBlock2: FC<IProps> = ({
               />
             </div>
 
-            <div className="forms">
+            <div className="forms sanaty">
               <div className="login_forms-label_pink">Класс</div>
-
               <Input
                 type="text"
-                name="text"
-                onChange={(e) => setText(e.target.value)}
+                name="eat"
+                readOnly={true}
+                style={{ cursor: "pointer" }}
+                onClick={() => setShowActive(!showActive)}
                 value={text}
-                placeholder="класс"
               />
+
+              <div
+                className="sanaty_dropdown"
+                style={{ textAlign: "center", width: "100%" }}
+              >
+                {showActive && (
+                  <SanatyModalModal
+                    setText={setText}
+                    setId={setId}
+                    setShowActive={setShowActive}
+                    timeArr={
+                      classess
+                        ? classess.map((item) => ({
+                            id: item.id,
+                            type: item.class_name,
+                          }))
+                        : []
+                    }
+                  />
+                )}
+              </div>
             </div>
 
             <div

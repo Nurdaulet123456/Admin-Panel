@@ -38,6 +38,8 @@ const ClassPage = () => {
     }
   }, [dispatch]);
 
+  console.log(classinfo)
+
   return (
     <MainLayouts>
       <div
