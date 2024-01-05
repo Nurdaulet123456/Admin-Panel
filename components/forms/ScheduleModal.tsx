@@ -161,10 +161,13 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
         {
           week_day: getWeekDayNumber(selectedCell.day),
           teacher: id2,
+          teacher2: id6,
           ring: selectedCell.timeId,
           classl: iaclass && iaclass[0].id,
           subject: id,
+          subject2: id5,
           classroom: id3,
+          classroom2: id7,
           typez: id4,
         },
         {
