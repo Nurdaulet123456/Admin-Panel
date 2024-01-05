@@ -77,7 +77,7 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
     ) {
       dispatch(getIASchoolThunk());
       dispatch(getIAClassRoomThunk());
-      dispatch(getIAClassThunk(router.asPath?.split("/")?.at(-1)));
+      dispatch(getIAClassThunk(decodeURIComponent(router.asPath?.split("/")?.at(-1) as string)));
       dispatch(getIATypeZThunk());
       dispatch(getIASubjectThunk());
       dispatch(getKruzhokTeachersInfoThunk());
@@ -163,7 +163,7 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
           teacher: id2,
           teacher2: id6,
           ring: selectedCell.timeId,
-          classl: iaclass && iaclass[0].id,
+          classl: iaclass && iaclass[0]?.id,
           subject: id,
           subject2: id5,
           classroom: id3,
@@ -184,6 +184,8 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
       })
       .catch((err) => console.log(err));
   };
+
+  console.log(decodeURIComponent(router.asPath?.split("/")?.at(-1) as string))
 
   return (
     <>

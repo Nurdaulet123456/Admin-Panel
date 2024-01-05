@@ -160,7 +160,7 @@ const ScheduleTable = ({
                         item.week_day === (dayIndex + 1).toString() &&
                         item?.ring?.start_time === timeRange.start_time &&
                         item?.classl?.class_name ===
-                          router.asPath?.split("/")?.at(-1)
+                          decodeURIComponent(router.asPath?.split("/")?.at(-1) as string)
                     );
 
                   const isSelected = selectedCells.some(
