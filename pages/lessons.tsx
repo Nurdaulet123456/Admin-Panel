@@ -1,4 +1,4 @@
-import { PlusIcons } from "@/components/atoms/Icons";
+import { LogoutIcons, PlusIcons } from "@/components/atoms/Icons";
 import { Button } from "@/components/atoms/UI/Buttons/Button";
 import LessonsTableBlock from "@/components/molecules/LessonsTableBlock";
 import LessonsTable from "@/components/organisms/LessonsTable";
@@ -19,13 +19,13 @@ const LessonsPage = () => {
   const handleAddButtonClick = () => {
     setEditActive(false);
     setShowActive(!showActive);
+    setId(null);
   };
 
   const handleClickGetId = (id?: number) => {
     setEditActive(true);
 
     setId(id);
-
     if (id) {
       dispatch(getLessonsIdThunk(id));
     }
@@ -42,26 +42,36 @@ const LessonsPage = () => {
         }}
       >
         <Button
-          background="#27AE60"
+          background={showActive || editActive ? "#CACACA" : "#27AE60"}
           radius="14px"
           style={{
             width: "auto",
-            display: "flex",
-            alignItems: "center",
-            gap: ".8rem",
           }}
           onClick={handleAddButtonClick}
         >
-          <PlusIcons />
-          Добавить
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: ".8rem",
+            }}
+          >
+            {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
+            {showActive || editActive ? "Закрыть" : "Добавить"}
+          </div>
         </Button>
       </div>
 
       {(showActive || editActive) && (
-        <LessonsTableBlock onReject={setShowActive} lessonsid={lessonsid} getId={getId} onEdit={setEditActive}/>
+        <LessonsTableBlock
+          onReject={setShowActive}
+          lessonsid={lessonsid}
+          getId={getId}
+          onEdit={setEditActive}
+        />
       )}
 
-      <LessonsTable handleClickGetId={handleClickGetId}/>
+      <LessonsTable handleClickGetId={handleClickGetId} />
     </MainLayouts>
   );
 };

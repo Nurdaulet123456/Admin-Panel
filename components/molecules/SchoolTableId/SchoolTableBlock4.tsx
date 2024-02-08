@@ -96,7 +96,7 @@ const SchoolTableBlock4: FC<IProps> = ({
                 headers: {
                   Authorization: `Token ${getTokenInLocalStorage()}`,
                 },
-              }
+              },
             )
             .then((res) => {
               if (res) {
@@ -124,7 +124,7 @@ const SchoolTableBlock4: FC<IProps> = ({
                 headers: {
                   Authorization: `Token ${getTokenInLocalStorage()}`,
                 },
-              }
+              },
             )
             .then((res) => {
               if (res) {
@@ -151,7 +151,7 @@ const SchoolTableBlock4: FC<IProps> = ({
     <>
       {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
       {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
-      
+
       <div className="main_table-modal">
         <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
           <div className="main_table-modal_upload sanaty">

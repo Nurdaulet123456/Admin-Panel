@@ -3,7 +3,11 @@ import { FC } from "react";
 import { IKruzhok } from "@/types/assets.type";
 import { DeleteIcons, PenIcons } from "../atoms/Icons";
 import { Table, Td, Th, Thead, Tr } from "../atoms/UI/Tables/Table";
-import { formatName, formatWeekDay, getTokenInLocalStorage } from "@/utils/assets.utils";
+import {
+  formatName,
+  formatWeekDay,
+  getTokenInLocalStorage,
+} from "@/utils/assets.utils";
 import { instance } from "@/api/axios.instance";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getKruzhokInfoThunk } from "@/store/thunks/schoolnfo.thunk";
@@ -24,9 +28,10 @@ const MainTable: FC<IProps> = ({ kruzhok, handleClickGetId }) => {
         },
       })
       .then((res) => {
-        if (res) {}
+        if (res) {
+        }
       });
-      dispatch(getKruzhokInfoThunk());
+    dispatch(getKruzhokInfoThunk());
   };
 
   return (
@@ -63,7 +68,11 @@ const MainTable: FC<IProps> = ({ kruzhok, handleClickGetId }) => {
                   ))}
                 </Td>
                 <Td>
-                  <div onClick={() => handleClickGetId && handleClickGetId(item.id)}>
+                  <div
+                    onClick={() =>
+                      handleClickGetId && handleClickGetId(item.id)
+                    }
+                  >
                     <PenIcons />
                   </div>
 

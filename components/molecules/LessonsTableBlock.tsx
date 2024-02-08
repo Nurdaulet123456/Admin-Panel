@@ -1,6 +1,6 @@
 import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { Button } from "../atoms/UI/Buttons/Button";
-import { Input } from "../atoms/UI/Inputs/Input";
+import { Input, Select } from "../atoms/UI/Inputs/Input";
 import TypeModal from "../modals/TypeModal";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
@@ -11,6 +11,9 @@ import SanatyModalModal from "../modals/SanatyModal";
 import { useModalLogic } from "@/hooks/useModalLogic";
 import ErrorModal from "../modals/ErrorModal";
 import SuccessModal from "../modals/SuccessModal";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+import { getMenuThunk } from "@/store/thunks/schoolnfo.thunk";
 
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
@@ -29,7 +32,6 @@ const LessonsTableBlock: FC<IProps> = ({
   const [showActive, setShowActive] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
   const [id, setId] = useState<number>();
-  const [updateInput, setUpdateInput] = useState<string>("");
 
   const {
     showSuccessModal,
@@ -40,157 +42,170 @@ const LessonsTableBlock: FC<IProps> = ({
     showError,
   } = useModalLogic();
 
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      sanat: "",
+    },
+    validationSchema: Yup.object({
+      name: Yup.string().required("Обязательно*"),
+      sanat: Yup.string().required("Обязательно*"),
+    }),
+    onSubmit: async (values) => {
+      if (!getId) {
+        await instance
+          .post(
+            "https://www.bilimge.kz/admins/api/subject/",
+            {
+              full_name: values.name,
+              type: values.sanat,
+            },
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            },
+          )
+          .then((res) => {
+            if (res) {
+              dispatch(getLessonsThunk());
+              showSuccess();
+              onDelete();
+              if (showSuccessModal && onReject) {
+                onReject(false);
+              }
+            }
+          })
+          .catch((err) => {
+            showError();
+            if (showErrorModal && onReject) {
+              onReject(false);
+            }
+          });
+      } else {
+        await instance
+          .put(
+            `https://www.bilimge.kz/admins/api/subject/${getId}/`,
+            {
+              full_name: values.name,
+              type: values.sanat,
+            },
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            },
+          )
+          .then((res) => {
+            if (res) {
+              dispatch(getLessonsThunk());
+              showSuccess();
+              if (showSuccessModal && onReject) {
+                onReject(false);
+              }
+            }
+          })
+          .catch((err) => {
+            showError();
+            if (showErrorModal && onReject) {
+              onReject(false);
+            }
+          });
+      }
+    },
+  });
+
   useEffect(() => {
-    if (lessonsid) {
-      setUpdateInput((lessonsid.full_name as string) || "");
-      setText((lessonsid.type as string) || "");
+    if (lessonsid && getId) {
+      formik.resetForm({
+        values: {
+          name: lessonsid.full_name || "",
+          sanat: lessonsid.type || "",
+        },
+      });
     }
-  }, [lessonsid]);
+  }, [lessonsid, getId]);
 
-  const onSave = async () => {
-    try {
-      if (!updateInput || !text) {
-        showError();
-        return;
-      }
-
-      if (updateInput && text) {
-        if (!getId) {
-          await instance
-            .post(
-              "/api/subject/",
-              {
-                full_name: updateInput,
-                type: text.toUpperCase(),
-              },
-              {
-                headers: {
-                  Authorization: `Token ${getTokenInLocalStorage()}`,
-                },
-              }
-            )
-            .then((res) => {
-              if (res) {
-                dispatch(getLessonsThunk());
-                showSuccess();
-                setText("");
-                setUpdateInput("");
-              }
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        } else {
-          await instance
-            .put(
-              `/api/subject/${getId}/`,
-              {
-                full_name: updateInput,
-                type: text.toUpperCase(),
-              },
-              {
-                headers: {
-                  Authorization: `Token ${getTokenInLocalStorage()}`,
-                },
-              }
-            )
-            .then((res) => {
-              if (res) {
-                dispatch(getLessonsThunk());
-                showSuccess();
-                setText("");
-                setUpdateInput("");
-              }
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        }
-      }
-    } catch (error) {
-      showError();
-    }
-  };
+  function onDelete() {
+    formik.resetForm({
+      values: {
+        name: "",
+        sanat: "",
+      },
+    });
+  }
 
   return (
     <>
       {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
       {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
-
-      <div className="main_table-modal">
-        <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
-          <div className="main_table-modal_forms">
-            <div className="forms flex" style={{ alignItems: "flex-start" }}>
-              <div style={{ width: "70%" }}>
-                <div className="login_forms-label_pink">Наименование</div>
-
-                <Input
-                  type="text"
-                  placeholder="оқушы"
-                  name="name"
-                  value={updateInput}
-                  onChange={(e) => setUpdateInput(e.target.value)}
-                />
-              </div>
-
-              <div className="sanaty">
-                <div className="login_forms-label_pink">Сабақ деңгейі</div>
-                <Input
-                  type="text"
-                  name="eat"
-                  readOnly={true}
-                  style={{ cursor: "pointer" }}
-                  onClick={() => setShowActive(!showActive)}
-                  value={text}
-                />
-
-                <div
-                  className="sanaty_dropdown"
-                  style={{ textAlign: "center", width: "100%" }}
-                >
-                  {showActive && (
-                    <SanatyModalModal
-                      setText={setText}
-                      setId={setId}
-                      setShowActive={setShowActive}
-                      timeArr={[
-                        { id: 1, type: "Easy" },
-                        { id: 2, type: "Medium" },
-                        { id: 3, type: "Hard" },
-                      ]}
-                    />
-                  )}
+      <form onSubmit={formik.handleSubmit}>
+        <div className="main_table-modal">
+          <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
+            <div className="main_table-modal_forms">
+              <div className="forms flex" style={{ alignItems: "flex-start" }}>
+                <div style={{ width: "70%" }}>
+                  <div className="login_forms-label_pink">Наименование*</div>
+                  {formik.touched.name && formik.errors.name ? (
+                    <div style={{ color: "red" }}>{formik.errors.name}</div>
+                  ) : null}
+                  <Input
+                    name={"name"}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.name}
+                    style={{
+                      borderColor:
+                        formik.touched.name && formik.errors.name
+                          ? "red"
+                          : "#c1bbeb",
+                    }}
+                  />
+                </div>
+                <div className="sanaty">
+                  <div className="login_forms-label_pink">Уровень занятий</div>
+                  <Select name="sanat" {...formik.getFieldProps("sanat")}>
+                    <option value="">Выберите сложность</option>
+                    {timeArr.map((item) => (
+                      <option value={item.type}>{item.type}</option>
+                    ))}
+                  </Select>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
-        <div
-          className="flex"
-          style={{ justifyContent: "flex-end", gap: "1.6rem" }}
-        >
-          <Button
-            background="#CACACA"
-            color="#645C5C"
-            style={{ width: "auto" }}
-            onClick={() =>
-              getId ? onEdit && onEdit(false) : onReject && onReject(false)
-            }
+          <div
+            className="flex"
+            style={{ justifyContent: "flex-end", gap: "1.6rem" }}
           >
-            Удалить
-          </Button>
-          <Button
-            background="#27AE60"
-            style={{ width: "auto" }}
-            onClick={onSave}
-          >
-            Сохранить
-          </Button>
+            <Button
+              background="#CACACA"
+              color="#645C5C"
+              style={{ width: "auto" }}
+              type="button"
+              onClick={onDelete}
+            >
+              Удалить
+            </Button>
+            <Button
+              background="#27AE60"
+              style={{ width: "auto" }}
+              type="submit"
+            >
+              Сохранить
+            </Button>
+          </div>
         </div>
-      </div>
+      </form>
     </>
   );
 };
+
+const timeArr = [
+  { id: 1, type: "EASY" },
+  { id: 2, type: "MEDIUM" },
+  { id: 3, type: "HARD" },
+];
 
 export default LessonsTableBlock;

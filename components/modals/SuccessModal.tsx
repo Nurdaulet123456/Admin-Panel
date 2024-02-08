@@ -7,7 +7,7 @@ interface IProps {
   onClose?: () => void;
 }
 
-const SuccessModal: FC<IProps> = ({onClose}) => {
+const SuccessModal: FC<IProps> = ({ onClose }) => {
   return (
     <>
       <Modal>
@@ -47,6 +47,4 @@ const SuccessModal: FC<IProps> = ({onClose}) => {
   );
 };
 
-
-
-export default SuccessModal ;
+export default SuccessModal;

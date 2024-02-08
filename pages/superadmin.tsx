@@ -10,6 +10,8 @@ import SuperAdminTable from "@/components/organisms/SuperAdmin/SuperAdminTable";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import SuperAdminLayouts from "@/layouts/SuperAdminLayouts";
+import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import { LogoutIcons } from "@/components/atoms/Icons";
 
 const MainPage = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
@@ -28,10 +30,12 @@ const MainPage = () => {
   const handleAddButtonClick = () => {
     setShowActive(!showActive);
     setEditActive(false);
+    setGetId(null);
   };
 
   const handleGetId = async (id?: number) => {
     setEditActive(true);
+    setShowActive(!showActive);
     setGetId(id);
 
     if (id) {
@@ -50,18 +54,23 @@ const MainPage = () => {
         }}
       >
         <Button
-          background="#27AE60"
+          background={showActive || editActive ? "#CACACA" : "#27AE60"}
           radius="14px"
           style={{
             width: "auto",
-            display: "flex",
-            alignItems: "center",
-            gap: ".8rem",
           }}
           onClick={handleAddButtonClick}
         >
-          <PlusIcons />
-          Добавить
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: ".8rem",
+            }}
+          >
+            {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
+            {showActive || editActive ? "Назад" : "Добавить"}
+          </div>
         </Button>
       </div>
 

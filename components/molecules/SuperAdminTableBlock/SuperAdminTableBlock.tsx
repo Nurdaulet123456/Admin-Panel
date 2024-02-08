@@ -10,12 +10,19 @@ import { Button } from "../../atoms/UI/Buttons/Button";
 import { Input } from "../../atoms/UI/Inputs/Input";
 import { instance } from "@/api/axios.instance";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { getSchoolThunk } from "@/store/thunks/schoolnfo.thunk";
+import {
+  getSchoolIdThunk,
+  getSchoolThunk,
+  getUsersThunk,
+} from "@/store/thunks/schoolnfo.thunk";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { ISchoolInfo } from "@/types/assets.type";
 import { useModalLogic } from "@/hooks/useModalLogic";
 import ErrorModal from "@/components/modals/ErrorModal";
 import SuccessModal from "@/components/modals/SuccessModal";
+import { Formik, Form, Field, useFormik, ErrorMessage } from "formik";
+import * as Yup from "yup";
+import TextField from "@mui/material/TextField";
 
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
@@ -40,15 +47,6 @@ const SuperAdminTableBlock: FC<IProps> = ({
   onEdit,
 }) => {
   const dispatch = useAppDispatch();
-  const [updateInput, setUpdateInput] = useState<IUpdateInputProps>({
-    kz: "",
-    ru: "",
-    eng: "",
-    city: "",
-    url: "",
-    timezone: "",
-  });
-
   const {
     showSuccessModal,
     showErrorModal,
@@ -58,131 +56,123 @@ const SuperAdminTableBlock: FC<IProps> = ({
     showError,
   } = useModalLogic();
 
+  const formik = useFormik({
+    initialValues: {
+      kz: "",
+      ru: "",
+      eng: "",
+      city: "",
+      url: "",
+      timezone: "",
+    },
+    validationSchema: Yup.object({
+      kz: Yup.string().required("Обязательно*"),
+      ru: Yup.string().required("Обязательно*"),
+      eng: Yup.string().required("Обязательно*"),
+      city: Yup.string().required("Обязательно*"),
+      url: Yup.string().required("Обязательно*"),
+      timezone: Yup.string().required("Обязательно*"),
+    }),
+    onSubmit: async (values) => {
+      console.log(values);
+      if (!getId) {
+        await instance
+          .post(
+            `https://www.bilimge.kz/admins/api/school/`,
+            {
+              school_kz_name: values.kz,
+              school_ru_name: values.ru,
+              school_eng_name: values.eng,
+              url: values.url,
+              city: values.city,
+              timezone: values.timezone,
+            },
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            },
+          )
+          .then((res) => {
+            if (res && onReject) {
+              showSuccess();
+              dispatch(getUsersThunk());
+              onDelete();
+              if (showSuccessModal && onReject) {
+                onReject(false);
+              }
+            }
+          })
+          .catch((e) => {
+            showError();
+            if (showErrorModal && onReject) {
+              onReject(false);
+            }
+          });
+      } else {
+        await instance
+          .put(
+            `https://www.bilimge.kz/admins/api/school/${getId}/`,
+            {
+              school_kz_name: values.kz,
+              school_ru_name: values.ru,
+              school_eng_name: values.eng,
+              url: values.url,
+              city: values.city,
+              timezone: values.timezone,
+            },
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            },
+          )
+          .then((res) => {
+            if (res && onEdit) {
+              showSuccess();
+              dispatch(getUsersThunk());
+              if (showSuccessModal && onReject) {
+                onReject(false);
+              }
+            }
+          })
+          .catch((e) => {
+            showError();
+            if (showErrorModal && onReject) {
+              onReject(false);
+            }
+          });
+      }
+    },
+  });
+
   useEffect(() => {
-    if (schoolid) {
-      setUpdateInput({
-        kz: schoolid?.school_kz_name || "",
-        ru: schoolid?.school_ru_name || "",
-        eng: schoolid?.school_eng_name || "",
-        city: schoolid?.city || "",
-        url: schoolid?.url || "",
-        timezone: schoolid?.timezone || "",
+    if (schoolid && getId) {
+      formik.resetForm({
+        values: {
+          kz: schoolid.school_kz_name || "",
+          ru: schoolid.school_ru_name || "",
+          eng: schoolid.school_eng_name || "",
+          city: schoolid.city || "",
+          url: schoolid.url || "",
+          timezone: schoolid.timezone || "",
+        },
       });
     }
-  }, [schoolid]);
+  }, [schoolid, getId, formik.resetForm]);
 
-  const onChangeUpdateInput = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-
-    setUpdateInput({
-      ...updateInput,
-      [name]: value,
+  function onDelete() {
+    formik.resetForm({
+      values: {
+        kz: "",
+        ru: "",
+        eng: "",
+        city: "",
+        url: "",
+        timezone: "",
+      },
     });
-  };
-
-  const onSave = async () => {
-    try {
-      if (
-        !updateInput.kz ||
-        !updateInput.ru ||
-        !updateInput.eng ||
-        !updateInput.city ||
-        !updateInput.url ||
-        !updateInput.timezone
-      ) {
-        showError();
-        return;
-      }
-
-      if (
-        updateInput.kz &&
-        updateInput.ru &&
-        updateInput.eng &&
-        updateInput.city &&
-        updateInput.url &&
-        updateInput.timezone
-      ) {
-        if (!getId) {
-          await instance
-            .post(
-              `/api/school/`,
-              {
-                school_kz_name: updateInput.kz,
-                school_ru_name: updateInput.ru,
-                school_eng_name: updateInput.eng,
-                url: updateInput.url,
-                city: updateInput.city,
-                timezone: updateInput.timezone,
-              },
-              {
-                headers: {
-                  Authorization: `Token ${getTokenInLocalStorage()}`,
-                },
-              }
-            )
-            .then((res) => {
-              if (res && onReject) {
-                dispatch(getSchoolThunk());
-                onReject(false);
-                showSuccess();
-
-                setUpdateInput({
-                  kz: "",
-                  ru: "",
-                  eng: "",
-                  url: "",
-                  city: "",
-                  timezone: "",
-                });
-              }
-            })
-            .catch((e) => {
-              console.log(e);
-            });
-        } else {
-          await instance
-            .put(
-              `/api/school/${getId}/`,
-              {
-                school_kz_name: updateInput.kz,
-                school_ru_name: updateInput.ru,
-                school_eng_name: updateInput.eng,
-                url: updateInput.url,
-                city: updateInput.city,
-                timezone: updateInput.timezone,
-              },
-              {
-                headers: {
-                  Authorization: `Token ${getTokenInLocalStorage()}`,
-                },
-              }
-            )
-            .then((res) => {
-              if (res && onEdit) {
-                dispatch(getSchoolThunk());
-                onEdit(false);
-
-                showSuccess();
-
-                setUpdateInput({
-                  kz: "",
-                  ru: "",
-                  eng: "",
-                  url: "",
-                  city: "",
-                  timezone: "",
-                });
-              }
-            })
-            .catch((e) => {
-              console.log(e);
-            });
-        }
-      }
-    } catch (error) {
-      showError();
-    }
-  };
+  }
 
   return (
     <>
@@ -190,113 +180,149 @@ const SuperAdminTableBlock: FC<IProps> = ({
       {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
       <div className="main_table-modal">
         <div className="main_table-modal_title">Школы</div>
-
-        <div className="main_table-modal_flex">
-          <div className="main_table-modal_forms">
-            <div className="forms">
-              <div className="login_forms-label_pink">
-                Наименование школы (KZ)*
-              </div>
-
-              <Input
-                type="text"
-                placeholder="наименование"
-                name="kz"
-                value={updateInput.kz}
-                onChange={(e) => onChangeUpdateInput(e)}
-              />
-            </div>
-
-            <div className="forms">
-              <div className="login_forms-label_pink">
-                Наименование школы (RU)*
-              </div>
-
-              <Input
-                type="text"
-                placeholder="наименование"
-                name="ru"
-                value={updateInput.ru}
-                onChange={(e) => onChangeUpdateInput(e)}
-              />
-            </div>
-
-            <div className="forms">
-              <div className="login_forms-label_pink">
-                Наименование школы (ENG)*
-              </div>
-
-              <Input
-                type="text"
-                placeholder="наименование"
-                name="eng"
-                value={updateInput.eng}
-                onChange={(e) => onChangeUpdateInput(e)}
-              />
-            </div>
-
-            <div className="forms flex">
-              <div>
-                <div className="login_forms-label_pink">Город</div>
-
+        <form onSubmit={formik.handleSubmit}>
+          <div className="main_table-modal_flex">
+            <div className="main_table-modal_forms">
+              <div className="forms">
+                <div className="login_forms-label_pink">
+                  Наименование школы (KZ)*
+                </div>
+                {formik.touched.kz && formik.errors.kz ? (
+                  <div style={{ color: "red" }}>{formik.errors.kz}</div>
+                ) : null}
                 <Input
-                  type="text"
-                  placeholder="город"
-                  name="city"
-                  value={updateInput.city}
-                  onChange={(e) => onChangeUpdateInput(e)}
+                  name={"kz"}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.kz}
+                  style={{
+                    borderColor:
+                      formik.touched.kz && formik.errors.kz ? "red" : "#c1bbeb",
+                  }}
                 />
               </div>
 
-              <div>
-                <div className="login_forms-label_pink">URL</div>
-
+              <div className="forms">
+                <div className="login_forms-label_pink">
+                  Наименование школы (RU)*
+                </div>
+                {formik.touched.ru && formik.errors.ru ? (
+                  <div style={{ color: "red" }}>{formik.errors.ru}</div>
+                ) : null}
                 <Input
-                  type="text"
-                  placeholder="автоматом"
-                  name="url"
-                  value={updateInput.url}
-                  onChange={(e) => onChangeUpdateInput(e)}
+                  name={"ru"}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.ru}
+                  style={{
+                    borderColor:
+                      formik.touched.ru && formik.errors.ru ? "red" : "#c1bbeb",
+                  }}
                 />
               </div>
 
-              <div>
-                <div className="login_forms-label_pink">Тайм-зона</div>
-
+              <div className="forms">
+                <div className="login_forms-label_pink">
+                  Наименование школы (ENG)*
+                </div>
+                {formik.touched.eng && formik.errors.eng ? (
+                  <div style={{ color: "red" }}>{formik.errors.eng}</div>
+                ) : null}
                 <Input
-                  type="text"
-                  placeholder="тайм зона"
-                  name="timezone"
-                  value={updateInput.timezone}
-                  onChange={(e) => onChangeUpdateInput(e)}
+                  name={"eng"}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.eng}
+                  style={{
+                    borderColor:
+                      formik.touched.eng && formik.errors.eng
+                        ? "red"
+                        : "#c1bbeb",
+                  }}
                 />
+              </div>
+
+              <div className="forms flex">
+                <div>
+                  <div className="login_forms-label_pink">Город</div>
+                  {formik.touched.city && formik.errors.city ? (
+                    <div style={{ color: "red" }}>{formik.errors.city}</div>
+                  ) : null}
+                  <Input
+                    name={"city"}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.city}
+                    style={{
+                      borderColor:
+                        formik.touched.city && formik.errors.city
+                          ? "red"
+                          : "#c1bbeb",
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <div className="login_forms-label_pink">URL</div>
+                  {formik.touched.url && formik.errors.url ? (
+                    <div style={{ color: "red" }}>{formik.errors.url}</div>
+                  ) : null}
+                  <Input
+                    name={"url"}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.url}
+                    style={{
+                      borderColor:
+                        formik.touched.url && formik.errors.url
+                          ? "red"
+                          : "#c1bbeb",
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <div className="login_forms-label_pink">Тайм-зона</div>
+                  {formik.touched.timezone && formik.errors.timezone ? (
+                    <div style={{ color: "red" }}>{formik.errors.timezone}</div>
+                  ) : null}
+                  <Input
+                    name={"timezone"}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.timezone}
+                    style={{
+                      borderColor:
+                        formik.touched.timezone && formik.errors.timezone
+                          ? "red"
+                          : "#c1bbeb",
+                    }}
+                  />
+                </div>
               </div>
             </div>
           </div>
-        </div>
-
-        <div
-          className="flex"
-          style={{ justifyContent: "flex-end", gap: "1.6rem" }}
-        >
-          <Button
-            background="#CACACA"
-            color="#645C5C"
-            style={{ width: "auto" }}
-            onClick={() =>
-              getId ? onEdit && onEdit(false) : onReject && onReject(false)
-            }
+          <div
+            className="flex"
+            style={{ justifyContent: "flex-end", gap: "1.6rem" }}
           >
-            Удалить
-          </Button>
-          <Button
-            background="#27AE60"
-            style={{ width: "auto" }}
-            onClick={onSave}
-          >
-            Сохранить
-          </Button>
-        </div>
+            <Button
+              background="#CACACA"
+              color="#645C5C"
+              style={{ width: "auto" }}
+              onClick={() => onDelete()}
+            >
+              Удалить
+            </Button>
+            <Button
+              background="#27AE60"
+              style={{ width: "auto" }}
+              type="submit"
+            >
+              Сохранить
+            </Button>
+          </div>
+        </form>
       </div>
     </>
   );

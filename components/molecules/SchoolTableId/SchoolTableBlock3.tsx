@@ -9,7 +9,7 @@ const SchoolTableBlock3 = () => {
   const [fileInput, setFileInput] = useState<any>();
 
   const onChangeUpdateInput = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
 
@@ -57,7 +57,7 @@ const SchoolTableBlock3 = () => {
     ];
 
     const allFieldsPresent = requiredFields.every(
-      (field) => !!updateInput?.[field]
+      (field) => !!updateInput?.[field],
     );
 
     if (allFieldsPresent) {
@@ -103,7 +103,7 @@ const SchoolTableBlock3 = () => {
             headers: {
               Authorization: `Token ${getTokenInLocalStorage()}`,
             },
-          }
+          },
         )
         .then(async (res) => {
           if (res) {
@@ -121,7 +121,7 @@ const SchoolTableBlock3 = () => {
                   headers: {
                     Authorization: `Token ${getTokenInLocalStorage()}`,
                   },
-                }
+                },
               );
 
               if (uploadPhotoResponse) {

@@ -55,7 +55,9 @@ const TabClassStyled = styled.div`
 
   cursor: pointer;
 
-  transition: background-color 0.2s linear, color 0.2s linear;
+  transition:
+    background-color 0.2s linear,
+    color 0.2s linear;
 
   &:hover {
     background-color: #4090ff;

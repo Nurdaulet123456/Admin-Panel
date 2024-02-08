@@ -9,16 +9,29 @@ import {
   useEffect,
   useState,
 } from "react";
-import SanatyModalModal from "@/components/modals/SanatyModal";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import { getIASchoolThunk } from "@/store/thunks/available.thunk";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
-import { getUsersThunk } from "@/store/thunks/schoolnfo.thunk";
+import {
+  getSchoolIdThunk,
+  getSchoolThunk,
+  getUsersThunk,
+} from "@/store/thunks/schoolnfo.thunk";
 import SuccessModal from "@/components/modals/SuccessModal";
 import ErrorModal from "@/components/modals/ErrorModal";
 import { IUsers } from "@/types/assets.type";
+import {
+  FormControl,
+  InputLabel,
+  MenuItem,
+  SelectChangeEvent,
+  Select,
+} from "@mui/material";
+import { useFormik } from "formik";
+import * as Yup from "yup";
+// import Select from "react-select";
 
 interface UpdateInputProps {
   username?: string;
@@ -41,7 +54,6 @@ const AdministratorTableBlock: FC<IProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const school = useTypedSelector((state) => state.ia.iaschool);
-
   const {
     showSuccessModal,
     showErrorModal,
@@ -51,233 +63,260 @@ const AdministratorTableBlock: FC<IProps> = ({
     showError,
   } = useModalLogic();
 
-  const [updateInput, setUpdateInput] = useState<UpdateInputProps>({
-    username: "",
-    password: "",
-    email: "",
-  });
-
-  const [text, setText] = useState<string>("");
-  const [id, setId] = useState<number>();
-  const [showActive, setShowActive] = useState<boolean>(false);
+  const [schoolId, setId] = useState<number>(getId ? usersid?.school : 8946542);
+  console.log(schoolId + " asdf");
 
   useEffect(() => {
-    if (school) {
-      dispatch(getIASchoolThunk());
-    }
+    dispatch(getIASchoolThunk());
   }, [dispatch]);
 
+  const handleChangeSchool = (event: SelectChangeEvent) => {
+    setId(event.target.value);
+  };
+
+  const formik = useFormik({
+    initialValues: {
+      username: "",
+      email: "",
+      password: "",
+    },
+    validationSchema: Yup.object({
+      username: Yup.string().required("Обязательно*"),
+      email: Yup.string().email().required("Обязательно*"),
+      password: Yup.string()
+        .min(8, "Должно быть как минимум 8 символов")
+        .required("Обязательно*"),
+    }),
+    onSubmit: async (values) => {
+      if (!getId) {
+        await instance
+          .post(
+            "https://www.bilimge.kz/admins/api/users/",
+            {
+              email: values.email,
+              username: values.username,
+              password: values.password,
+              school: schoolId,
+            },
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            },
+          )
+          .then((res) => {
+            if (res) {
+              showSuccess();
+              dispatch(getUsersThunk());
+              formik.resetForm({
+                values: {
+                  username: "",
+                  email: "",
+                  password: "",
+                },
+              });
+              setId(89846546321);
+              if (showSuccessModal && onReject) {
+                onReject(false);
+              }
+            }
+          })
+          .catch((e) => {
+            showError();
+            if (showErrorModal && onReject) {
+              onReject(false);
+            }
+          });
+      } else {
+        await instance
+          .put(
+            `https://www.bilimge.kz/admins/api/users/${getId}/`,
+            {
+              email: values.email,
+              username: values.username,
+              school: schoolId,
+            },
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            },
+          )
+          .then((res) => {
+            if (res) {
+              showSuccess();
+              dispatch(getUsersThunk());
+              if (showSuccessModal && onReject) {
+                onReject(false);
+              }
+            }
+          })
+          .catch((e) => {
+            showError();
+            if (showErrorModal && onReject) {
+              onReject(false);
+            }
+          });
+      }
+    },
+  });
+
   useEffect(() => {
-    if (usersid) {
-      setUpdateInput({
-        username: usersid.username || "",
-        email: usersid.email || "",
+    if (usersid && getId) {
+      formik.resetForm({
+        values: {
+          username: usersid.username || "",
+          email: usersid.email || "",
+          password: "12345678",
+        },
       });
+      setId(usersid.school);
     }
-  }, [usersid]);
+  }, [schoolId, usersid]);
 
-  const onChangeUpdateInput = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-
-    setUpdateInput({
-      ...updateInput,
-      [name]: value,
+  function onDelete() {
+    formik.resetForm({
+      values: {
+        username: "",
+        email: "",
+        password: "12345678",
+      },
     });
-  };
-
-  const onSave = async () => {
-    try {
-      if (
-        !updateInput.password ||
-        !updateInput.username ||
-        !updateInput.email ||
-        !id
-      ) {
-        showError();
-        return;
-      }
-
-      if (
-        updateInput.password &&
-        updateInput.username &&
-        updateInput.email &&
-        id
-      ) {
-        if (!getId) {
-          await instance
-            .post(
-              "/auth/users/",
-              {
-                email: updateInput.email,
-                username: updateInput.username,
-                password: updateInput.password,
-                school: id,
-              },
-              {
-                headers: {
-                  Authorization: `Token ${getTokenInLocalStorage()}`,
-                },
-              }
-            )
-            .then((res) => {
-              if (res) {
-                showSuccess();
-                dispatch(getUsersThunk());
-                // onReject(false);
-                setUpdateInput({
-                  username: "",
-                  email: "",
-                  password: "",
-                });
-
-                if (showSuccessModal && onReject) {
-                  onReject(false);
-                }
-              }
-            });
-        } else {
-          await instance
-            .put(
-              `/auth/users/${getId}/`,
-              {
-                email: updateInput.email,
-                // username: updateInput.username,
-                password: updateInput.password,
-                school: id,
-              },
-              {
-                headers: {
-                  Authorization: `Token ${getTokenInLocalStorage()}`,
-                },
-              }
-            )
-            .then((res) => {
-              if (res) {
-                showSuccess();
-                dispatch(getUsersThunk());
-                // onReject(false);
-                setUpdateInput({
-                  username: "",
-                  email: "",
-                  password: "",
-                });
-
-                if (showSuccessModal && onReject) {
-                  onReject(false);
-                }
-              }
-            });
-        }
-      }
-    } catch (error) {
-      showError();
-    }
-  };
+  }
 
   return (
     <>
       {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
       {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
-      <div className="main_table-modal">
-        <div className="main_table-modal_title">Админстраторы</div>
-
-        <div>
-          <div className="main_table-modal_forms" style={{ width: "100%" }}>
-            <div className="forms flex" style={{ gap: "1.6rem" }}>
-              <div style={{ width: "75%" }}>
-                <div className="login_forms-label_pink">Username *</div>
-
-                <Input
-                  type="text"
-                  placeholder="username"
-                  name="username"
-                  value={updateInput.username}
-                  onChange={(e) => onChangeUpdateInput(e)}
-                />
-              </div>
-
-              <div style={{ width: "75%" }}>
-                <div className="login_forms-label_pink">Email *</div>
-
-                <Input
-                  type="email"
-                  placeholder="admin@aa11"
-                  name="email"
-                  value={updateInput.email}
-                  onChange={(e) => onChangeUpdateInput(e)}
-                />
-              </div>
-
-              <div>
-                <div className="login_forms-label_pink">Пароль</div>
-
-                <Input
-                  type="password"
-                  placeholder="пароль"
-                  name="password"
-                  value={updateInput.password}
-                  onChange={(e) => onChangeUpdateInput(e)}
-                />
-              </div>
-            </div>
-
-            <div className="sanaty" style={{ width: "40%" }}>
-              <div className="login_forms-label_pink">Школа</div>
-              <Input
-                type="text"
-                name="school"
-                readOnly={true}
-                style={{ cursor: "pointer" }}
-                onClick={() => setShowActive(!showActive)}
-                value={text}
-              />
-              <div
-                className="sanaty_dropdown"
-                style={{ textAlign: "center", width: "100%" }}
-              >
-                {showActive && (
-                  <SanatyModalModal
-                    setText={setText}
-                    setId={setId}
-                    setShowActive={setShowActive}
-                    timeArr={
-                      school
-                        ? school.map((item) => ({
-                            id: item.id,
-                            type: item.school_kz_name,
-                          }))
-                        : []
-                    }
+      <form onSubmit={formik.handleSubmit}>
+        <div className="main_table-modal">
+          <div className="main_table-modal_title">Админстраторы</div>
+          <div>
+            <div className="main_table-modal_forms" style={{ width: "100%" }}>
+              <div className="forms flex" style={{ gap: "1.6rem" }}>
+                <div style={{ width: "75%" }}>
+                  <div className="login_forms-label_pink">Username *</div>
+                  {formik.touched.username && formik.errors.username ? (
+                    <div style={{ color: "red" }}>{formik.errors.username}</div>
+                  ) : null}
+                  <Input
+                    name={"username"}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.username}
+                    style={{
+                      borderColor:
+                        formik.touched.username && formik.errors.username
+                          ? "red"
+                          : "#c1bbeb",
+                    }}
                   />
+                </div>
+
+                <div style={{ width: "75%" }}>
+                  <div className="login_forms-label_pink">Email *</div>
+                  {formik.touched.email && formik.errors.email ? (
+                    <div style={{ color: "red" }}>{formik.errors.email}</div>
+                  ) : null}
+                  <Input
+                    name={"email"}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.email}
+                    style={{
+                      borderColor:
+                        formik.touched.email && formik.errors.email
+                          ? "red"
+                          : "#c1bbeb",
+                    }}
+                  />
+                </div>
+
+                {getId ? (
+                  <div></div>
+                ) : (
+                  <div>
+                    <div className="login_forms-label_pink">Пароль</div>
+                    {formik.touched.password && formik.errors.password ? (
+                      <div style={{ color: "red" }}>
+                        {formik.errors.password}
+                      </div>
+                    ) : null}
+                    <Input
+                      name={"password"}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.password}
+                      style={{
+                        borderColor:
+                          formik.touched.password && formik.errors.password
+                            ? "red"
+                            : "#c1bbeb",
+                      }}
+                    />
+                  </div>
                 )}
               </div>
+
+              {schoolId && (
+                <FormControl sx={{ width: "35%" }}>
+                  <div className="login_forms-label_pink">School *</div>
+                  <Select
+                    id="demo-simple-select"
+                    value={schoolId}
+                    onChange={handleChangeSchool}
+                    MenuProps={{
+                      PaperProps: {
+                        style: {
+                          maxHeight: "250px",
+                        },
+                      },
+                    }}
+                    sx={{
+                      borderRadius: "5px",
+                      border: "1px solid #c1bbeb",
+                      fontSize: "1.2rem",
+                      backgroundColor: "white",
+                    }}
+                  >
+                    {school.map((item) => (
+                      <MenuItem
+                        key={item.id}
+                        value={item.id}
+                        sx={{ fontSize: "1.4rem" }}
+                      >
+                        {item.school_kz_name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              )}
             </div>
           </div>
-        </div>
 
-        <div
-          className="flex"
-          style={{ justifyContent: "flex-end", gap: "1.6rem" }}
-        >
-          <Button
-            background="#CACACA"
-            color="#645C5C"
-            style={{ width: "auto" }}
-            onClick={() =>
-              getId ? onEdit && onEdit(false) : onReject && onReject(false)
-            }
+          <div
+            className="flex"
+            style={{ justifyContent: "flex-end", gap: "1.6rem" }}
           >
-            Удалить
-          </Button>
-          <Button
-            background="#27AE60"
-            style={{ width: "auto" }}
-            onClick={onSave}
-          >
-            Сохранить
-          </Button>
+            <Button
+              background="#CACACA"
+              color="#645C5C"
+              style={{ width: "auto" }}
+              type="button"
+              onClick={() => onDelete()}
+            >
+              Удалить
+            </Button>
+            <Button
+              background="#27AE60"
+              style={{ width: "auto" }}
+              type="submit"
+            >
+              Сохранить
+            </Button>
+          </div>
         </div>
-      </div>
+      </form>
     </>
   );
 };

@@ -63,7 +63,7 @@ const ScheduleComponents = () => {
     classlId: any,
     subjectId: any,
     classroomId: any,
-    typezId: any
+    typezId: any,
   ) => {
     const cell = {
       day,
@@ -85,17 +85,15 @@ const ScheduleComponents = () => {
       (selectedCell) =>
         selectedCell.day === cell.day &&
         selectedCell.start_time === cell.start_time &&
-        selectedCell.end_time === cell.end_time
+        selectedCell.end_time === cell.end_time,
     );
 
     if (isSelected) {
       const updatedSelection = selectedCells.filter(
         (selectedCell) =>
-          (
-            selectedCell.day !== cell.day &&
-            selectedCell.start_time !== cell.start_time &&
-            selectedCell.end_time !== cell.end_time
-          )
+          selectedCell.day !== cell.day &&
+          selectedCell.start_time !== cell.start_time &&
+          selectedCell.end_time !== cell.end_time,
       );
       setSelectedCells(updatedSelection);
     } else {
@@ -107,7 +105,7 @@ const ScheduleComponents = () => {
     day: any,
     start_time: any,
     end_time: any,
-    timeId?: any
+    timeId?: any,
   ) => {
     const cell = {
       day,
@@ -124,7 +122,7 @@ const ScheduleComponents = () => {
       (selectedCell) =>
         selectedCell.day === cell.day &&
         selectedCell.start_time === cell.start_time &&
-        selectedCell.end_time === cell.end_time
+        selectedCell.end_time === cell.end_time,
     );
 
     if (isSelected) {
@@ -132,7 +130,7 @@ const ScheduleComponents = () => {
         (selectedCell) =>
           selectedCell.day !== cell.day &&
           selectedCell.start_time !== cell.start_time &&
-          selectedCell.end_time !== cell.end_time
+          selectedCell.end_time !== cell.end_time,
       );
       setSelectedCellsPaste(updatedSelection);
     } else {
@@ -149,7 +147,7 @@ const ScheduleComponents = () => {
   const handlePasteClick = async () => {
     await instance
       .post(
-        "/api/schedule/",
+        "https://www.bilimge.kz/admins/schedule/",
         {
           week_day: getWeekDayNumber(selectedCellsPaste[0]?.day),
           teacher: copiedData[0]?.teacherId,
@@ -163,7 +161,7 @@ const ScheduleComponents = () => {
           headers: {
             Authorization: `Token ${getTokenInLocalStorage()}`,
           },
-        }
+        },
       )
       .then((res) => {
         if (res) {

@@ -87,7 +87,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
   }, [kruzhokid]);
 
   const handleUpdate = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
     if (name === "time") {
@@ -142,7 +142,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
               headers: {
                 Authorization: `Token ${getTokenInLocalStorage()}`,
               },
-            }
+            },
           )
           .then(async (res) => {
             if (res) {
@@ -160,7 +160,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
                     headers: {
                       Authorization: `Token ${getTokenInLocalStorage()}`,
                     },
-                  }
+                  },
                 );
 
                 if (uploadPhotoResponse) {

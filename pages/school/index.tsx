@@ -6,6 +6,6 @@ const SchoolPage = () => {
       <SchoolComponents />
     </>
   );
-}
+};
 
 export default SchoolPage;

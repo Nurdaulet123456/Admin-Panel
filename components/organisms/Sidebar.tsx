@@ -1,12 +1,41 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import { useEffect, useState } from "react";
+import { instance } from "@/api/axios.instance";
 
 const Sidebar = () => {
   const router = useRouter();
+  const [schoolId, setSchoolId] = useState<number>();
+
+  console.log(getTokenInLocalStorage());
+
+  // useEffect(() => {
+  //   async function getSchool() {
+  //     await instance
+  //         .get("https://www.bilimge.kz/admins/users/me/", {
+  //           headers: {
+  //             Authorization: `Token ${
+  //                 getTokenInLocalStorage()
+  //             }`,
+  //           },
+  //         })
+  //         .then((res) => {
+  //           if (res) {
+  //             if(res.school)
+  //             setSchoolId(res.school);
+  //           }
+  //         });
+  //   }
+  //
+  //   getSchool();
+  // }, []);
 
   return (
     <div className="sidebar">
-      <div className="sidebar_top">Мектеп атауы</div>
+      <Link href={"/"}>
+        <div className="sidebar_top">KESTESI.KZ</div>
+      </Link>
 
       <nav className="sidebar_links">
         {sidebar.map((item) => (
@@ -14,7 +43,7 @@ const Sidebar = () => {
             href={`/${item.link}`}
             key={item.id}
             className={`${
-              router.asPath.split('/')[1] === item.link?.split("/")[0]
+              router.asPath.split("/")[1] === item.link?.split("/")[0]
                 ? "active"
                 : ""
             }`}

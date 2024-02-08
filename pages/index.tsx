@@ -6,6 +6,6 @@ const MainPage = () => {
       <LoginPage />
     </>
   );
-}
+};
 
 export default MainPage;

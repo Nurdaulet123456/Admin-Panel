@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState } from "react";
 
 export const useModalLogic = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);

@@ -94,7 +94,7 @@ const TeachersTableBlock: FC<IProps> = ({
         teachersid.speciality_history.length > 0
       ) {
         setMamandygyList(
-          teachersid.speciality_history as ISpecificationProps[]
+          teachersid.speciality_history as ISpecificationProps[],
         );
       }
 
@@ -103,7 +103,7 @@ const TeachersTableBlock: FC<IProps> = ({
   }, [teachersid]);
 
   const onChangeUpdateInput = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, value } = e.target;
 
@@ -127,12 +127,12 @@ const TeachersTableBlock: FC<IProps> = ({
   const handleWorkExperienceChange = (
     index: number,
     fieldName: string,
-    value: any
+    value: any,
   ) => {
     setWorkExperience((prevExperience) =>
       prevExperience.map((experience, i) =>
-        i === index ? { ...experience, [fieldName]: value } : experience
-      )
+        i === index ? { ...experience, [fieldName]: value } : experience,
+      ),
     );
   };
 
@@ -151,12 +151,12 @@ const TeachersTableBlock: FC<IProps> = ({
   const handleMamandygyChange = (
     index: number,
     fieldName: string,
-    value: any
+    value: any,
   ) => {
     setMamandygyList((prevList) =>
       prevList.map((item, i) =>
-        i === index ? { ...item, [fieldName]: value } : item
-      )
+        i === index ? { ...item, [fieldName]: value } : item,
+      ),
     );
   };
 
@@ -189,7 +189,7 @@ const TeachersTableBlock: FC<IProps> = ({
               headers: {
                 Authorization: `Token ${getTokenInLocalStorage()}`,
               },
-            }
+            },
           )
           .then(async (res) => {
             if (res) {
@@ -207,7 +207,7 @@ const TeachersTableBlock: FC<IProps> = ({
                     headers: {
                       Authorization: `Token ${getTokenInLocalStorage()}`,
                     },
-                  }
+                  },
                 );
 
                 if (uploadPhotoResponse) {
@@ -234,7 +234,7 @@ const TeachersTableBlock: FC<IProps> = ({
               headers: {
                 Authorization: `Token ${getTokenInLocalStorage()}`,
               },
-            }
+            },
           )
           .then((res) => {
             if (res) {
@@ -343,7 +343,7 @@ const TeachersTableBlock: FC<IProps> = ({
                     handleWorkExperienceChange(
                       index,
                       "start_date",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 />
@@ -364,7 +364,7 @@ const TeachersTableBlock: FC<IProps> = ({
                     handleWorkExperienceChange(
                       index,
                       "end_date",
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 />
@@ -383,7 +383,7 @@ const TeachersTableBlock: FC<IProps> = ({
                   handleWorkExperienceChange(
                     index,
                     "job_characteristic",
-                    e.target.value
+                    e.target.value,
                   )
                 }
               />
@@ -431,7 +431,7 @@ const TeachersTableBlock: FC<IProps> = ({
                   handleMamandygyChange(
                     index,
                     "speciality_university",
-                    e.target.value
+                    e.target.value,
                   )
                 }
               />

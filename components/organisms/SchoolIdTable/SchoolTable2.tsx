@@ -7,11 +7,11 @@ import { getSchoolPhotosThunk } from "@/store/thunks/schoolnfo.thunk";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 
-interface IProps{
+interface IProps {
   handleClickGetId2?: (id?: number) => void;
 }
 
-const SchoolTable2: FC<IProps> = ({handleClickGetId2}) => {
+const SchoolTable2: FC<IProps> = ({ handleClickGetId2 }) => {
   const disptach = useAppDispatch();
   const photos = useTypedSelector((state) => state.system.schoolphotos);
 
@@ -63,7 +63,11 @@ const SchoolTable2: FC<IProps> = ({handleClickGetId2}) => {
                 </Td>
                 <Td>{item.slider_name}</Td>
                 <Td>
-                  <div onClick={() => handleClickGetId2 && handleClickGetId2(item.id)}>
+                  <div
+                    onClick={() =>
+                      handleClickGetId2 && handleClickGetId2(item.id)
+                    }
+                  >
                     <PenIcons />
                   </div>
 

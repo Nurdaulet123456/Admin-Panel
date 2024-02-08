@@ -8,10 +8,10 @@ import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 
 interface IProps {
-  handleClickGetId?: (id?: number) => void
+  handleClickGetId?: (id?: number) => void;
 }
 
-const LessonsTable: FC<IProps> = ({handleClickGetId}) => {
+const LessonsTable: FC<IProps> = ({ handleClickGetId }) => {
   const dispatch = useAppDispatch();
   const lessons = useTypedSelector((state) => state.pride.lessons);
 
@@ -23,7 +23,7 @@ const LessonsTable: FC<IProps> = ({handleClickGetId}) => {
 
   const handleDeleteItems = async (id?: number) => {
     await instance
-      .delete(`/api/subject/${id}`, {
+      .delete(`https://www.bilimge.kz/admins/api/subject/${id}`, {
         headers: {
           Authorization: `Token ${getTokenInLocalStorage()}`,
         },
@@ -57,7 +57,11 @@ const LessonsTable: FC<IProps> = ({handleClickGetId}) => {
                 <Td>{index + 1}</Td>
                 <Td>{item.full_name}</Td>
                 <Td>
-                  <div onClick={() => handleClickGetId && handleClickGetId(item.id)}>
+                  <div
+                    onClick={() =>
+                      handleClickGetId && handleClickGetId(item.id)
+                    }
+                  >
                     <PenIcons />
                   </div>
 

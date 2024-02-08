@@ -10,7 +10,8 @@ const LoginPage = () => {
         </div>
         <div className="login_content">
           <div className="login_content-title">
-            <span>ЭЛЕКТРОННОЕ РАСПИСАНИЕ</span> <br />ДЛЯ УЧЕБНЫХ ЗАВЕДЕНИЙ
+            <span>ЭЛЕКТРОННОЕ РАСПИСАНИЕ</span> <br />
+            ДЛЯ УЧЕБНЫХ ЗАВЕДЕНИЙ
           </div>
 
           <div className="login_content-check">

@@ -8,7 +8,10 @@ import MainLayouts from "@/layouts/MainLayouts";
 import { useState } from "react";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
-import { getKruzhokInfoIdThunk, getKruzhokInfoThunk } from "@/store/thunks/schoolnfo.thunk";
+import {
+  getKruzhokInfoIdThunk,
+  getKruzhokInfoThunk,
+} from "@/store/thunks/schoolnfo.thunk";
 
 const MainPage = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
@@ -67,9 +70,19 @@ const MainPage = () => {
         </Button>
       </div>
 
-      {(showActive || editActive) && <MainTableBlock onReject={setShowActive} kruzhokid={kruzhokid} getId={getId} onEdit={setEditActive}/>}
+      {(showActive || editActive) && (
+        <MainTableBlock
+          onReject={setShowActive}
+          kruzhokid={kruzhokid}
+          getId={getId}
+          onEdit={setEditActive}
+        />
+      )}
 
-      <MainTable kruzhok={kruzhok && kruzhok} handleClickGetId={handleClickGetId}/>
+      <MainTable
+        kruzhok={kruzhok && kruzhok}
+        handleClickGetId={handleClickGetId}
+      />
     </MainLayouts>
   );
 };

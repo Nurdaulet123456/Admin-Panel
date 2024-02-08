@@ -8,13 +8,12 @@ import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 
 interface IProps {
-  handleClickGetId?: (id?: number) => void
+  handleClickGetId?: (id?: number) => void;
 }
 
-const NewsTable: FC<IProps> = ({handleClickGetId}) => {
+const NewsTable: FC<IProps> = ({ handleClickGetId }) => {
   const dispatch = useAppDispatch();
   const news = useTypedSelector((state) => state.pride.news);
-
 
   useEffect(() => {
     if (news) {
@@ -23,14 +22,16 @@ const NewsTable: FC<IProps> = ({handleClickGetId}) => {
   }, [dispatch]);
 
   const onDelete = async (id: number) => {
-    await instance.delete(`/api/newsApi/${id}`, {
-      headers: {
-        'Authorization': `Token ${getTokenInLocalStorage()}`
-      }
-    }).catch((e) => console.log(e))
+    await instance
+      .delete(`/api/newsApi/${id}`, {
+        headers: {
+          Authorization: `Token ${getTokenInLocalStorage()}`,
+        },
+      })
+      .catch((e) => console.log(e));
 
-    dispatch(getNewsThunk())
-  }
+    dispatch(getNewsThunk());
+  };
 
   return (
     <div className="main_table">
@@ -66,7 +67,11 @@ const NewsTable: FC<IProps> = ({handleClickGetId}) => {
                 <Td>{item.text?.slice(0, 30)}...</Td>
                 <Td>{item.date}</Td>
                 <Td style={{ alignItems: "center" }}>
-                  <div onClick={() => handleClickGetId && handleClickGetId(item.id)}>
+                  <div
+                    onClick={() =>
+                      handleClickGetId && handleClickGetId(item.id)
+                    }
+                  >
                     <PenIcons />
                   </div>
 

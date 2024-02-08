@@ -11,11 +11,16 @@ import { Input } from "../atoms/UI/Inputs/Input";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { getClassRoomThunk } from "@/store/thunks/schoolnfo.thunk";
+import {
+  getClassRoomThunk,
+  getUsersThunk,
+} from "@/store/thunks/schoolnfo.thunk";
 import { IClassRoom } from "@/types/assets.type";
 import { useModalLogic } from "@/hooks/useModalLogic";
 import ErrorModal from "../modals/ErrorModal";
 import SuccessModal from "../modals/SuccessModal";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 
 interface IUpdateInputProps {
   name?: string;
@@ -38,12 +43,6 @@ const CabinetTableBlock: FC<IProps> = ({
   setEditActive,
 }) => {
   const dispatch = useAppDispatch();
-  const [updateInput, setUpdateInput] = useState<IUpdateInputProps>({
-    name: "",
-    gr: "",
-    floor: "",
-    corpuse: "",
-  });
 
   const {
     showSuccessModal,
@@ -54,188 +53,218 @@ const CabinetTableBlock: FC<IProps> = ({
     showError,
   } = useModalLogic();
 
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      gr: "",
+      floor: "",
+      corpuse: "",
+    },
+    validationSchema: Yup.object({
+      name: Yup.string().required("Обязательно*"),
+      gr: Yup.string().required("Обязательно*"),
+      floor: Yup.string().required("Обязательно*"),
+      corpuse: Yup.string().required("Обязательно*"),
+    }),
+    onSubmit: async (values) => {
+      if (!getId) {
+        await instance
+          .post(
+            "https://www.bilimge.kz/admins/api/classroom/",
+            {
+              classroom_name: values.name,
+              classroom_number: Number(values.gr),
+              flat: Number(values.floor),
+              korpus: Number(values.corpuse),
+            },
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            },
+          )
+          .then((res) => {
+            if (res) {
+              dispatch(getClassRoomThunk());
+              showSuccess();
+              onDelete();
+              if (showSuccessModal && onReject) {
+                onReject(false);
+              }
+            }
+          })
+          .catch((e) => {
+            showError();
+            if (showErrorModal && onReject) {
+              onReject(false);
+            }
+          });
+      } else {
+        await instance
+          .put(
+            `https://www.bilimge.kz/admins/api/classroom/${getId}/`,
+            {
+              classroom_name: values.name,
+              classroom_number: Number(values.gr),
+              flat: Number(values.floor),
+              korpus: Number(values.corpuse),
+            },
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            },
+          )
+          .then((res) => {
+            if (res) {
+              dispatch(getClassRoomThunk());
+              showSuccess();
+              if (showSuccessModal && onReject) {
+                onReject(false);
+              }
+            }
+          })
+          .catch((e) => {
+            showError();
+            if (showErrorModal && onReject) {
+              onReject(false);
+            }
+          });
+      }
+    },
+  });
+
   useEffect(() => {
-    if (cabinetid) {
-      setUpdateInput({
-        name: cabinetid.classroom_name || "",
-        gr: String(cabinetid.classroom_number) || "",
-        floor: String(cabinetid.flat) || "",
-        corpuse: String(cabinetid.korpus) || "",
+    if (cabinetid && getId) {
+      formik.resetForm({
+        values: {
+          name: cabinetid.classroom_name || "",
+          gr: String(cabinetid.classroom_number) || "",
+          floor: String(cabinetid.flat) || "",
+          corpuse: String(cabinetid.korpus) || "",
+        },
       });
     }
-  }, [cabinetid]);
+  }, [cabinetid, getId]);
 
-  const onChangeUpdateInput = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-
-    setUpdateInput({
-      ...updateInput,
-      [name]: value,
+  function onDelete() {
+    formik.resetForm({
+      values: {
+        name: "",
+        gr: "",
+        floor: "",
+        corpuse: "",
+      },
     });
-  };
-
-  const onSave = async () => {
-    try {
-      if (!updateInput.gr || !updateInput.floor) {
-        showError();
-        return;
-      }
-
-      if (updateInput.gr && updateInput.floor) {
-        if (!getId) {
-          await instance
-            .post(
-              "/api/classroom/",
-              {
-                classroom_name: updateInput.name,
-                classroom_number: Number(updateInput.gr),
-                flat: Number(updateInput.floor),
-                korpus: Number(updateInput.corpuse),
-              },
-              {
-                headers: {
-                  Authorization: `Token ${getTokenInLocalStorage()}`,
-                },
-              }
-            )
-            .then((res) => {
-              if (res) {
-                dispatch(getClassRoomThunk());
-                showSuccess();
-                setUpdateInput({
-                  name: "",
-                  gr: "",
-                  floor: "",
-                  corpuse: "",
-                });
-              }
-            })
-            .catch((e) => {
-              console.log(e);
-            });
-        } else {
-          await instance
-            .put(
-              `/api/classroom/${getId}/`,
-              {
-                classroom_name: updateInput.name,
-                classroom_number: Number(updateInput.gr),
-                flat: Number(updateInput.floor),
-                korpus: Number(updateInput.corpuse),
-              },
-              {
-                headers: {
-                  Authorization: `Token ${getTokenInLocalStorage()}`,
-                },
-              }
-            )
-            .then((res) => {
-              if (res) {
-                dispatch(getClassRoomThunk());
-                showSuccess();
-                setUpdateInput({
-                  name: "",
-                  gr: "",
-                  floor: "",
-                  corpuse: "",
-                });
-              }
-            })
-            .catch((e) => {
-              console.log(e);
-            });
-        }
-      }
-    } catch (error) {
-      showError();
-    }
-  };
+  }
 
   return (
     <>
       {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
       {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
-      <div className="main_table-modal">
-        <div className="main_table-modal_title">Кабинет</div>
-
-        <div className="main_table-modal_forms">
-          <div className="forms">
-            <div className="login_forms-label_pink">Наименование *</div>
-
-            <Input
-              type="text"
-              placeholder="наименование"
-              name="name"
-              value={updateInput.name}
-              onChange={(e) => onChangeUpdateInput(e)}
-            />
-          </div>
-
-          <div className="flex">
+      <form onSubmit={formik.handleSubmit}>
+        <div className="main_table-modal">
+          <div className="main_table-modal_title">Кабинет</div>
+          <div className="main_table-modal_forms">
             <div className="forms">
-              <div className="login_forms-label_pink">
-                Номер (кабинет номері)
+              <div className="login_forms-label_pink">Наименование *</div>
+              {formik.touched.name && formik.errors.name ? (
+                <div style={{ color: "red" }}>{formik.errors.name}</div>
+              ) : null}
+              <Input
+                name={"name"}
+                onChange={formik.handleChange}
+                onBlur={formik.handleBlur}
+                value={formik.values.name}
+                style={{
+                  borderColor:
+                    formik.touched.name && formik.errors.name
+                      ? "red"
+                      : "#c1bbeb",
+                }}
+              />
+            </div>
+
+            <div className="flex">
+              <div className="forms">
+                <div className="login_forms-label_pink">Номер кабинета *</div>
+                {formik.touched.gr && formik.errors.gr ? (
+                  <div style={{ color: "red" }}>{formik.errors.gr}</div>
+                ) : null}
+                <Input
+                  name={"gr"}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.gr}
+                  style={{
+                    borderColor:
+                      formik.touched.gr && formik.errors.gr ? "red" : "#c1bbeb",
+                  }}
+                />
               </div>
-              <Input
-                type="number"
-                placeholder="кабинет номері: пример 305"
-                name="gr"
-                value={updateInput.gr}
-                onChange={(e) => onChangeUpdateInput(e)}
-              />
-            </div>
 
-            <div className="forms">
-              <div className="login_forms-label_pink">Этаж</div>
-              <Input
-                type="number"
-                placeholder="этаж:2"
-                name="floor"
-                value={updateInput.floor}
-                onChange={(e) => onChangeUpdateInput(e)}
-              />
-            </div>
+              <div className="forms">
+                <div className="login_forms-label_pink">Этаж</div>
+                {formik.touched.floor && formik.errors.floor ? (
+                  <div style={{ color: "red" }}>{formik.errors.floor}</div>
+                ) : null}
+                <Input
+                  name={"floor"}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.floor}
+                  style={{
+                    borderColor:
+                      formik.touched.floor && formik.errors.floor
+                        ? "red"
+                        : "#c1bbeb",
+                  }}
+                />
+              </div>
 
-            <div className="forms">
-              <div className="login_forms-label_pink">Корпус</div>
-              <Input
-                type="number"
-                placeholder="корпус:2"
-                name="corpuse"
-                value={updateInput.corpuse}
-                onChange={(e) => onChangeUpdateInput(e)}
-              />
+              <div className="forms">
+                <div className="login_forms-label_pink">Корпус</div>
+                {formik.touched.corpuse && formik.errors.corpuse ? (
+                  <div style={{ color: "red" }}>{formik.errors.corpuse}</div>
+                ) : null}
+                <Input
+                  name={"corpuse"}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.corpuse}
+                  style={{
+                    borderColor:
+                      formik.touched.corpuse && formik.errors.corpuse
+                        ? "red"
+                        : "#c1bbeb",
+                  }}
+                />
+              </div>
             </div>
           </div>
-        </div>
-
-        <div
-          className="flex"
-          style={{ justifyContent: "flex-end", gap: "1.6rem" }}
-        >
-          <Button
-            background="#CACACA"
-            color="#645C5C"
-            style={{ width: "auto" }}
-            onClick={() =>
-              getId
-                ? setEditActive && setEditActive(false)
-                : onReject && onReject(false)
-            }
+          <div
+            className="flex"
+            style={{ justifyContent: "flex-end", gap: "1.6rem" }}
           >
-            Удалить
-          </Button>
-          <Button
-            background="#27AE60"
-            style={{ width: "auto" }}
-            onClick={onSave}
-          >
-            Сохранить
-          </Button>
+            <Button
+              background="#CACACA"
+              color="#645C5C"
+              style={{ width: "auto" }}
+              type="button"
+              onClick={onDelete}
+            >
+              Удалить
+            </Button>
+            <Button
+              background="#27AE60"
+              style={{ width: "auto" }}
+              type="submit"
+            >
+              Сохранить
+            </Button>
+          </div>
         </div>
-      </div>
+      </form>
     </>
   );
 };

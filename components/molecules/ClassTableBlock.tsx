@@ -130,7 +130,7 @@ const ClassTableBlock: FC<IProps> = ({
                 headers: {
                   Authorization: `Token ${getTokenInLocalStorage()}`,
                 },
-              }
+              },
             )
             .then((res) => {
               if (res) {
@@ -166,7 +166,7 @@ const ClassTableBlock: FC<IProps> = ({
                 headers: {
                   Authorization: `Token ${getTokenInLocalStorage()}`,
                 },
-              }
+              },
             )
             .then((res) => {
               if (res) {
@@ -285,7 +285,7 @@ const ClassTableBlock: FC<IProps> = ({
                             : []
                         }
                       />
-                    )
+                    ),
                 )}
               </div>
             </div>
@@ -321,7 +321,7 @@ const ClassTableBlock: FC<IProps> = ({
                             : []
                         }
                       />
-                    )
+                    ),
                 )}
               </div>
             </div>
@@ -367,7 +367,7 @@ const ClassTableBlock: FC<IProps> = ({
                             : []
                         }
                       />
-                    )
+                    ),
                 )}
               </div>
             </div>
@@ -402,7 +402,7 @@ const ClassTableBlock: FC<IProps> = ({
                             : []
                         }
                       />
-                    )
+                    ),
                 )}
               </div>
             </div>
@@ -447,7 +447,7 @@ const ClassTableBlock: FC<IProps> = ({
                             : []
                         }
                       />
-                    )
+                    ),
                 )}
               </div>
             </div>
@@ -483,7 +483,7 @@ const ClassTableBlock: FC<IProps> = ({
                             : []
                         }
                       />
-                    )
+                    ),
                 )}
               </div>
             </div>

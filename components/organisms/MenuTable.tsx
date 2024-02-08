@@ -19,7 +19,7 @@ const MenuTable: FC<IProps> = ({ menu, setDel, del, handleClickGetId }) => {
 
   const handleDeleteItems = async (id?: number) => {
     await instance
-      .delete(`/api/menu/${id}`, {
+      .delete(`https://www.bilimge.kz/admins/api/menu/${id}`, {
         headers: {
           Authorization: `Token ${getTokenInLocalStorage()}`,
         },
@@ -59,7 +59,11 @@ const MenuTable: FC<IProps> = ({ menu, setDel, del, handleClickGetId }) => {
                 <Td>{item.food_sostav}</Td>
                 <Td>{item.vihod_1}</Td>
                 <Td>
-                  <div onClick={() => handleClickGetId && handleClickGetId(item.id)}>
+                  <div
+                    onClick={() =>
+                      handleClickGetId && handleClickGetId(item.id)
+                    }
+                  >
                     <PenIcons />
                   </div>
 

@@ -1,11 +1,13 @@
 import { IUsers } from "@/types/assets.type";
 import { DeleteIcons, PenIcons } from "../../atoms/Icons";
 import { Table, Td, Th, Thead, Tr } from "../../atoms/UI/Tables/Table";
-import { FC } from "react";
+import { FC, useEffect } from "react";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { getUsersThunk } from "@/store/thunks/schoolnfo.thunk";
+import { useTypedSelector } from "@/hooks/useTypedSelector";
+import { getIASchoolThunk } from "@/store/thunks/available.thunk";
 
 interface IProps {
   users?: IUsers[];
@@ -17,7 +19,7 @@ const AdministratorTable: FC<IProps> = ({ users, handleClickGetId }) => {
 
   const handleDeleteItems = async (id?: number) => {
     await instance
-      .delete(`/api/admin/${id}/`, {
+      .delete(`https://www.bilimge.kz/admins/api/users/${id}/`, {
         headers: {
           Authorization: `Token ${getTokenInLocalStorage()}`,
         },
@@ -29,6 +31,21 @@ const AdministratorTable: FC<IProps> = ({ users, handleClickGetId }) => {
       })
       .catch((e) => console.log(e));
     dispatch(getUsersThunk());
+  };
+
+  const school = useTypedSelector((state) => state.ia.iaschool);
+  useEffect(() => {
+    dispatch(getIASchoolThunk());
+  }, [dispatch]);
+
+  const getSchoolLabelById = (id) => {
+    const selectedSchool = school.find((item) => item.id === id);
+    return selectedSchool ? selectedSchool.school_kz_name : "";
+  };
+
+  const getSchoolUrlById = (id) => {
+    const selectedSchool = school.find((item) => item.id === id);
+    return selectedSchool ? selectedSchool.url : "";
   };
 
   return (
@@ -48,23 +65,29 @@ const AdministratorTable: FC<IProps> = ({ users, handleClickGetId }) => {
           </Thead>
 
           {users &&
-            users.map((item, index) => (
-              <Tr key={item.id}>
-                <Td>{index + 1}</Td>
-                <Td>{item.email}</Td>
-                <Td>{item.school || "null"}</Td>
-                <Td>Content</Td>
-                <Td>
-                  <div onClick={() => handleClickGetId && handleClickGetId(item.id)}>
-                    <PenIcons />
-                  </div>
+            users
+              .filter((user) => user.role === "admin")
+              .map((item, index) => (
+                <Tr key={item.id}>
+                  <Td>{index + 1}</Td>
+                  <Td>{item.email}</Td>
+                  <Td>{getSchoolLabelById(item.school) || "null"}</Td>
+                  <Td>{getSchoolUrlById(item.school) || "null"}</Td>
+                  <Td>
+                    <div
+                      onClick={() =>
+                        handleClickGetId && handleClickGetId(item.id)
+                      }
+                    >
+                      <PenIcons />
+                    </div>
 
-                  <div onClick={() => handleDeleteItems(item.id)}>
-                    <DeleteIcons />
-                  </div>
-                </Td>
-              </Tr>
-            ))}
+                    <div onClick={() => handleDeleteItems(item.id)}>
+                      <DeleteIcons />
+                    </div>
+                  </Td>
+                </Tr>
+              ))}
         </Table>
       </div>
     </div>

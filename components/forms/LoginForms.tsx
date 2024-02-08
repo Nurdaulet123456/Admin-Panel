@@ -8,6 +8,7 @@ import { useRouter } from "next/router";
 
 const LoginForms = () => {
   const router = useRouter();
+  const url = "https://www.bilimge.kz/admins/";
   return (
     <div className="login_forms-form">
       <div className="login_forms-title">KESTESI.KZ</div>
@@ -22,7 +23,7 @@ const LoginForms = () => {
         onSubmit={async (values) => {
           if (values.email && values.password) {
             await instance
-              .post("/auth/token/login/", {
+              .post("https://www.bilimge.kz/admins/login/", {
                 username: values.email,
                 password: values.password,
               })
@@ -30,11 +31,11 @@ const LoginForms = () => {
                 if (res) {
                   localStorageWrapper.set(
                     "token",
-                    (res as { auth_token?: string })?.auth_token
+                    (res as { auth_token?: string })?.auth_token,
                   );
 
                   await instance
-                    .get("/auth/users/me", {
+                    .get("https://www.bilimge.kz/admins/users/me/", {
                       headers: {
                         Authorization: `Token ${
                           (res as { auth_token?: string })?.auth_token

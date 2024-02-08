@@ -52,7 +52,7 @@ const TypeLessonsTableBlock: FC<IProps> = ({
   } = useModalLogic();
 
   useEffect(() => {
-    if (extraid) {
+    if (extraid && getId) {
       setUpdateInput((extraid?.type_full_name as string) || "");
       setChooseColor((extraid?.type_color as string) || "");
     }
@@ -64,7 +64,7 @@ const TypeLessonsTableBlock: FC<IProps> = ({
         if (!getId) {
           await instance
             .post(
-              "/api/extra_lesson/",
+              "https://www.bilimge.kz/admins/api/extra_lesson/",
               {
                 type_full_name: updateInput,
                 type_color: chooseColor,
@@ -73,20 +73,27 @@ const TypeLessonsTableBlock: FC<IProps> = ({
                 headers: {
                   Authorization: `Token ${getTokenInLocalStorage()}`,
                 },
-              }
+              },
             )
             .then((res) => {
               if (res) {
                 dispatch(getExtraThunk());
+                showSuccess();
+                if (showSuccessModal && onReject) {
+                  onReject(false);
+                }
               }
             })
             .catch((err) => {
-              console.log(err);
+              showError();
+              if (showErrorModal && onReject) {
+                onReject(false);
+              }
             });
         } else {
           await instance
             .put(
-              `/api/extra_lesson/${getId}/`,
+              `https://www.bilimge.kz/admins/api/extra_lesson/${getId}/`,
               {
                 type_full_name: updateInput,
                 type_color: chooseColor,
@@ -95,7 +102,7 @@ const TypeLessonsTableBlock: FC<IProps> = ({
                 headers: {
                   Authorization: `Token ${getTokenInLocalStorage()}`,
                 },
-              }
+              },
             )
             .then((res) => {
               if (res) {
@@ -103,13 +110,14 @@ const TypeLessonsTableBlock: FC<IProps> = ({
               }
             })
             .catch((err) => {
-              console.log(err);
+              showError();
+              if (showErrorModal && onReject) {
+                onReject(false);
+              }
             });
         }
       }
-    } catch (error) {
-      
-    }
+    } catch (error) {}
   };
 
   return (

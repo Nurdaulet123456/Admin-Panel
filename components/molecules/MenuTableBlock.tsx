@@ -1,6 +1,6 @@
 import { Dispatch, FC, SetStateAction, useEffect, useState } from "react";
 import { Button } from "../atoms/UI/Buttons/Button";
-import { Input } from "../atoms/UI/Inputs/Input";
+import { Input, Select } from "../atoms/UI/Inputs/Input";
 import { instance } from "@/api/axios.instance";
 import {
   getTokenInLocalStorage,
@@ -8,12 +8,17 @@ import {
   getWeekDayString,
 } from "@/utils/assets.utils";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { getMenuThunk } from "@/store/thunks/schoolnfo.thunk";
+import {
+  getClassRoomThunk,
+  getMenuThunk,
+} from "@/store/thunks/schoolnfo.thunk";
 import { IMenu } from "@/types/assets.type";
 import SanatyModalModal from "../modals/SanatyModal";
 import { useModalLogic } from "@/hooks/useModalLogic";
 import ErrorModal from "../modals/ErrorModal";
 import SuccessModal from "../modals/SuccessModal";
+import { useFormik, useField, Formik, Form } from "formik";
+import * as Yup from "yup";
 
 interface IUpdateInput {
   name?: string;
@@ -30,20 +35,7 @@ interface IProps {
 
 const MenuTableBlock: FC<IProps> = ({ onReject, getId, menuid, onEdit }) => {
   const [showActive, setShowActive] = useState<boolean>(false);
-  const [text, setText] = useState<string>("");
-  const [id, setId] = useState<number>();
-
   const dispatch = useAppDispatch();
-
-  const [updateInput, setUpdateInput] = useState<IUpdateInput>({
-    name: "",
-    recipe: "",
-    exits: {
-      gr1: "",
-      gr2: "",
-      gr3: "",
-    },
-  });
 
   const {
     showSuccessModal,
@@ -54,238 +46,260 @@ const MenuTableBlock: FC<IProps> = ({ onReject, getId, menuid, onEdit }) => {
     showError,
   } = useModalLogic();
 
-  useEffect(() => {
-    if (menuid) {
-      setUpdateInput((prevInput) => ({
-        ...prevInput,
-        name: menuid.food_name || "",
-        recipe: menuid.food_reti || "",
-        exits: {
-          gr1: menuid.vihod_1 || "",
-          gr2: menuid.vihod_2 || "",
-          gr3: menuid.vihod_3 || "",
-        },
-      }));
-
-      setText(getWeekDayString(menuid.week_day as string) || "");
-    }
-  }, [menuid]);
-
-  const handleUpdate = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-
-    if (name === "gr") {
-      const day = e.target.dataset.day as string;
-      setUpdateInput((prevInput) => ({
-        ...prevInput,
-        exits: {
-          ...prevInput.exits,
-          [day]: value,
-        },
-      }));
-    } else {
-      setUpdateInput({
-        ...updateInput,
-        [name]: value,
-      });
-    }
-  };
-
-  const onSave = async () => {
-    try {
-      if (
-        !updateInput.name ||
-        !updateInput.recipe ||
-        !updateInput.exits.gr1 ||
-        !updateInput.exits.gr2 ||
-        !updateInput.exits.gr3
-      ) {
-        showError();
-        return;
-      }
-
+  const formik = useFormik({
+    initialValues: {
+      week_day: "",
+      name: "",
+      recipe: "",
+      exits1: "",
+      exits2: "",
+      exits3: "",
+    },
+    validationSchema: Yup.object({
+      week_day: Yup.number().required("Обязательно*"),
+      name: Yup.string().required("Обязательно*"),
+      recipe: Yup.string().required("Обязательно*"),
+      exits1: Yup.string().required("Обязательно*"),
+      exits2: Yup.string().required("Обязательно*"),
+      exits3: Yup.string().required("Обязательно*"),
+    }),
+    onSubmit: async (values) => {
       if (!getId) {
         await instance
           .post(
-            "/api/menu/",
+            "https://www.bilimge.kz/admins/api/menu/",
             {
-              food_name: updateInput.name,
-              food_sostav: updateInput.recipe,
-              vihod_1: updateInput.exits.gr1,
-              vihod_2: updateInput.exits.gr2,
-              vihod_3: updateInput.exits.gr3,
-              week_day: getWeekDayNumber(text),
-              food_reti: updateInput.recipe,
+              food_name: values.name,
+              food_sostav: values.recipe,
+              vihod_1: values.exits1,
+              vihod_2: values.exits2,
+              vihod_3: values.exits3,
+              week_day: values.week_day,
             },
             {
               headers: {
                 Authorization: `Token ${getTokenInLocalStorage()}`,
               },
-            }
+            },
           )
           .then((res) => {
             if (res) {
               dispatch(getMenuThunk());
               showSuccess();
-              setText("");
-              setUpdateInput({
-                name: "",
-                recipe: "",
-                exits: {
-                  gr1: "",
-                  gr2: "",
-                  gr3: "",
-                },
-              });
+              onDelete();
+              if (showSuccessModal && onReject) {
+                onReject(false);
+              }
+            }
+          })
+          .catch((e) => {
+            showError();
+            if (showErrorModal && onReject) {
+              onReject(false);
             }
           });
       } else {
         await instance
           .put(
-            `/api/menu/${getId}/`,
+            `https://www.bilimge.kz/admins/api/menu/${getId}/`,
             {
-              food_name: updateInput.name,
-              food_sostav: updateInput.recipe,
-              vihod_1: updateInput.exits.gr1,
-              vihod_2: updateInput.exits.gr2,
-              vihod_3: updateInput.exits.gr3,
-              week_day: getWeekDayNumber(text),
-              food_reti: updateInput.recipe,
+              food_name: values.name,
+              food_sostav: values.recipe,
+              vihod_1: values.exits1,
+              vihod_2: values.exits2,
+              vihod_3: values.exits3,
+              week_day: values.week_day,
             },
             {
               headers: {
                 Authorization: `Token ${getTokenInLocalStorage()}`,
               },
-            }
+            },
           )
           .then((res) => {
             if (res) {
               dispatch(getMenuThunk());
               showSuccess();
-              setText("");
-              setUpdateInput({
-                name: "",
-                recipe: "",
-                exits: {
-                  gr1: "",
-                  gr2: "",
-                  gr3: "",
-                },
-              });
+              if (showSuccessModal && onReject) {
+                onReject(false);
+              }
+            }
+          })
+          .catch((e) => {
+            showError();
+            if (showErrorModal && onReject) {
+              onReject(false);
             }
           });
       }
-    } catch (error) {
-      showError();
+    },
+  });
+
+  useEffect(() => {
+    if (menuid && getId) {
+      formik.resetForm({
+        values: {
+          week_day: menuid.week_day || "",
+          name: menuid.food_name || "",
+          recipe: menuid.food_sostav || "",
+          exits1: menuid.vihod_1 || "",
+          exits2: menuid.vihod_2 || "",
+          exits3: menuid.vihod_3 || "",
+        },
+      });
     }
-  };
+  }, [menuid, getId]);
+
+  function onDelete() {
+    formik.resetForm({
+      values: {
+        week_day: "",
+        name: "",
+        recipe: "",
+        exits1: "",
+        exits2: "",
+        exits3: "",
+      },
+    });
+  }
 
   return (
     <>
       {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
       {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
+      <form onSubmit={formik.handleSubmit}>
+        <div className="main_table-modal">
+          <div className="main_table-modal_title">Меню</div>
 
-      <div className="main_table-modal">
-        <div className="main_table-modal_title">Меню</div>
-
-        <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
-          <div className="main_table-modal_upload sanaty">
-            <div className="login_forms-label_pink">Күні</div>
-            <Input
-              type="text"
-              name="eat"
-              readOnly={true}
-              style={{ cursor: "pointer" }}
-              onClick={() => setShowActive(!showActive)}
-              value={text}
-            />
-
-            <div
-              className="sanaty_dropdown"
-              style={{ textAlign: "center", width: "100%" }}
-            >
-              {showActive && (
-                <SanatyModalModal
-                  setText={setText}
-                  setId={setId}
-                  setShowActive={setShowActive}
-                  timeArr={timeArr}
-                />
-              )}
-            </div>
-          </div>
-
-          <div className="main_table-modal_forms">
-            <div className="forms">
-              <div className="login_forms-label_pink">Тамақ атауы</div>
-
-              <Input
-                type="text"
-                placeholder="тамақ ататуы"
-                name="name"
-                value={updateInput.name}
-                onChange={(e) => handleUpdate(e)}
-              />
+          <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
+            <div className="main_table-modal_upload sanaty">
+              <div className="login_forms-label_pink">Күні</div>
+              <Select name="week_day" {...formik.getFieldProps("week_day")}>
+                <option value="">Выберите день недели</option>
+                {timeArr.map((item) => (
+                  <option value={item.id}>{item.type}</option>
+                ))}
+              </Select>
             </div>
 
-            <div className="forms">
-              <div className="login_forms-label_pink">Құрамы</div>
-
-              <Input
-                type="text"
-                placeholder="құрамы"
-                name="recipe"
-                value={updateInput.recipe}
-                onChange={(e) => handleUpdate(e)}
-              />
-            </div>
-
-            <div className="forms flex" style={{ gap: "1.6rem" }}>
-              <div
-                className="login_forms-label_pink"
-                style={{ marginBottom: "0" }}
-              >
-                Выход:
-              </div>
-              {Object.keys(updateInput.exits).map((gr) => (
+            <div className="main_table-modal_forms">
+              <div className="forms">
+                <div className="login_forms-label_pink">Тамақ атауы</div>
+                {formik.touched.name && formik.errors.name ? (
+                  <div style={{ color: "red" }}>{formik.errors.name}</div>
+                ) : null}
                 <Input
-                  type="text"
-                  placeholder="Гр"
-                  name="gr"
-                  data-day={gr}
-                  value={updateInput.exits[gr]}
-                  onChange={(e) => handleUpdate(e)}
+                  name={"name"}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.name}
+                  style={{
+                    borderColor:
+                      formik.touched.name && formik.errors.name
+                        ? "red"
+                        : "#c1bbeb",
+                  }}
                 />
-              ))}
-            </div>
+              </div>
 
-            <div
-              className="flex"
-              style={{ justifyContent: "flex-end", gap: "1.6rem" }}
-            >
-              <Button
-                background="#CACACA"
-                color="#645C5C"
-                style={{ width: "auto" }}
-                onClick={() =>
-                  getId ? onEdit && onEdit(false) : onReject && onReject(false)
-                }
+              <div className="forms">
+                <div className="login_forms-label_pink">Құрамы</div>
+                {formik.touched.recipe && formik.errors.recipe ? (
+                  <div style={{ color: "red" }}>{formik.errors.recipe}</div>
+                ) : null}
+                <Input
+                  name={"recipe"}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.recipe}
+                  style={{
+                    borderColor:
+                      formik.touched.recipe && formik.errors.recipe
+                        ? "red"
+                        : "#c1bbeb",
+                  }}
+                />
+              </div>
+
+              <div className="forms flex" style={{ gap: "1.6rem" }}>
+                <div
+                  className="login_forms-label_pink"
+                  style={{ marginBottom: "0" }}
+                >
+                  Выходы:
+                </div>
+                {formik.touched.exits1 && formik.errors.exits1 ? (
+                  <div style={{ color: "red" }}>{formik.errors.exits1}</div>
+                ) : null}
+                <Input
+                  name={"exits1"}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.exits1}
+                  style={{
+                    borderColor:
+                      formik.touched.exits1 && formik.errors.exits1
+                        ? "red"
+                        : "#c1bbeb",
+                  }}
+                />
+                {formik.touched.exits2 && formik.errors.exits2 ? (
+                  <div style={{ color: "red" }}>{formik.errors.exits2}</div>
+                ) : null}
+                <Input
+                  name={"exits2"}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.exits2}
+                  style={{
+                    borderColor:
+                      formik.touched.exits2 && formik.errors.exits2
+                        ? "red"
+                        : "#c1bbeb",
+                  }}
+                />
+                {formik.touched.exits3 && formik.errors.exits3 ? (
+                  <div style={{ color: "red" }}>{formik.errors.exits3}</div>
+                ) : null}
+                <Input
+                  name={"exits3"}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.exits3}
+                  style={{
+                    borderColor:
+                      formik.touched.exits3 && formik.errors.exits3
+                        ? "red"
+                        : "#c1bbeb",
+                  }}
+                />
+              </div>
+
+              <div
+                className="flex"
+                style={{ justifyContent: "flex-end", gap: "1.6rem" }}
               >
-                Удалить
-              </Button>
-              <Button
-                background="#27AE60"
-                style={{ width: "auto" }}
-                onClick={onSave}
-              >
-                Сохранить
-              </Button>
+                <Button
+                  background="#CACACA"
+                  color="#645C5C"
+                  style={{ width: "auto" }}
+                  type="button"
+                  onClick={onDelete}
+                >
+                  Удалить
+                </Button>
+                <Button
+                  background="#27AE60"
+                  style={{ width: "auto" }}
+                  type={"submit"}
+                >
+                  Сохранить
+                </Button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      </form>
     </>
   );
 };

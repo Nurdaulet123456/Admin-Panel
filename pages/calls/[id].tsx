@@ -79,14 +79,27 @@ const CallsComponents = () => {
       </div>
 
       {(showActive || editActive) && router.query.id === "1" && (
-        <CallsTableBlock1 onReject={setShowActive} osid={osid} onEdit={setEditActive}/>
+        <CallsTableBlock1
+          onReject={setShowActive}
+          osid={osid}
+          onEdit={setEditActive}
+        />
       )}
       {(showActive || editActive) && router.query.id === "2" && (
-        <CallsTableBlock2 onReject={setShowActive} dopid={dopid} getId={getId} onEdit={setEditActive}/>
+        <CallsTableBlock2
+          onReject={setShowActive}
+          dopid={dopid}
+          getId={getId}
+          onEdit={setEditActive}
+        />
       )}
 
-      {router.query.id === "1" && <CallsTable handleClickGetIdOS={handleClickGetIdOS}/>}
-      {router.query.id === "2" && <CallsTable2 handleClickGetIdDop={handleClickGetIdDop}/>}
+      {router.query.id === "1" && (
+        <CallsTable handleClickGetIdOS={handleClickGetIdOS} />
+      )}
+      {router.query.id === "2" && (
+        <CallsTable2 handleClickGetIdDop={handleClickGetIdDop} />
+      )}
     </MainLayouts>
   );
 };

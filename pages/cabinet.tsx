@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
-import { PlusIcons } from "@/components/atoms/Icons";
+import { LogoutIcons, PlusIcons } from "@/components/atoms/Icons";
 import { Button } from "@/components/atoms/UI/Buttons/Button";
 import CabinetTableBlock from "@/components/molecules/CabinetTableBlock";
 import CabinetTable from "@/components/organisms/CabinetTable";
@@ -29,6 +29,7 @@ const CabinetPage = () => {
   const handleAddButtonClick = () => {
     setEditActive(false);
     setShowActive(!showActive);
+    setId(null);
   };
 
   const handleClickGetId = (id?: number) => {
@@ -52,23 +53,33 @@ const CabinetPage = () => {
         }}
       >
         <Button
-          background="#27AE60"
+          background={showActive || editActive ? "#CACACA" : "#27AE60"}
           radius="14px"
           style={{
             width: "auto",
-            display: "flex",
-            alignItems: "center",
-            gap: ".8rem",
           }}
           onClick={handleAddButtonClick}
         >
-          <PlusIcons />
-          Добавить
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: ".8rem",
+            }}
+          >
+            {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
+            {showActive || editActive ? "Закрыть" : "Добавить"}
+          </div>
         </Button>
       </div>
 
       {(showActive || editActive) && (
-        <CabinetTableBlock onReject={setShowActive} cabinetid={cabinetid} getId={getId} setEditActive={setEditActive}/>
+        <CabinetTableBlock
+          onReject={setShowActive}
+          cabinetid={cabinetid}
+          getId={getId}
+          setEditActive={setEditActive}
+        />
       )}
 
       <CabinetTable cabinet={cabinet} handleClickGetId={handleClickGetId} />

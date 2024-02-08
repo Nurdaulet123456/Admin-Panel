@@ -8,10 +8,10 @@ import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 
 interface IProps {
-  handleClickGetIdDop?: (id?: number) => void
+  handleClickGetIdDop?: (id?: number) => void;
 }
 
-const SchoolTable3: FC<IProps> = ({handleClickGetIdDop}) => {
+const SchoolTable3: FC<IProps> = ({ handleClickGetIdDop }) => {
   const dispatch = useAppDispatch();
   const media = useTypedSelector((state) => state.system.schoolsocial);
 
@@ -61,7 +61,11 @@ const SchoolTable3: FC<IProps> = ({handleClickGetIdDop}) => {
                 <Td>Content</Td>
                 <Td>{item.account_name}</Td>
                 <Td>
-                  <div onClick={() => handleClickGetIdDop && handleClickGetIdDop(item.id)}>
+                  <div
+                    onClick={() =>
+                      handleClickGetIdDop && handleClickGetIdDop(item.id)
+                    }
+                  >
                     <PenIcons />
                   </div>
 

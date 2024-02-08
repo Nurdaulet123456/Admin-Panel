@@ -1,12 +1,12 @@
-import React from 'react';
-import ScheduleComponents from './[...id]';
+import React from "react";
+import ScheduleComponents from "./[...id]";
 
 const SchedulePage = () => {
   return (
     <>
-        <ScheduleComponents /> 
+      <ScheduleComponents />
     </>
   );
-}
+};
 
 export default SchedulePage;

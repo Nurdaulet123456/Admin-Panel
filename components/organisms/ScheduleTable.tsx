@@ -49,7 +49,7 @@ const ScheduleTable = ({
     day: any,
     start_time: any,
     end_time: any,
-    timeId?: any
+    timeId?: any,
   ) => {
     setOpenModal(true);
     setSelectedCell({ day, start_time, end_time, timeId });
@@ -73,7 +73,7 @@ const ScheduleTable = ({
           onReject={handleCloseModal}
           selectedCell={selectedCell}
           classnames={decodeURIComponent(
-            router.asPath.split("/").at(-1) as string
+            router.asPath.split("/").at(-1) as string,
           )}
         />
       )}
@@ -160,21 +160,23 @@ const ScheduleTable = ({
                         item.week_day === (dayIndex + 1).toString() &&
                         item?.ring?.start_time === timeRange.start_time &&
                         item?.classl?.class_name ===
-                          decodeURIComponent(router.asPath?.split("/")?.at(-1) as string)
+                          decodeURIComponent(
+                            router.asPath?.split("/")?.at(-1) as string,
+                          ),
                     );
 
                   const isSelected = selectedCells.some(
                     (selectedCell: any) =>
                       selectedCell.day === day &&
                       selectedCell.start_time === timeRange.start_time &&
-                      selectedCell.end_time === timeRange.end_time
+                      selectedCell.end_time === timeRange.end_time,
                   );
 
                   const isSelectedPaste = selectedCellsPaste.some(
                     (selectedCell: any) =>
                       selectedCell.day === day &&
                       selectedCell.start_time === timeRange.start_time &&
-                      selectedCell.end_time === timeRange.end_time
+                      selectedCell.end_time === timeRange.end_time,
                   );
 
                   return (
@@ -227,7 +229,7 @@ const ScheduleTable = ({
                                   scheduleItem?.classl?.id,
                                   scheduleItem?.subject?.id,
                                   scheduleItem?.classroom?.id,
-                                  scheduleItem?.typez?.id
+                                  scheduleItem?.typez?.id,
                                 )
                               }
                             />
@@ -248,7 +250,7 @@ const ScheduleTable = ({
                                 day,
                                 timeRange.start_time,
                                 timeRange.end_time,
-                                timeRange.id
+                                timeRange.id,
                               )
                             }
                           >
@@ -263,7 +265,7 @@ const ScheduleTable = ({
                                   day,
                                   timeRange.start_time,
                                   timeRange.end_time,
-                                  timeRange.id
+                                  timeRange.id,
                                 )
                               }
                             />

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { PlusIcons } from "@/components/atoms/Icons";
+import { LogoutIcons, PlusIcons } from "@/components/atoms/Icons";
 import { Button } from "@/components/atoms/UI/Buttons/Button";
 import MenuTableBlock from "@/components/molecules/MenuTableBlock";
 import MenuTable from "@/components/organisms/MenuTable";
@@ -28,6 +28,7 @@ const MenuPage = () => {
   const handleAddButtonClick = () => {
     setEditActive(false);
     setShowActive(!showActive);
+    setId(null);
   };
 
   const handleClickGetId = (id?: number) => {
@@ -51,23 +52,33 @@ const MenuPage = () => {
         }}
       >
         <Button
-          background="#27AE60"
+          background={showActive || editActive ? "#CACACA" : "#27AE60"}
           radius="14px"
           style={{
             width: "auto",
-            display: "flex",
-            alignItems: "center",
-            gap: ".8rem",
           }}
           onClick={handleAddButtonClick}
         >
-          <PlusIcons />
-          Добавить
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: ".8rem",
+            }}
+          >
+            {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
+            {showActive || editActive ? "Закрыть" : "Добавить"}
+          </div>
         </Button>
       </div>
 
       {(showActive || editActive) && (
-        <MenuTableBlock onReject={setShowActive} getId={getId} menuid={menuid} onEdit={setEditActive}/>
+        <MenuTableBlock
+          onReject={setShowActive}
+          getId={getId}
+          menuid={menuid}
+          onEdit={setEditActive}
+        />
       )}
 
       <MenuTable

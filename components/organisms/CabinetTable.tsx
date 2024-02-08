@@ -16,7 +16,7 @@ const CabinetTable: FC<IProps> = ({ cabinet, handleClickGetId }) => {
   const dispatch = useAppDispatch();
   const handleDeleteItems = async (id?: number) => {
     await instance
-      .delete(`/api/classroom/${id}`, {
+      .delete(`https://www.bilimge.kz/admins/api/classroom/${id}`, {
         headers: {
           Authorization: `Token ${getTokenInLocalStorage()}`,
         },

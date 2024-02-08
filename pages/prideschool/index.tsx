@@ -1,11 +1,11 @@
-import PrideSchoolComponents from './[id]';
+import PrideSchoolComponents from "./[id]";
 
 const PrideSchoolPage = () => {
   return (
     <>
-    <PrideSchoolComponents /> 
+      <PrideSchoolComponents />
     </>
   );
-}
+};
 
 export default PrideSchoolPage;

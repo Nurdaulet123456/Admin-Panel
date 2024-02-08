@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { PlusIcons } from "@/components/atoms/Icons";
+import { LogoutIcons, PlusIcons } from "@/components/atoms/Icons";
 import { Button } from "@/components/atoms/UI/Buttons/Button";
 import AdministratorTableBlock from "@/components/molecules/SuperAdminTableBlock/AdministratorTableBlock";
 import AdministratorTable from "@/components/organisms/SuperAdmin/AdministratorTable";
@@ -27,11 +27,12 @@ const MainPage = () => {
   const handleAddButtonClick = () => {
     setEditActive(false);
     setShowActive(!showActive);
+    setId(null);
   };
 
   const handleClickGetId = (id?: number) => {
     setEditActive(true);
-
+    setShowActive(!showActive);
     setId(id);
 
     if (id) {
@@ -50,23 +51,33 @@ const MainPage = () => {
         }}
       >
         <Button
-          background="#27AE60"
+          background={showActive || editActive ? "#CACACA" : "#27AE60"}
           radius="14px"
           style={{
             width: "auto",
-            display: "flex",
-            alignItems: "center",
-            gap: ".8rem",
           }}
           onClick={handleAddButtonClick}
         >
-          <PlusIcons />
-          Добавить
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: ".8rem",
+            }}
+          >
+            {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
+            {showActive || editActive ? "Назад" : "Добавить"}
+          </div>
         </Button>
       </div>
 
       {(showActive || editActive) && (
-        <AdministratorTableBlock onReject={setShowActive} usersid={usersid} getId={getId} onEdit={setEditActive}/>
+        <AdministratorTableBlock
+          onReject={setShowActive}
+          usersid={usersid}
+          getId={getId}
+          onEdit={setEditActive}
+        />
       )}
 
       {!showActive && !editActive && (

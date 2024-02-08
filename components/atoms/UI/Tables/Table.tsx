@@ -18,21 +18,19 @@ export const Th = styled.th`
   color: white;
   font-weight: 700;
   font-size: 1.6rem;
-
 `;
 
 export const Tr = styled.tr`
-    &:nth-child(odd) {
-        background-color:#E0E0E066;
-    }
-`
+  &:nth-child(odd) {
+    background-color: #e0e0e066;
+  }
+`;
 
 export const Td = styled.td`
   padding: 2rem;
   font-weight: 400;
-  color: #4F4F4F;
-  font-size: 1.6rem; 
-
+  color: #4f4f4f;
+  font-size: 1.6rem;
 
   &:last-child {
     display: flex;
@@ -40,7 +38,7 @@ export const Td = styled.td`
     gap: 1.6rem;
 
     div {
-        cursor: pointer;
+      cursor: pointer;
     }
   }
 `;

@@ -16,7 +16,7 @@ const SuperAdminTable: FC<IProps> = ({ school, onEdit }) => {
   const dispatch = useAppDispatch();
   const handleDeleteItems = async (id?: number) => {
     await instance
-      .delete(`/api/school/${id}`, {
+      .delete(`https://www.bilimge.kz/admins/api/school/${id}`, {
         headers: {
           Authorization: `Token ${getTokenInLocalStorage()}`,
         },
@@ -39,7 +39,7 @@ const SuperAdminTable: FC<IProps> = ({ school, onEdit }) => {
           <Thead>
             <tr>
               <Th>No</Th>
-              <Th>Мектеп списакасы</Th>
+              <Th>Список школ</Th>
               <Th>Действие</Th>
             </tr>
           </Thead>

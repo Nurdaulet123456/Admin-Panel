@@ -99,7 +99,7 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
               headers: {
                 Authorization: `Token ${getTokenInLocalStorage()}`,
               },
-            }
+            },
           );
 
           showSuccess();
@@ -123,7 +123,7 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
               headers: {
                 Authorization: `Token ${getTokenInLocalStorage()}`,
               },
-            }
+            },
           );
 
           showSuccess();
@@ -178,7 +178,7 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
                           : []
                       }
                     />
-                  )
+                  ),
               )}
             </div>
 
@@ -209,7 +209,7 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
                           : []
                       }
                     />
-                  )
+                  ),
               )}
             </div>
 
@@ -241,7 +241,7 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
                             : []
                         }
                       />
-                    )
+                    ),
                 )}
               </div>
             </div>

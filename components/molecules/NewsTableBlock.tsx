@@ -48,7 +48,7 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
   } = useModalLogic();
 
   const onChangeUpdateInput = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
   ) => {
     const { name, type } = e.target;
 
@@ -141,7 +141,7 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
                 headers: {
                   Authorization: `Token ${getTokenInLocalStorage()}`,
                 },
-              }
+              },
             )
             .then((res) => {
               if (res) {

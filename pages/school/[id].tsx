@@ -95,11 +95,21 @@ const SchoolComponents = () => {
       </div>
 
       {(showActive || editActive) && router.query.id === "1" && (
-        <SchoolTableBlock1 onReject={setShowActive} adminid={adminid} getId={getId} onEdit={setEditActive}/>
+        <SchoolTableBlock1
+          onReject={setShowActive}
+          adminid={adminid}
+          getId={getId}
+          onEdit={setEditActive}
+        />
       )}
       {router.query.id === "2" && <SchoolTableBlock3 />}
       {(showActive || editActive) && router.query.id === "3" && (
-        <SchoolTableBlock2 onReject={setShowActive} photosid={photosid} getId={getId} onEdit={setEditActive}/>
+        <SchoolTableBlock2
+          onReject={setShowActive}
+          photosid={photosid}
+          getId={getId}
+          onEdit={setEditActive}
+        />
       )}
       {(showActive || editActive) && router.query.id === "4" && (
         <SchoolTableBlock4
@@ -110,8 +120,12 @@ const SchoolComponents = () => {
         />
       )}
 
-      {router.query.id === "1" && <SchoolTable handleClickGetId1={handleClickGetId1}/>}
-      {router.query.id === "3" && <SchoolTable2 handleClickGetId2={handleClickGetId2}/>}
+      {router.query.id === "1" && (
+        <SchoolTable handleClickGetId1={handleClickGetId1} />
+      )}
+      {router.query.id === "3" && (
+        <SchoolTable2 handleClickGetId2={handleClickGetId2} />
+      )}
       {router.query.id === "4" && (
         <SchoolTable3 handleClickGetIdDop={handleClickGetIdDop} />
       )}

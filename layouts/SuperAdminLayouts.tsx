@@ -16,9 +16,8 @@ const SuperAdminLayouts = ({ children }: ILayouts) => {
 
   const onLogout = async () => {
     try {
-        router.push("/");
-        localStorageWrapper.remove("token");
-
+      router.push("/");
+      localStorageWrapper.remove("token");
     } catch (err) {
       console.error("Logout error:", err);
     }

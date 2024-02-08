@@ -40,24 +40,25 @@ export const ModalContent = styled.div`
     font-weight: 500;
 
     .forms {
-        span {
-            color: rgba(0,0,0,0.5);
-        }
+      span {
+        color: rgba(0, 0, 0, 0.5);
+      }
     }
 
-    &-title, &-subtitle {
+    &-title,
+    &-subtitle {
       text-align: center;
     }
 
     &-title {
-      color: #54595E;
+      color: #54595e;
       font-size: 2rem;
-      margin-bottom: .8rem;
+      margin-bottom: 0.8rem;
       font-weight: 600;
     }
 
     &-subtitle {
-      color: #54595E99;
+      color: #54595e99;
       font-size: 1.4rem;
     }
   }

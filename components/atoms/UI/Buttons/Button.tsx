@@ -31,7 +31,7 @@ export const Button = styled.button<ButtonProps>`
 export const ButtonLogout = styled.button`
   display: inline-block;
 
-  background-color: #4090FF;
+  background-color: #4090ff;
   border-radius: 6px;
 
   border: none;
@@ -47,4 +47,4 @@ export const ButtonLogout = styled.button`
   font-size: 1.6rem;
 
   cursor: pointer;
-`
+`;

@@ -9,11 +9,11 @@ import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 
 interface IProps {
-  onEdit?: Dispatch<SetStateAction<boolean>>
-  handleClickGetId?: (id?: number) => void
+  onEdit?: Dispatch<SetStateAction<boolean>>;
+  handleClickGetId?: (id?: number) => void;
 }
 
-const TypeLessonsTable: FC<IProps> = ({onEdit, handleClickGetId}) => {
+const TypeLessonsTable: FC<IProps> = ({ onEdit, handleClickGetId }) => {
   const dispatch = useAppDispatch();
   const extra = useTypedSelector((state) => state.pride.extra);
 
@@ -23,17 +23,16 @@ const TypeLessonsTable: FC<IProps> = ({onEdit, handleClickGetId}) => {
     }
   }, [dispatch]);
 
-
   const handleDeleteItems = async (id?: number) => {
     await instance
-      .delete(`/api/extra_lesson/${id}`, {
+      .delete(`https://www.bilimge.kz/admins/api/extra_lesson/${id}`, {
         headers: {
           Authorization: `Token ${getTokenInLocalStorage()}`,
         },
       })
       .then((res) => {
         if (res) {
-          console.log(res)
+          console.log(res);
         }
       })
       .catch((e) => console.log(e));
@@ -43,7 +42,6 @@ const TypeLessonsTable: FC<IProps> = ({onEdit, handleClickGetId}) => {
   return (
     <div className="main_table">
       <div className="main_table-title">Тип занятий</div>
-
       <div className="main_table-block">
         <Table>
           <Thead>
@@ -64,7 +62,11 @@ const TypeLessonsTable: FC<IProps> = ({onEdit, handleClickGetId}) => {
                   <ColorBlock color={item.type_color} circle />
                 </Td>
                 <Td>
-                  <div onClick={() => handleClickGetId && handleClickGetId(item.id)}>
+                  <div
+                    onClick={() =>
+                      handleClickGetId && handleClickGetId(item.id)
+                    }
+                  >
                     <PenIcons />
                   </div>
 
