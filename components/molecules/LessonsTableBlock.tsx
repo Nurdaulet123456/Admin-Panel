@@ -164,7 +164,7 @@ const LessonsTableBlock: FC<IProps> = ({
                 </div>
                 <div className="sanaty">
                   <div className="login_forms-label_pink">Уровень занятий</div>
-                  <Select name="sanat" {...formik.getFieldProps("sanat")}>
+                  <Select {...formik.getFieldProps("sanat")}>
                     <option value="">Выберите сложность</option>
                     {timeArr.map((item) => (
                       <option value={item.type}>{item.type}</option>

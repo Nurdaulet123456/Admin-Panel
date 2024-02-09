@@ -8,6 +8,7 @@ import MainLayouts from "@/layouts/MainLayouts";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import { getMenuIdThunk, getMenuThunk } from "@/store/thunks/schoolnfo.thunk";
+import {useSelector} from "react-redux";
 
 const MenuPage = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
