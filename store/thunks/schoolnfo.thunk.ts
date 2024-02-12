@@ -38,7 +38,7 @@ export const getClassRoomIdThunk = createAsyncThunk(
 
 export const getSchoolThunk = createAsyncThunk(
   "getSchoolThunk",
-  async (id?: number) => await assetsApi.getSchool(id),
+  async () => await assetsApi.getSchool(),
 );
 
 export const getSchoolIdThunk = createAsyncThunk(

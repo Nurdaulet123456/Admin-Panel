@@ -30,7 +30,7 @@ const MainPage = () => {
   const handleAddButtonClick = () => {
     setShowActive(!showActive);
     setEditActive(false);
-    setGetId(null);
+    setGetId(undefined);
   };
 
   const handleGetId = async (id?: number) => {

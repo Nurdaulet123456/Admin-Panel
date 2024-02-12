@@ -29,7 +29,7 @@ const MenuPage = () => {
   const handleAddButtonClick = () => {
     setEditActive(false);
     setShowActive(!showActive);
-    setId(null);
+    setId(undefined);
   };
 
   const handleClickGetId = (id?: number) => {

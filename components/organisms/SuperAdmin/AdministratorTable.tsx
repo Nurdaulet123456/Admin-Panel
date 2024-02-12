@@ -38,13 +38,13 @@ const AdministratorTable: FC<IProps> = ({ users, handleClickGetId }) => {
     dispatch(getIASchoolThunk());
   }, [dispatch]);
 
-  const getSchoolLabelById = (id) => {
-    const selectedSchool = school.find((item) => item.id === id);
+  const getSchoolLabelById = (id?: number) => {
+    const selectedSchool = school?.find((item) => item.id === id);
     return selectedSchool ? selectedSchool.school_kz_name : "";
   };
 
-  const getSchoolUrlById = (id) => {
-    const selectedSchool = school.find((item) => item.id === id);
+  const getSchoolUrlById = (id?: number) => {
+    const selectedSchool = school?.find((item) => item.id === id);
     return selectedSchool ? selectedSchool.url : "";
   };
 

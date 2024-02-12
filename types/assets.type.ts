@@ -285,6 +285,7 @@ export interface IClass {
 export interface IASchool {
   id?: number;
   school_kz_name?: string;
+  url?: string;
 }
 
 export interface IAClass {

@@ -174,7 +174,7 @@ const MenuTableBlock: FC<IProps> = ({ onReject, getId, menuid, onEdit }) => {
           <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
             <div className="main_table-modal_upload sanaty">
               <div className="login_forms-label_pink">Күні</div>
-              <Select name="week_day" {...formik.getFieldProps("week_day")}>
+              <Select {...formik.getFieldProps("week_day")}>
                 <option value="">Выберите день недели</option>
                 {timeArr.map((item) => (
                   <option value={item.id}>{item.type}</option>

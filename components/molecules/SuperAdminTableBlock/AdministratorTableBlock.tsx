@@ -63,7 +63,7 @@ const AdministratorTableBlock: FC<IProps> = ({
     showError,
   } = useModalLogic();
 
-  const [schoolId, setId] = useState<number>(getId ? usersid?.school : 8946542);
+  const [schoolId, setId] = useState(getId ? usersid?.school : 8946542);
   console.log(schoolId + " asdf");
 
   useEffect(() => {
@@ -279,7 +279,7 @@ const AdministratorTableBlock: FC<IProps> = ({
                       backgroundColor: "white",
                     }}
                   >
-                    {school.map((item) => (
+                    {school?.map((item) => (
                       <MenuItem
                         key={item.id}
                         value={item.id}
