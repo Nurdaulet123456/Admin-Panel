@@ -96,7 +96,7 @@ const SuperAdminTableBlock: FC<IProps> = ({
           .then((res) => {
             if (res && onReject) {
               showSuccess();
-              dispatch(getUsersThunk());
+              dispatch(getSchoolThunk());
               onDelete();
               if (showSuccessModal && onReject) {
                 onReject(false);
@@ -130,7 +130,7 @@ const SuperAdminTableBlock: FC<IProps> = ({
           .then((res) => {
             if (res && onEdit) {
               showSuccess();
-              dispatch(getUsersThunk());
+              dispatch(getSchoolThunk());
               if (showSuccessModal && onReject) {
                 onReject(false);
               }

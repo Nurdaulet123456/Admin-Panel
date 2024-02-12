@@ -1,4 +1,4 @@
-import { PlusIcons } from "@/components/atoms/Icons";
+import { LogoutIcons, PlusIcons } from "@/components/atoms/Icons";
 import { Button } from "@/components/atoms/UI/Buttons/Button";
 import TeachersTableBlock from "@/components/molecules/TeachersTableBlock";
 import TeachersTable from "@/components/organisms/TeachersTable";
@@ -20,6 +20,7 @@ const TeachersPage = () => {
   const handleAddButtonClick = () => {
     setEditActive(false);
     setShowActive(!showActive);
+    setId(undefined);
   };
 
   const handleClickGetId = (id?: number) => {
@@ -42,18 +43,23 @@ const TeachersPage = () => {
         }}
       >
         <Button
-          background="#27AE60"
+          background={showActive || editActive ? "#CACACA" : "#27AE60"}
           radius="14px"
           style={{
             width: "auto",
-            display: "flex",
-            alignItems: "center",
-            gap: ".8rem",
           }}
           onClick={handleAddButtonClick}
         >
-          <PlusIcons />
-          Добавить
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: ".8rem",
+            }}
+          >
+            {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
+            {showActive || editActive ? "Назад" : "Добавить"}
+          </div>
         </Button>
       </div>
 

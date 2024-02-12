@@ -362,7 +362,7 @@ export const assetsApi = {
   },
 
   async getTeachers(): Promise<ITeachers[]> {
-    return await instance.get("/api/teacher/", {
+    return await instance.get("https://bilimge.kz/admins/api/teacher/", {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -370,7 +370,7 @@ export const assetsApi = {
   },
 
   async getTeachersId(id?: number): Promise<ITeachers> {
-    return await instance.get(`/api/teacher/${id}`, {
+    return await instance.get(`https://bilimge.kz/admins/api/teacher/${id}`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
