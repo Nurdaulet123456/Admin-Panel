@@ -22,8 +22,7 @@ const Sidebar = () => {
   //         })
   //         .then((res) => {
   //           if (res) {
-  //             if(res.school)
-  //             setSchoolId(res.school);
+  //             console.log(res)
   //           }
   //         });
   //   }

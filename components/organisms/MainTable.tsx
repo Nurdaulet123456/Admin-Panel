@@ -22,7 +22,7 @@ const MainTable: FC<IProps> = ({ kruzhok, handleClickGetId }) => {
 
   const handleDeleteItems = async (id?: number) => {
     await instance
-      .delete(`/api/kruzhok/${id}/`, {
+      .delete(`https://bilimge.kz/admins/api/kruzhok/${id}/`, {
         headers: {
           Authorization: `Token ${getTokenInLocalStorage()}`,
         },

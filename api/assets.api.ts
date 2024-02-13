@@ -33,7 +33,7 @@ import {
 
 export const assetsApi = {
   async getKruzhok(): Promise<IKruzhok[]> {
-    return await instance.get("/api/kruzhok/", {
+    return await instance.get("https://bilimge.kz/admins/api/kruzhok/", {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -57,7 +57,7 @@ export const assetsApi = {
   },
 
   async getKruzhokId(id?: number): Promise<IKruzhok> {
-    return await instance.get(`/api/kruzhok/${id}`, {
+    return await instance.get(`https://bilimge.kz/admins/api/kruzhok/${id}`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -183,7 +183,7 @@ export const assetsApi = {
   },
 
   async getSchoolSocialMedia(): Promise<ISchoolSocialMedia[]> {
-    return await instance.get("/api/School_SocialMediaApi/", {
+    return await instance.get("https://bilimge.kz/admins/api/School_SocialMediaApi/", {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -191,7 +191,7 @@ export const assetsApi = {
   },
 
   async getSchoolSocialMediaId(id?: number): Promise<ISchoolSocialMedia> {
-    return await instance.get(`/api/School_SocialMediaApi/${id}`, {
+    return await instance.get(`https://bilimge.kz/admins/api/School_SocialMediaApi/${id}`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -201,7 +201,7 @@ export const assetsApi = {
   // pride school
 
   async getSchoolSport(): Promise<ISchoolSport[]> {
-    return await instance.get("/api/Sport_SuccessApi/", {
+    return await instance.get("https://bilimge.kz/admins/api/Sport_SuccessApi/", {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -209,7 +209,7 @@ export const assetsApi = {
   },
 
   async getSchoolSportId(id?: number): Promise<ISchoolSport> {
-    return await instance.get(`/api/Sport_SuccessApi/${id}`, {
+    return await instance.get(`https://bilimge.kz/admins/api/Sport_SuccessApi/${id}`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -217,7 +217,7 @@ export const assetsApi = {
   },
 
   async getSchoolOner(): Promise<ISchoolOner[]> {
-    return await instance.get("/api/Oner_SuccessApi/", {
+    return await instance.get("https://bilimge.kz/admins/api/Oner_SuccessApi/", {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -225,7 +225,7 @@ export const assetsApi = {
   },
 
   async getSchoolOnerId(id?: number): Promise<ISchoolOner> {
-    return await instance.get(`/api/Oner_SuccessApi/${id}`, {
+    return await instance.get(`https://bilimge.kz/admins/api/Oner_SuccessApi/${id}`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -233,7 +233,7 @@ export const assetsApi = {
   },
 
   async getSchoolOlimp(): Promise<ISchoolOlimp[]> {
-    return await instance.get("/api/PandikOlimpiadaApi/", {
+    return await instance.get("https://bilimge.kz/admins/api/PandikOlimpiadaApi/", {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -241,7 +241,7 @@ export const assetsApi = {
   },
 
   async getSchoolOlimpId(id?: number): Promise<ISchoolOlimp> {
-    return await instance.get(`/api/PandikOlimpiadaApi/${id}`, {
+    return await instance.get(`https://bilimge.kz/admins/api/PandikOlimpiadaApi/${id}`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -249,7 +249,7 @@ export const assetsApi = {
   },
 
   async getSchoolAltyn(): Promise<ISchoolAltyn[]> {
-    return await instance.get("/api/School_AltynBelgiApi/", {
+    return await instance.get("https://bilimge.kz/admins/api/School_AltynBelgiApi/", {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -257,7 +257,7 @@ export const assetsApi = {
   },
 
   async getSchoolAltynId(id?: number): Promise<ISchoolAltyn> {
-    return await instance.get(`/api/School_AltynBelgiApi/${id}`, {
+    return await instance.get(`https://bilimge.kz/admins/api/School_AltynBelgiApi/${id}`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -265,7 +265,7 @@ export const assetsApi = {
   },
 
   async getSchoolAtestat(): Promise<ISchoolAtest[]> {
-    return await instance.get("/api/School_RedCertificateApi/", {
+    return await instance.get("https://bilimge.kz/admins/api/School_RedCertificateApi/", {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -273,7 +273,7 @@ export const assetsApi = {
   },
 
   async getSchoolAtestatId(id?: number): Promise<ISchoolAtest> {
-    return await instance.get(`/api/School_RedCertificateApi/${id}`, {
+    return await instance.get(`https://bilimge.kz/admins/api/School_RedCertificateApi/${id}`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -354,7 +354,7 @@ export const assetsApi = {
   },
 
   async getPrideClasses(): Promise<IClassName[]> {
-    return await instance.get("/api/available_classes/", {
+    return await instance.get("https://www.bilimge.kz/admins/api/available_classes/", {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -407,7 +407,7 @@ export const assetsApi = {
   },
 
   async getAvalibaleClasses(class_name?: string): Promise<IAClass[]> {
-    return await instance.get(`/api/available_classes/`, {
+    return await instance.get(`https://www.bilimge.kz/admins/api/available_classes/`, {
       params: {
         class_name,
       },

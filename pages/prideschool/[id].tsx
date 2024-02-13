@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { PlusIcons } from "@/components/atoms/Icons";
+import {LogoutIcons, PlusIcons} from "@/components/atoms/Icons";
 import { Button } from "@/components/atoms/UI/Buttons/Button";
 import Tabs from "@/components/molecules/Tabs/Tabs";
 import MainLayouts from "@/layouts/MainLayouts";
@@ -43,6 +43,7 @@ const PrideSchoolComponents = () => {
   const handleAddButtonClick = () => {
     setEditActive(false);
     setShowActive(!showActive);
+    setId(undefined);
   };
 
   const handleClickGetIdSport = (id?: number) => {
@@ -107,18 +108,23 @@ const PrideSchoolComponents = () => {
       >
         <Tabs link="prideschool" tabs={tabs} />
         <Button
-          background="#27AE60"
-          radius="14px"
-          style={{
-            width: "auto",
-            display: "flex",
-            alignItems: "center",
-            gap: ".8rem",
-          }}
-          onClick={handleAddButtonClick}
+            background={showActive || editActive ? "#CACACA" : "#27AE60"}
+            radius="14px"
+            style={{
+              width: "auto",
+            }}
+            onClick={handleAddButtonClick}
         >
-          <PlusIcons />
-          Добавить
+          <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: ".8rem",
+              }}
+          >
+            {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
+            {showActive || editActive ? "Назад" : "Добавить"}
+          </div>
         </Button>
       </div>
 

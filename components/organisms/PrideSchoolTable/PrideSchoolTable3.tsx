@@ -23,7 +23,7 @@ const PrideSchoolTable3: FC<IProps> = ({ handleClickGetIdOlimp }) => {
 
   const handleDeleteItems = async (id?: number) => {
     await instance
-      .delete(`/api/PandikOlimpiadaApi/${id}`, {
+      .delete(`https://bilimge.kz/admins/api/PandikOlimpiadaApi/${id}`, {
         headers: {
           Authorization: `Token ${getTokenInLocalStorage()}`,
         },

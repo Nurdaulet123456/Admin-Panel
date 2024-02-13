@@ -23,7 +23,7 @@ const PrideSchoolTable5: FC<IProps> = ({ handleClickGetIdAtest }) => {
 
   const handleDeleteItems = async (id?: number) => {
     await instance
-      .delete(`/api/School_RedCertificateApi/${id}`, {
+      .delete(`https://bilimge.kz/admins/api/School_RedCertificateApi/${id}`, {
         headers: {
           Authorization: `Token ${getTokenInLocalStorage()}`,
         },

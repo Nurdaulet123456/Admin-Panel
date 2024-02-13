@@ -146,6 +146,7 @@ export interface ISchoolSport {
   student_success?: string;
   classl?: any;
   school?: number;
+  class_id?: string;
 }
 
 // School Oner
@@ -157,6 +158,7 @@ export interface ISchoolOner {
   student_success?: string;
   classl?: any;
   school?: number;
+  class_id?: string;
 }
 
 // School Olimp
@@ -168,6 +170,7 @@ export interface ISchoolOlimp {
   student_success?: string;
   classl?: any;
   school?: number;
+  class_id?: string;
 }
 
 // School Altyn
@@ -179,6 +182,7 @@ export interface ISchoolAltyn {
   student_success?: string;
   endyear?: string;
   school?: number;
+  class_id?: string;
 }
 
 // School Atestat
@@ -190,6 +194,7 @@ export interface ISchoolAtest {
   student_success?: string;
   endyear?: string;
   school?: number;
+  class_id?: string;
 }
 
 // Lessons

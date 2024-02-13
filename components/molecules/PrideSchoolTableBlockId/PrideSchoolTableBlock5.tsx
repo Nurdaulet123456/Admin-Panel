@@ -10,12 +10,14 @@ import { Button } from "../../atoms/UI/Buttons/Button";
 import { Input } from "../../atoms/UI/Inputs/Input";
 import { instance } from "@/api/axios.instance";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { getSchoolAtestThunk } from "@/store/thunks/pride.thunk";
+import {getSchoolAtestThunk, getSchoolSportThunk} from "@/store/thunks/pride.thunk";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { ISchoolAtest } from "@/types/assets.type";
 import { useModalLogic } from "@/hooks/useModalLogic";
 import ErrorModal from "@/components/modals/ErrorModal";
 import SuccessModal from "@/components/modals/SuccessModal";
+import {useFormik} from "formik";
+import * as Yup from "yup";
 
 interface UpdateInputProps {
   fullname: string;
@@ -38,12 +40,7 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
   getId,
 }) => {
   const dispatch = useAppDispatch();
-  const [updateInput, setUpdateInput] = useState<UpdateInputProps>({
-    fullname: "",
-    text: "",
-    class: "",
-    file: null,
-  });
+
 
   const {
     showSuccessModal,
@@ -53,192 +50,221 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
     showSuccess,
     showError,
   } = useModalLogic();
-
-  const onChangeUpdateInput = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value, files } = e.target;
-
-    if (name === "file") {
-      setUpdateInput({
-        ...updateInput,
-        file: files?.[0] || null,
-      });
-    } else {
-      setUpdateInput({
-        ...updateInput,
-        [name]: value,
-      });
+  const formik = useFormik({
+    initialValues: {
+      fullname: "",
+      student_success: "",
+      endyear: "",
+      photo: null,
+    },
+    validationSchema: Yup.object({
+      fullname: Yup.string().required("Обязательно*"),
+      student_success: Yup.string().required("Обязательно*"),
+      endyear: Yup.string()
+          .matches(/^\d{4}-\d{4}$/, 'Неверный формат годового диапазона')
+          .required('Годовой диапазон обязателен для заполнения'),
+    }),
+    onSubmit: async (values) => {
+      console.log(values);
+      if (!getId) {
+        await instance
+            .post("https://bilimge.kz/admins/api/School_RedCertificateApi/", values, {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+                "Content-Type": "multipart/form-data",
+              },
+            })
+            .then((res) => {
+              if (res) {
+                dispatch(getSchoolAtestThunk());
+                showSuccess();
+                onDelete();
+                if (showSuccessModal && onReject) {
+                  onReject(false);
+                }
+              }
+            })
+            .catch((e) => {
+              showError();
+              if (showErrorModal && onReject) {
+                onReject(false);
+              }
+            });
+      } else {
+        await instance
+            .put(`https://bilimge.kz/admins/api/School_RedCertificateApi/${getId}/`,
+                values.photo ? {
+                      fullname: values.fullname,
+                      endyear: values.endyear,
+                      student_success: values.student_success,
+                      photo: values.photo
+                    } :
+                    {
+                      fullname: values.fullname,
+                      endyear: values.endyear,
+                      student_success: values.student_success,
+                    }, {
+                  headers: {
+                    Authorization: `Token ${getTokenInLocalStorage()}`,
+                    "Content-Type": "multipart/form-data",
+                  },
+                })
+            .then((res) => {
+              if (res) {
+                if (res) {
+                  dispatch(getSchoolAtestThunk());
+                  showSuccess();
+                  if (showSuccessModal && onReject) {
+                    onReject(false);
+                  }
+                }
+              }
+            })
+            .catch((e) => {
+              showError();
+              if (showErrorModal && onReject) {
+                onReject(false);
+              }
+            });
+      }
     }
-  };
+  });
+
 
   useEffect(() => {
-    if (atestid) {
-      setUpdateInput({
-        fullname: atestid.fullname || "",
-        file: null,
-        text: atestid.student_success || "",
-        class: atestid.endyear || "",
+    if (atestid && getId) {
+      formik.resetForm({
+        values: {
+          fullname: atestid.fullname || "",
+          student_success: atestid.student_success || "",
+          endyear: atestid.endyear || "",
+          photo: null,
+        },
       });
     }
-  }, [atestid]);
+  }, [atestid, getId]);
 
-  const onSave = async () => {
-    try {
-      if (
-        !updateInput.fullname ||
-        !updateInput.text ||
-        !updateInput.class ||
-        !updateInput.file
-      ) {
-        showError();
-        return;
-      }
 
-      if (
-        updateInput.fullname &&
-        updateInput.text &&
-        updateInput.class &&
-        updateInput.file
-      ) {
-        const formData = new FormData();
-        formData.append("fullname", updateInput.fullname);
-        formData.append("photo", updateInput.file);
-        formData.append("student_success", updateInput.text);
-        formData.append("endyear", updateInput.class);
+  function onDelete() {
+    formik.resetForm({
+      values: {
+        fullname: "",
+        student_success: "",
+        endyear: "",
+        photo: null,
+      },
+    });
+  }
 
-        if (!getId) {
-          await instance
-            .post(`/api/School_RedCertificateApi/`, formData, {
-              headers: {
-                Authorization: `Token ${getTokenInLocalStorage()}`,
-                "Content-Type": "multipart/form-data",
-              },
-            })
-            .then((res) => {
-              if (res) {
-                dispatch(getSchoolAtestThunk());
-                showSuccess();
-                setUpdateInput({
-                  file: null,
-                  fullname: "",
-                  text: "",
-                  class: "",
-                });
-              }
-            })
-            .catch((e) => {
-              console.log(e);
-            });
-        } else {
-          await instance
-            .put(`/api/School_RedCertificateApi/${getId}/`, formData, {
-              headers: {
-                Authorization: `Token ${getTokenInLocalStorage()}`,
-                "Content-Type": "multipart/form-data",
-              },
-            })
-            .then((res) => {
-              if (res) {
-                dispatch(getSchoolAtestThunk());
-                showSuccess();
-                setUpdateInput({
-                  file: null,
-                  fullname: "",
-                  text: "",
-                  class: "",
-                });
-              }
-            })
-            .catch((e) => {
-              console.log(e);
-            });
-        }
-      }
-    } catch (error) {
-      showError();
-    }
-  };
+
   return (
     <>
       {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
       {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
 
       <div className="main_table-modal">
-        <div className="main_table-modal_title">Должность</div>
-        <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
-          <div className="main_table-modal_upload">
-            <div className="login_forms-label_pink">Фото *</div>
-            <Input
-              type="file"
-              name="file"
-              onChange={(e) => onChangeUpdateInput(e)}
-              accept=".png, .jpg, .jpeg, .svg"
-            />
-          </div>
+        <form onSubmit={formik.handleSubmit}>
+          <div className="main_table-modal_title">Должность</div>
+          <div className="main_table-modal_flex" style={{gap: "1.6rem"}}>
+            <div className="main_table-modal_upload">
+              <div className="login_forms-label_pink">Фото *</div>
+              <Input type="file" name="photo" onChange={(event) => {
+                console.log(event?.target?.files?.[0]);
+                return formik.setFieldValue('photo', event?.target?.files?.[0]);
+              }}
+                     accept=".png, .jpg, .jpeg, .svg"
+                     key={formik.values.photo}
 
-          <div className="main_table-modal_forms">
-            <div className="forms">
-              <div className="login_forms-label_pink">ФИО *</div>
-
-              <Input
-                type="text"
-                placeholder="ФИО"
-                name="fullname"
-                value={updateInput.fullname}
-                onChange={(e) => onChangeUpdateInput(e)}
               />
             </div>
 
-            <div className="forms">
-              <div className="login_forms-label_pink">Текст</div>
+            <div className="main_table-modal_forms">
+              <div className="forms">
+                <div className="login_forms-label_pink">ФИО *</div>
+                {formik.touched.fullname && formik.errors.fullname ? (
+                    <div style={{color: "red"}}>{formik.errors.fullname}</div>
+                ) : null}
+                <Input
+                    name={"fullname"}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.fullname}
+                    style={{
+                      borderColor:
+                          formik.touched.fullname && formik.errors.fullname
+                              ? "red"
+                              : "#c1bbeb",
+                    }}
+                />
+              </div>
 
-              <Input
-                type="text"
-                placeholder="текст"
-                name="text"
-                value={updateInput.text}
-                onChange={(e) => onChangeUpdateInput(e)}
-              />
-            </div>
+              <div className="forms">
+                <div className="login_forms-label_pink">Текст</div>
+                {formik.touched.student_success && formik.errors.student_success ? (
+                    <div style={{color: "red"}}>{formik.errors.student_success}</div>
+                ) : null}
+                <Input
+                    name={"student_success"}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.student_success}
+                    style={{
+                      borderColor:
+                          formik.touched.student_success && formik.errors.student_success
+                              ? "red"
+                              : "#c1bbeb",
+                    }}
+                />
+              </div>
 
-            <div className="forms">
-              <div className="login_forms-label_pink">Год</div>
+              <div className="forms">
+                <div className="login_forms-label_pink">Год</div>
+                {formik.touched.endyear && formik.errors.endyear ? (
+                    <div style={{color: "red"}}>{formik.errors.endyear}</div>
+                ) : null}
+                <Input
+                    name={"endyear"}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.endyear}
+                    style={{
+                      borderColor:
+                          formik.touched.endyear && formik.errors.endyear
+                              ? "red"
+                              : "#c1bbeb",
+                    }}
+                    placeholder={"YYYY-YYYY "}
+                />
+              </div>
 
-              <Input
-                type="text"
-                placeholder="год"
-                name="class"
-                value={updateInput.class}
-                onChange={(e) => onChangeUpdateInput(e)}
-              />
-            </div>
-
-            <div
-              className="flex"
-              style={{ justifyContent: "flex-end", gap: "1.6rem" }}
-            >
-              <Button
-                background="#CACACA"
-                color="#645C5C"
-                style={{ width: "auto" }}
-                onClick={() =>
-                  getId ? onEdit && onEdit(false) : onReject && onReject(false)
-                }
+              <div
+                  className="flex"
+                  style={{justifyContent: "flex-end", gap: "1.6rem"}}
               >
-                Удалить
-              </Button>
-              <Button
-                background="#27AE60"
-                style={{ width: "auto" }}
-                onClick={onSave}
-              >
-                Сохранить
-              </Button>
+                <Button
+                    background="#CACACA"
+                    color="#645C5C"
+                    style={{width: "auto"}}
+                    onClick={() =>
+                        getId ? onEdit && onEdit(false) : onReject && onReject(false)
+                    }
+                >
+                  Удалить
+                </Button>
+                <Button
+                    background="#27AE60"
+                    style={{width: "auto"}}
+                    type={"submit"}
+                >
+                  Сохранить
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
+        </form>
       </div>
     </>
-  );
+);
 };
 
 export default PrideSchoolTableBlock5;
