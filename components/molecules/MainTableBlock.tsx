@@ -26,6 +26,8 @@ import { BASE_URL } from "@/config/config";
 import { IKruzhok } from "@/types/assets.type";
 import {useFormik} from "formik";
 import * as Yup from "yup";
+import {array} from "yup";
+import {log} from "console";
 
 interface IUpdateInput {
   name?: string;
@@ -52,148 +54,6 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
   const [showActive, setShowActive] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
   const [id, setId] = useState<number>();
-  // const [updateInput, setUpdateInput] = useState<IUpdateInput>({
-  //   name: "",
-  //   teacher: "",
-  //   goal: "",
-  //   times: {
-  //     Понедельник: "",
-  //     Вторник: "",
-  //     Среда: "",
-  //     Четверг: "",
-  //     Пятница: "",
-  //     Суббота: "",
-  //   },
-  // });
-  //
-  // const [file, setFile] = useState<any>(null);
-  //
-  // useEffect(() => {
-  //   if (kruzhokid) {
-  //     const newTimes = updateInput.times;
-  //     kruzhokid?.lessons?.forEach((lesson) => {
-  //       const russianDay = getWeekRussianDayString(lesson?.week_day as string);
-  //       newTimes[russianDay as string] = lesson?.start_end_time as string;
-  //     });
-  //
-  //     setUpdateInput({
-  //       name: kruzhokid.kruzhok_name || "",
-  //       teacher: kruzhokid?.teacher?.full_name || "",
-  //       goal: kruzhokid.purpose || "",
-  //       times: newTimes,
-  //     });
-  //
-  //     setText(kruzhokid?.teacher?.full_name || "");
-  //     setId(kruzhokid?.teacher?.id || "");
-  //   }
-  // }, [kruzhokid]);
-  //
-  // const handleUpdate = (
-  //   e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  // ) => {
-  //   const { name, value } = e.target;
-  //   if (name === "time") {
-  //     const day = e.target.dataset.day as string;
-  //     setUpdateInput((prevInput) => ({
-  //       ...prevInput,
-  //       times: {
-  //         ...prevInput.times,
-  //         [day]: value,
-  //       },
-  //     }));
-  //   } else {
-  //     setUpdateInput({
-  //       ...updateInput,
-  //       [name]: value,
-  //     });
-  //   }
-  // };
-  //
-  // const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-  //   const selectedFile = e.target.files?.[0];
-  //   console.log("Selected File:", selectedFile);
-  //   if (selectedFile) {
-  //     setFile(selectedFile);
-  //   }
-  // };
-  //
-  // const saveTimeSlots = async () => {
-  //   const timeSlots: ITimeSlot[] = [];
-  //
-  //   Object.entries(updateInput.times).forEach(([day, time]) => {
-  //     if (time.trim() !== "") {
-  //       timeSlots.push({
-  //         week_day: String(getWeekDayNumber(day)),
-  //         start_end_time: String(time),
-  //       });
-  //     }
-  //   });
-  //
-  //   if (timeSlots.length > 0 && updateInput.name && id && updateInput.goal) {
-  //     if (!getId) {
-  //       await instance
-  //         .post(
-  //           "/api/kruzhok/",
-  //           {
-  //             kruzhok_name: updateInput.name,
-  //             teacher: String(id),
-  //             purpose: updateInput.goal,
-  //             lessons: timeSlots,
-  //           },
-  //           {
-  //             headers: {
-  //               Authorization: `Token ${getTokenInLocalStorage()}`,
-  //             },
-  //           },
-  //         )
-  //         .then(async (res) => {
-  //           if (res) {
-  //             const formData = new FormData();
-  //
-  //             formData.append("photo", file);
-  //             formData.append("id", String((res as any).id));
-  //
-  //             try {
-  //               const uploadPhotoResponse = await instance.post(
-  //                 "/api/kruzhok/upload_photo/",
-  //                 formData,
-  //                 {
-  //                   headers: {
-  //                     Authorization: `Token ${getTokenInLocalStorage()}`,
-  //                   },
-  //                 },
-  //               );
-  //
-  //               if (uploadPhotoResponse) {
-  //                 dispatch(getKruzhokInfoThunk());
-  //               }
-  //             } catch (err) {
-  //               console.log(err);
-  //             }
-  //           }
-  //         })
-  //         .catch((err) => console.log(err));
-  //     }
-  //     else {
-  //       await instance
-  //         .put(`/api/kruzhok/${getId}/`, formData, {
-  //           headers: {
-  //             Authorization: `Token ${getTokenInLocalStorage()}`,
-  //             "Content-Type": "multipart/form-data",
-  //           },
-  //         })
-  //         .then((res) => {
-  //           if (res) {
-  //             dispatch(getKruzhokInfoThunk());
-  //           }
-  //         })
-  //         .catch((e) => {
-  //           console.log(e);
-  //         });
-  //     }
-  //   }
-  // };
-  //
   useEffect(() => {
     if (teachers) {
       dispatch(getKruzhokTeachersInfoThunk());
@@ -207,6 +67,18 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
       setText(text as string);
     }
   };
+
+  const toDict = (arr?: any[]) => {
+    let temp: { week_day: string; start_end_time: string }[] = [];
+    if (Array.isArray(arr)) {
+      arr.forEach((item, i) => {
+        if(item)
+        temp.push({week_day: String(i+1), start_end_time
+              : String(item)});
+      });
+    }
+    return temp;
+  }
 
   const formik = useFormik({
     initialValues: {
@@ -227,19 +99,162 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
       name: Yup.string().required('Введите имя'),
       teacher: Yup.string().required('Введите учителя'),
       goal: Yup.string().required('Введите цель'),
-      times: Yup.object().shape({
-        1: Yup.string().required('Введите время для Понедельника'),
-        2: Yup.string().required('Введите время для Вторника'),
-        3: Yup.string().required('Введите время для Среды'),
-        4: Yup.string().required('Введите время для Четверга'),
-        5: Yup.string().required('Введите время для Пятницы'),
-        6: Yup.string().required('Введите время для Субботы'),
-      }),
+      times: Yup.array().of(
+          Yup.string().nullable()
+              .matches(
+                  /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/,
+                  'Неправильно'
+              )
+      ).min(1),
     }),
     onSubmit: async (values) => {
-      console.log(values)
+      if (!getId) {
+              await instance
+                .post(
+                  "https://bilimge.kz/admins/api/kruzhok/",
+                  {
+                    kruzhok_name: values.name,
+                    teacher: values.teacher,
+                    purpose: values.goal,
+                    lessons: toDict(values.times),
+                  },
+                  {
+                    headers: {
+                      Authorization: `Token ${getTokenInLocalStorage()}`,
+                    },
+                  },
+                )
+                .then(async (res) => {
+                  if (res) {
+                    const formData = new FormData();
+
+                    formData.append("photo", values.photo ? values.photo : "");
+                    formData.append("id", String((res as any).id));
+
+                    try {
+                      const uploadPhotoResponse = await instance.post(
+                        "https://bilimge.kz/admins/api/kruzhok/upload_photo/",
+                        formData,
+                        {
+                          headers: {
+                            Authorization: `Token ${getTokenInLocalStorage()}`,
+                            "Content-Type": "multipart/form-data",
+                          },
+                        },
+                      );
+
+                      if (uploadPhotoResponse) {
+                        dispatch(getKruzhokInfoThunk());
+                      }
+                    } catch (err) {
+                      console.log(err);
+                    }
+                  }
+                })
+                .catch((err) => console.log(err));
+            }
+            else {
+              await instance
+                .put(`https://bilimge.kz/admins/api/kruzhok/${getId}/`,
+                    {
+                      kruzhok_name: values.name,
+                      teacher: values.teacher,
+                      purpose: values.goal,
+                      lessons: toDict(values.times),
+                    },
+                    {
+                  headers: {
+                    Authorization: `Token ${getTokenInLocalStorage()}`,
+                  },
+                })
+                .then(async (res) => {
+                  if (res) {
+                    if(values.photo) {
+                      const formData = new FormData();
+
+                      formData.append("photo", values.photo ? values.photo : "");
+                      formData.append("id", String((res as any).id));
+                      try {
+                        const uploadPhotoResponse = await instance.put(
+                            "https://bilimge.kz/admins/api/kruzhok/upload_photo/",
+                            formData,
+                            {
+                              headers: {
+                                Authorization: `Token ${getTokenInLocalStorage()}`,
+                                "Content-Type": "multipart/form-data",
+                              },
+                            },
+                        );
+
+                        if (uploadPhotoResponse) {
+                          dispatch(getKruzhokInfoThunk());
+                        }
+                      } catch (err) {
+                        console.log(err);
+                      }
+                    }
+                    dispatch(getKruzhokInfoThunk());
+                  }
+                })
+                .catch((e) => {
+                  console.log(e);
+                });
+            }
     },
   });
+
+
+  const setTime = (arr?: any[]) => {
+    let temp = [];
+    if (Array.isArray(arr)) {
+      arr.forEach((item) => {
+        temp[parseInt(String(item.week_day - 1))] = item.start_end_time;
+      });
+    }
+    for(let i = 0; i  < 6; i++) {
+      if(!temp[i]) {
+        temp[i] = '';
+      }
+    }
+    return temp;
+  }
+
+      console.log(kruzhokid)
+
+  useEffect(() => {
+    if (kruzhokid && getId) {
+      console.log(kruzhokid)
+      formik.resetForm({
+        values: {
+          photo: null,
+          name: kruzhokid.kruzhok_name || '',
+          teacher: kruzhokid.teacher?.id || '',
+          goal: kruzhokid.purpose || '',
+          times: setTime(kruzhokid.lessons),
+        },
+      });
+    }
+  }, [kruzhokid, getId]);
+
+
+  function onDelete() {
+    formik.resetForm({
+      values: {
+        photo: null,
+        name: '',
+        teacher: '',
+        goal: '',
+        times: [
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+        ],
+      },
+    });
+  }
 
 
   return (
@@ -250,14 +265,11 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
           <div className="main_table-modal_flex" style={{gap: "1.6rem"}}>
             <div className="main_table-modal_upload">
               <div className="login_forms-label_pink">Фото *</div>
-              <div className="login_forms-label_pink">Фото *</div>
               <Input type="file" name="photo" onChange={(event) => {
-                console.log(event?.target?.files?.[0]);
                 return formik.setFieldValue('photo', event?.target?.files?.[0]);
               }}
                      accept=".png, .jpg, .jpeg, .svg"
                      key={formik.values.photo}
-
               />
             </div>
 
@@ -284,8 +296,6 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
 
               <div className="forms">
                 <div className="login_forms-label_pink">Учитель ФИО</div>
-
-                <div className="login_forms-label_pink">Күні</div>
                 <Select {...formik.getFieldProps("teacher")}>
                   <option value="">Выберите учителя</option>
                   {teachers?.map((item) => (
@@ -315,15 +325,12 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
 
                 <div className="length">{formik.values.goal?.length}/2000</div>
               </div>
-
+              <div className="login_forms-label_pink">Күні</div>
               <div className="forms flex">
                 <div>
-                  {formik.values.times.slice(0,3).map((time, index) => (
+                  {formik.values.times.slice(0, 3).map((time, index) => (
                       <div key={index} className="flex-grid">
                         <label htmlFor={`times.${index}`} className="login_forms-label_pink">{weekDay[index]}</label>
-                        {formik.touched.times && formik.errors.times && formik.errors.times[index] && (
-                            <div style={{ color: "red" }}>{formik.errors.times[index]}</div>
-                        )}
                         <Input
                             id={`times.${index}`}
                             name={`times.${index}`}
@@ -340,21 +347,22 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
                 </div>
 
                 <div>
-                  {formik.values.times.slice(3,6).map((time, index) => (
-                      <div key={index+2} className="flex-grid">
-                        <label htmlFor={`times.${index+2}`} className="login_forms-label_pink">{weekDay[index+2]}</label>
-                        {formik.touched.times && formik.errors.times && formik.errors.times[index+2] && (
-                            <div style={{ color: "red" }}>{formik.errors.times[index+2]}</div>
-                        )}
+                  {formik.values.times.slice(3, 6).map((time, index) => (
+                      <div key={index + 3} className="flex-grid">
+                        <label htmlFor={`times.${index + 3}`}
+                               className="login_forms-label_pink">{weekDay[index + 3]}</label>
+                        {/*{formik.touched.times && formik.errors.times && formik.errors.times[index+3] && (*/}
+                        {/*    <div style={{ color: "red" }}>{formik.errors.times[index+3]}</div>*/}
+                        {/*)}*/}
                         <Input
-                            id={`times.${index+2}`}
-                            name={`times.${index+2}`}
+                            id={`times.${index + 3}`}
+                            name={`times.${index + 3}`}
                             type="text"
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             value={time}
                             style={{
-                              borderColor: formik.touched.times && formik.errors.times && formik.errors.times[index+2] ? "red" : "#c1bbeb",
+                              borderColor: formik.touched.times && formik.errors.times && formik.errors.times[index + 3] ? "red" : "#c1bbeb",
                             }}
                         />
                       </div>
@@ -371,7 +379,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
                     background="#CACACA"
                     color="#645C5C"
                     style={{width: "auto"}}
-                    onClick={() => onReject && onReject(false)}
+                    onClick={onDelete}
                 >
                   Удалить
                 </Button>
@@ -387,7 +395,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
           </div>
         </form>
       </div>
-);
+  );
 };
 
 const weekDay = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];

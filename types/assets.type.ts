@@ -135,6 +135,7 @@ export interface ISchoolSocialMedia {
   type?: string;
   account_name?: string;
   school?: number;
+  qr_code?:string;
 }
 
 // School Sport

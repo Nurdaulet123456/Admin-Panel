@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useRouter } from "next/router";
-import { PlusIcons } from "@/components/atoms/Icons";
+import {LogoutIcons, PlusIcons} from "@/components/atoms/Icons";
 import { Button } from "@/components/atoms/UI/Buttons/Button";
 import Tabs from "@/components/molecules/Tabs/Tabs";
 import MainLayouts from "@/layouts/MainLayouts";
@@ -27,6 +27,7 @@ const CallsComponents = () => {
   const handleAddButtonClick = () => {
     setEditActive(false);
     setShowActive(!showActive);
+    setId(undefined);
   };
 
   const handleClickGetIdDop = (id?: number) => {
@@ -63,18 +64,23 @@ const CallsComponents = () => {
           <Tabs link="calls" tabs={tabs} />
         </div>
         <Button
-          background="#27AE60"
-          radius="14px"
-          style={{
-            width: "auto",
-            display: "flex",
-            alignItems: "center",
-            gap: ".8rem",
-          }}
-          onClick={handleAddButtonClick}
+            background={showActive || editActive ? "#CACACA" : "#27AE60"}
+            radius="14px"
+            style={{
+              width: "auto",
+            }}
+            onClick={handleAddButtonClick}
         >
-          <PlusIcons />
-          Добавить
+          <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: ".8rem",
+              }}
+          >
+            {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
+            {showActive || editActive ? "Закрыть" : "Добавить"}
+          </div>
         </Button>
       </div>
 
@@ -82,6 +88,7 @@ const CallsComponents = () => {
         <CallsTableBlock1
           onReject={setShowActive}
           osid={osid}
+          getId={getId}
           onEdit={setEditActive}
         />
       )}

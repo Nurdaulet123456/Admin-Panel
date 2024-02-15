@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import { Button } from "../../atoms/UI/Buttons/Button";
-import { Input } from "../../atoms/UI/Inputs/Input";
+import {Input, Select} from "../../atoms/UI/Inputs/Input";
 import { instance } from "@/api/axios.instance";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getOSThunk } from "@/store/thunks/pride.thunk";
@@ -17,6 +17,9 @@ import SanatyModalModal from "@/components/modals/SanatyModal";
 import SuccessModal from "@/components/modals/SuccessModal";
 import ErrorModal from "@/components/modals/ErrorModal";
 import { useModalLogic } from "@/hooks/useModalLogic";
+import {useFormik} from "formik";
+import * as Yup from "yup";
+import {getMenuThunk} from "@/store/thunks/schoolnfo.thunk";
 
 interface UpdateInputProps {
   start?: string;
@@ -33,19 +36,6 @@ interface IProps {
 const CallsTableBlock1: FC<IProps> = ({ onReject, osid, getId, onEdit }) => {
   const dispatch = useAppDispatch();
   const [show, setShow] = useState([false, false, false]);
-  const [text1, setText1] = useState<string>("");
-  const [text2, setText2] = useState<string>("");
-  const [text3, setText3] = useState<string>("");
-
-  const [id1, setId1] = useState<number>();
-  const [id2, setId2] = useState<number>();
-  const [id3, setId3] = useState<number>();
-
-  const [updateInput, setUpdateInput] = useState<UpdateInputProps>({
-    start: "",
-    end: "",
-  });
-
   const {
     showSuccessModal,
     showErrorModal,
@@ -55,268 +45,231 @@ const CallsTableBlock1: FC<IProps> = ({ onReject, osid, getId, onEdit }) => {
     showError,
   } = useModalLogic();
 
-  const showModal = (index: number) => {
-    const updatedShow = show.map((value, i) => i === index);
-    setShow(updatedShow);
-  };
-
-  const hideModal = () => {
-    setShow([false, false, false]);
-  };
-
-  const onChangeUpdateInput = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-
-    setUpdateInput({
-      ...updateInput,
-      [name]: value,
-    });
-  };
-
-  useEffect(() => {
-    if (osid && osid?.plan && osid?.number && osid?.smena) {
-      setUpdateInput({
-        start: osid.start_time || "",
-        end: osid.end_time || "",
-      });
-
-      setText1((String(osid?.plan) as string) || "");
-      setText2((String(osid?.number) as string) || "");
-      setText3((String(osid?.smena) as string) || "");
-    }
-  }, [osid]);
-
-  const onSave = async () => {
-    if (!updateInput.start || !updateInput.end || !text1 || !text2 || !text3) {
-      showError();
-      return;
-    }
-
-    try {
+  const formik = useFormik({
+    initialValues: {
+      start: "",
+      end: "",
+      plan: "",
+      number: "",
+      smena: "",
+    },
+    validationSchema: Yup.object({
+      start: Yup.string().required("Обязательно*"),
+      end: Yup.string().required("Обязательно*"),
+      plan: Yup.string().required("Обязательно*"),
+      number: Yup.string().required("Обязательно*"),
+      smena: Yup.string().required("Обязательно*"),
+    }),
+    onSubmit: async (values) => {
+      console.log(values);
       if (!getId) {
         const res = await instance.post(
-          "/api/ringApi/",
-          {
-            plan: String(text1),
-            number: String(text2),
-            smena: String(text3),
-            start_time: updateInput.start,
-            end_time: updateInput.end,
-          },
-          {
-            headers: {
-              Authorization: `Token ${getTokenInLocalStorage()}`,
+            "https://bilimge.kz/admins/api/ringApi/",
+            {
+              plan: String(values.plan),
+              number: String(values.number),
+              smena: String(values.smena),
+              start_time: values.start,
+              end_time: values.end,
             },
-          },
-        );
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            },
+        ).then((res) => {
+          if (res) {
+            dispatch(getOSThunk());
+            showSuccess();
+            onDelete();
+            if (showSuccessModal && onReject) {
+              onReject(false);
+            }
+          }
+        })
+            .catch((e) => {
+              showError();
+              if (showErrorModal && onReject) {
+                onReject(false);
+              }
+            });
 
-        if (res) {
-          showSuccess();
-          dispatch(getOSThunk());
-        }
       } else {
         const res = await instance.put(
-          `/api/ringApi/${getId}/`,
-          {
-            plan: Number(text1),
-            number: Number(text2),
-            smena: Number(text3),
-            start_time: updateInput.start,
-            end_time: updateInput.end,
-          },
-          {
-            headers: {
-              Authorization: `Token ${getTokenInLocalStorage()}`,
+            `https://bilimge.kz/admins/api/ringApi/${getId}/`,
+            {
+              plan: String(values.plan),
+              number: String(values.number),
+              smena: String(values.smena),
+              start_time: values.start,
+              end_time: values.end,
             },
-          },
-        );
-
-        if (res) {
-          showSuccess();
-          dispatch(getOSThunk());
-        }
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            },
+        ).then((res) => {
+          if (res) {
+            dispatch(getOSThunk());
+            showSuccess();
+            if (showSuccessModal && onReject) {
+              onReject(false);
+            }
+          }
+        })
+            .catch((e) => {
+              showError();
+              if (showErrorModal && onReject) {
+                onReject(false);
+              }
+            });
       }
-    } catch (err) {
-      console.error(err);
-      showError();
+    },
+  });
+
+  useEffect(() => {
+    if (osid && getId) {
+      formik.resetForm({
+        values: {
+          start: osid.start_time || "",
+          end: osid.end_time || "",
+          plan: String(osid.plan) || "",
+          number: String(osid.number) || "",
+          smena: String(osid.smena) || "",
+        },
+      });
     }
-  };
+  }, [osid, getId]);
+
+  function onDelete() {
+    formik.resetForm({
+      values: {
+        start: "",
+        end: "",
+        plan: "",
+        number: "",
+        smena: "",
+      },
+    });
+  }
+
   return (
     <>
       {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
       {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
       <div className="main_table-modal">
-        <div className="login_forms-label_pink">Основной урок</div>
-        <div className="main_table-modal_forms">
-          <div
-            className="forms flex"
-            style={{
-              alignItems: "flex-start",
-              justifyContent: "flex-start",
-              gap: "5.2rem",
-            }}
-          >
-            <div className="sanaty">
-              <div className="login_forms-label_pink">План звонков</div>
-              <Input
-                type="text"
-                name="cabinet"
-                readOnly={true}
-                style={{ cursor: "pointer" }}
-                onClick={() => showModal(0)}
-                value={text1}
-              />
-              <div
-                className="sanaty_dropdown"
-                style={{ textAlign: "center", width: "100%" }}
-              >
-                {show.map(
-                  (isShown, index) =>
-                    isShown && (
-                      <SanatyModalModal
-                        key={index}
-                        setText={setText1}
-                        setId={setId1}
-                        setShowActive={hideModal}
-                        timeArr={
-                          index === 0
-                            ? Array.from({ length: 10 }, (_, i) => ({
-                                id: i + 1,
-                                type: (i + 1).toString(),
-                              }))
-                            : []
-                        }
-                      />
-                    ),
-                )}
+        <form onSubmit={formik.handleSubmit}>
+          <div className="login_forms-label_pink">Основной урок</div>
+          <div className="main_table-modal_forms">
+            <div
+                className="forms flex"
+                style={{
+                  alignItems: "flex-start",
+                  justifyContent: "flex-start",
+                  gap: "5.2rem",
+                }}
+            >
+              <div className="sanaty">
+                <div className="login_forms-label_pink">План звонков</div>
+                <Select {...formik.getFieldProps("plan")}>
+                  <option value="">Выберите план звонка</option>
+                  {timeArr.map((item) => (
+                      <option key={item} value={item}>{item}</option>
+                  ))}
+                </Select>
               </div>
-            </div>
 
-            <div className="sanaty">
-              <div className="login_forms-label_pink">Номер урока</div>
-              <Input
-                type="text"
-                name="lang"
-                readOnly={true}
-                style={{ cursor: "pointer" }}
-                onClick={() => showModal(1)}
-                value={text2}
-              />
-              <div
-                className="sanaty_dropdown"
-                style={{ textAlign: "center", width: "100%" }}
-              >
-                {show.map(
-                  (isShown, index) =>
-                    isShown && (
-                      <SanatyModalModal
-                        key={index}
-                        setText={setText2}
-                        setId={setId2}
-                        setShowActive={hideModal}
-                        timeArr={
-                          index === 1
-                            ? Array.from({ length: 10 }, (_, i) => ({
-                                id: i + 1,
-                                type: (i + 1).toString(),
-                              }))
-                            : []
-                        }
-                      />
-                    ),
-                )}
+              <div className="sanaty">
+                <div className="login_forms-label_pink">Номер урока</div>
+                <Select {...formik.getFieldProps("number")}>
+                  <option value="">Выберите номер урока</option>
+                  {timeArr.map((item) => (
+                      <option key={item} value={item}>{item}</option>
+                  ))}
+                </Select>
               </div>
-            </div>
 
-            <div className="sanaty">
-              <div>
-                <div className="login_forms-label_pink">Смена</div>
-                <Input
-                  type="text"
-                  name="end"
-                  readOnly={true}
-                  style={{ cursor: "pointer" }}
-                  onClick={() => showModal(2)}
-                  value={text3}
-                />
-                <div
-                  className="sanaty_dropdown"
-                  style={{ textAlign: "center", width: "100%" }}
-                >
-                  {show.map(
-                    (isShown, index) =>
-                      isShown && (
-                        <SanatyModalModal
-                          key={index}
-                          setText={setText3}
-                          setId={setId3}
-                          setShowActive={hideModal}
-                          timeArr={
-                            index === 2
-                              ? Array.from({ length: 4 }, (_, i) => ({
-                                  id: i + 1,
-                                  type: (i + 1).toString(),
-                                }))
-                              : []
-                          }
-                        />
-                      ),
-                  )}
+              <div className="sanaty">
+                <div>
+                  <div className="login_forms-label_pink">Смена</div>
+                  <Select {...formik.getFieldProps("smena")}>
+                    <option value="">Выберите смену</option>
+                    {timeArr.map((item) => (
+                        <option key={item} value={item}>{item}</option>
+                    ))}
+                  </Select>
                 </div>
               </div>
             </div>
+
+            <div className="forms">
+              <div className="login_forms-label_pink">Смена начало</div>
+              {formik.touched.start && formik.errors.start ? (
+                  <div style={{color: "red"}}>{formik.errors.start}</div>
+              ) : null}
+              <Input
+                  name={"start"}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.start}
+                  style={{
+                    borderColor:
+                        formik.touched.start && formik.errors.start
+                            ? "red"
+                            : "#c1bbeb",
+                  }}
+              />
+            </div>
+
+            <div className="forms">
+              <div className="login_forms-label_pink">Смена конец</div>
+              {formik.touched.end && formik.errors.end ? (
+                  <div style={{color: "red"}}>{formik.errors.end}</div>
+              ) : null}
+              <Input
+                  name={"end"}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.end}
+                  style={{
+                    borderColor:
+                        formik.touched.end && formik.errors.end
+                            ? "red"
+                            : "#c1bbeb",
+                  }}
+              />
+            </div>
           </div>
 
-          <div className="forms">
-            <div className="login_forms-label_pink">Смена начало</div>
-
-            <Input
-              type="text"
-              placeholder="смена начало"
-              name="start"
-              value={updateInput.start}
-              onChange={(e) => onChangeUpdateInput(e)}
-            />
-          </div>
-
-          <div className="forms">
-            <div className="login_forms-label_pink">Смена конец</div>
-
-            <Input
-              type="text"
-              placeholder="смена конец"
-              name="end"
-              value={updateInput.end}
-              onChange={(e) => onChangeUpdateInput(e)}
-            />
-          </div>
-        </div>
-
-        <div
-          className="flex"
-          style={{ justifyContent: "flex-end", gap: "1.6rem" }}
-        >
-          <Button
-            background="#CACACA"
-            color="#645C5C"
-            style={{ width: "auto" }}
-            onClick={() =>
-              getId ? onEdit && onEdit(false) : onReject && onReject(false)
-            }
+          <div
+              className="flex"
+              style={{justifyContent: "flex-end", gap: "1.6rem"}}
           >
-            Удалить
-          </Button>
-          <Button
-            background="#27AE60"
-            style={{ width: "auto" }}
-            onClick={onSave}
-          >
-            Сохранить
-          </Button>
-        </div>
-      </div>{" "}
+            <Button
+                type="button"
+                background="#CACACA"
+                color="#645C5C"
+                style={{width: "auto"}}
+                onClick={onDelete}
+            >
+              Удалить
+            </Button>
+            <Button
+                background="#27AE60"
+                style={{width: "auto"}}
+                type="submit"
+            >
+              Сохранить
+            </Button>
+          </div>
+        </form>
+
+      </div>
     </>
   );
 };
+
+const timeArr = [1, 2, 3, 4, 5, 6,7,8,9,10];
 
 export default CallsTableBlock1;

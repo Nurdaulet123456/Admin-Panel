@@ -16,6 +16,9 @@ import { ISchoolAdmin } from "@/types/assets.type";
 import { useModalLogic } from "@/hooks/useModalLogic";
 import ErrorModal from "@/components/modals/ErrorModal";
 import SuccessModal from "@/components/modals/SuccessModal";
+import {useFormik} from "formik";
+import * as Yup from "yup";
+import {getSchoolSportThunk} from "@/store/thunks/pride.thunk";
 
 interface UpdateInputProps {
   name?: string;
@@ -39,13 +42,6 @@ const SchoolTableBlock1: FC<IProps> = ({
 }) => {
   const dispatch = useAppDispatch();
 
-  const [updateInput, setUpdateInput] = useState<UpdateInputProps>({
-    name: "",
-    prof: "",
-    tel: "",
-    file: null,
-  });
-
   const {
     showSuccessModal,
     showErrorModal,
@@ -55,109 +51,102 @@ const SchoolTableBlock1: FC<IProps> = ({
     showError,
   } = useModalLogic();
 
-  const onChangeUpdateInput = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value, files } = e.target;
 
-    if (name === "file") {
-      setUpdateInput({
-        ...updateInput,
-        file: files?.[0] || null,
-      });
-    } else {
-      setUpdateInput({
-        ...updateInput,
-        [name]: value,
-      });
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      prof: "",
+      tel: "",
+      photo: null,
+    },
+    validationSchema: Yup.object({
+      name: Yup.string().required("Обязательно*"),
+      prof: Yup.string().required("Обязательно*"),
+      tel: Yup.number().required("Обязательно*"),
+    }),
+    onSubmit: async (values) => {
+      const formData = new FormData();
+      formData.append("administrator_name", values.name);
+      formData.append("phone_number", values.tel);
+      formData.append("position", values.prof);
+      values.photo && formData.append("administator_photo", values.photo);
+
+      if (!getId) {
+        await instance
+            .post("https://bilimge.kz/admins/api/school_administration/", formData, {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+                "Content-Type": "multipart/form-data",
+              },
+            })
+            .then((res) => {
+              if (res) {
+                dispatch(getSchoolAdminThunk());
+                showSuccess();
+                onDelete();
+                if (showSuccessModal && onReject) {
+                  onReject(false);
+                }
+              }
+            })
+            .catch((e) => {
+              showError();
+              if (showErrorModal && onReject) {
+                onReject(false);
+              }
+            });
+      } else {
+        await instance
+            .put(`https://bilimge.kz/admins/api/school_administration/${getId}/`, formData, {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+                "Content-Type": "multipart/form-data",
+              },
+            })
+            .then((res) => {
+              if (res) {
+                dispatch(getSchoolAdminThunk());
+                showSuccess();
+                if (showSuccessModal && onReject) {
+                  onReject(false);
+                }
+              }
+            })
+            .catch((e) => {
+              showError();
+              if (showErrorModal && onReject) {
+                onReject(false);
+              }
+            });
+      }
     }
-  };
+  });
+
 
   useEffect(() => {
-    if (adminid) {
-      setUpdateInput({
-        name: adminid.administrator_name || "",
-        tel: adminid.phone_number || "",
-        prof: adminid.position || "",
-        file: null,
+    if (adminid && getId) {
+      formik.resetForm({
+        values: {
+          name: adminid.administrator_name || "",
+          prof: adminid.position || "",
+          tel: adminid.phone_number || "",
+          photo: null,
+        },
       });
     }
-  }, [adminid]);
+  }, [adminid, getId]);
 
-  const onSave = async () => {
-    try {
-      if (
-        !updateInput.name ||
-        !updateInput.tel ||
-        !updateInput.prof ||
-        !updateInput.file
-      ) {
-        showError();
-        return;
-      }
 
-      if (
-        updateInput.name &&
-        updateInput.tel &&
-        updateInput.prof &&
-        updateInput.file
-      ) {
-        const formData = new FormData();
-        formData.append("administrator_name", updateInput.name);
-        formData.append("phone_number", updateInput.tel);
-        formData.append("position", updateInput.prof);
-        formData.append("administator_photo", updateInput.file);
-
-        if (!getId) {
-          await instance
-            .post("/api/school_administration/", formData, {
-              headers: {
-                Authorization: `Token ${getTokenInLocalStorage()}`,
-                "Content-Type": "multipart/form-data",
-              },
-            })
-            .then((res) => {
-              if (res) {
-                dispatch(getSchoolAdminThunk());
-                showSuccess();
-                setUpdateInput({
-                  name: "",
-                  prof: "",
-                  tel: "",
-                  file: null,
-                });
-              }
-            })
-            .catch((e) => {
-              console.log(e.message);
-            });
-        } else {
-          await instance
-            .put(`/api/school_administration/${getId}/`, formData, {
-              headers: {
-                Authorization: `Token ${getTokenInLocalStorage()}`,
-                "Content-Type": "multipart/form-data",
-              },
-            })
-            .then((res) => {
-              if (res) {
-                dispatch(getSchoolAdminThunk());
-                showSuccess();
-                setUpdateInput({
-                  name: "",
-                  prof: "",
-                  tel: "",
-                  file: null,
-                });
-              }
-            })
-            .catch((e) => {
-              console.log(e.message);
-            });
-        }
-      }
-    } catch (error) {
-      showError();
-    }
-  };
+  function onDelete() {
+    formik.resetForm({
+      values: {
+        name: "",
+        prof: "",
+        tel: "",
+        photo: null,
+      },
+    });
+  }
 
   return (
     <>
@@ -165,82 +154,106 @@ const SchoolTableBlock1: FC<IProps> = ({
       {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
 
       <div className="main_table-modal">
-        <div className="main_table-modal_title">Должность</div>
-        <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
-          <div className="main_table-modal_upload">
-            <div className="login_forms-label_pink">Фото *</div>
-            <Input
-              type="file"
-              name="file"
-              accept=".png, .jpg, .jpeg, .svg"
-              onChange={(e) => onChangeUpdateInput(e)}
-            />
-          </div>
+        <form onSubmit={formik.handleSubmit}>
+          <div className="main_table-modal_title">Должность</div>
+          <div className="main_table-modal_flex" style={{gap: "1.6rem"}}>
+            <div className="main_table-modal_upload">
+              <div className="login_forms-label_pink">Фото *</div>
+              <Input type="file" name="photo" onChange={(event) => {
+                return formik.setFieldValue('photo', event?.target?.files?.[0]);
+              }}
+                     accept=".png, .jpg, .jpeg, .svg"
+                     key={formik.values.photo}
 
-          <div className="main_table-modal_forms">
-            <div className="forms">
-              <div className="login_forms-label_pink">ФИО *</div>
-
-              <Input
-                type="text"
-                placeholder="фио"
-                name="name"
-                value={updateInput.name}
-                onChange={(e) => onChangeUpdateInput(e)}
               />
             </div>
 
-            <div className="forms">
-              <div className="login_forms-label_pink">Должность *</div>
+            <div className="main_table-modal_forms">
+              <div className="forms">
+                <div className="login_forms-label_pink">ФИО *</div>
+                {formik.touched.name && formik.errors.name ? (
+                    <div style={{color: "red"}}>{formik.errors.name}</div>
+                ) : null}
+                <Input
+                    name={"name"}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.name}
+                    style={{
+                      borderColor:
+                          formik.touched.name && formik.errors.name
+                              ? "red"
+                              : "#c1bbeb",
+                    }}
+                />
+              </div>
 
-              <Input
-                type="text"
-                placeholder="Должность"
-                name="prof"
-                value={updateInput.prof}
-                onChange={(e) => onChangeUpdateInput(e)}
-              />
-            </div>
+              <div className="forms">
+                <div className="login_forms-label_pink">Должность *</div>
+                {formik.touched.prof && formik.errors.prof ? (
+                    <div style={{color: "red"}}>{formik.errors.prof}</div>
+                ) : null}
+                <Input
+                    name={"prof"}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.prof}
+                    style={{
+                      borderColor:
+                          formik.touched.prof && formik.errors.prof
+                              ? "red"
+                              : "#c1bbeb",
+                    }}
+                />
+              </div>
 
-            <div className="forms">
-              <div className="login_forms-label_pink">Номер телефона *</div>
+              <div className="forms">
+                <div className="login_forms-label_pink">Номер телефона *</div>
 
-              <Input
-                type="text"
-                placeholder="+7 777 777 77 77"
-                name="tel"
-                value={updateInput.tel}
-                onChange={(e) => onChangeUpdateInput(e)}
-              />
-            </div>
+                {formik.touched.tel && formik.errors.tel ? (
+                    <div style={{color: "red"}}>{formik.errors.tel}</div>
+                ) : null}
+                <Input
+                    name={"tel"}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.tel}
+                    style={{
+                      borderColor:
+                          formik.touched.tel && formik.errors.tel
+                              ? "red"
+                              : "#c1bbeb",
+                    }}
+                />
+              </div>
 
-            <div
-              className="flex"
-              style={{ justifyContent: "flex-end", gap: "1.6rem" }}
-            >
-              <Button
-                background="#CACACA"
-                color="#645C5C"
-                style={{ width: "auto" }}
-                onClick={() =>
-                  getId ? onEdit && onEdit(false) : onReject && onReject(false)
-                }
+              <div
+                  className="flex"
+                  style={{justifyContent: "flex-end", gap: "1.6rem"}}
               >
-                Удалить
-              </Button>
-              <Button
-                background="#27AE60"
-                style={{ width: "auto" }}
-                onClick={onSave}
-              >
-                Сохранить
-              </Button>
+                <Button
+                    background="#CACACA"
+                    color="#645C5C"
+                    style={{width: "auto"}}
+                    type={"button"}
+                    onClick={onDelete}
+                >
+                  Удалить
+                </Button>
+                <Button
+                    background="#27AE60"
+                    style={{width: "auto"}}
+                    type="submit"
+                >
+                  Сохранить
+                </Button>
+              </div>
             </div>
           </div>
-        </div>
+        </form>
       </div>
     </>
-  );
+);
 };
 
 export default SchoolTableBlock1;

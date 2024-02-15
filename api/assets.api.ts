@@ -65,7 +65,7 @@ export const assetsApi = {
   },
 
   async getKruzhokTeacher(): Promise<any[]> {
-    return await instance.get("/api/kruzhok/available_teachers/", {
+    return await instance.get("https://bilimge.kz/admins/api/kruzhok/available_teachers/", {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -143,7 +143,7 @@ export const assetsApi = {
   },
 
   async getSchoolAdministration(): Promise<ISchoolAdmin[]> {
-    return await instance.get("/api/school_administration/", {
+    return await instance.get("https://bilimge.kz/admins/api/school_administration/", {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -151,7 +151,7 @@ export const assetsApi = {
   },
 
   async getSchoolAdministrationId(id?: number): Promise<ISchoolAdmin> {
-    return await instance.get(`/api/school_administration/${id}`, {
+    return await instance.get(`https://bilimge.kz/admins/api/school_administration/${id}`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -159,7 +159,7 @@ export const assetsApi = {
   },
 
   async getSchoolPassport(): Promise<ISchoolPassport[]> {
-    return await instance.get("/api/schoolpasport/", {
+    return await instance.get("https://bilimge.kz/admins/api/schoolpasport/1", {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -322,7 +322,7 @@ export const assetsApi = {
   // Calls
 
   async getCallsDop(): Promise<ICalls[]> {
-    return await instance.get("/api/DopUrokRingApi/", {
+    return await instance.get("https://bilimge.kz/admins/api/DopUrokRingApi/", {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -330,7 +330,7 @@ export const assetsApi = {
   },
 
   async getCallsDopId(id?: number): Promise<ICalls> {
-    return await instance.get(`/api/DopUrokRingApi/${id}`, {
+    return await instance.get(`https://bilimge.kz/admins/api/DopUrokRingApi/${id}`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -338,7 +338,7 @@ export const assetsApi = {
   },
 
   async getCallsOS(): Promise<ICalls[]> {
-    return await instance.get("/api/ringApi/", {
+    return await instance.get("https://bilimge.kz/admins/api/ringApi/", {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -346,7 +346,7 @@ export const assetsApi = {
   },
 
   async getCallsOSId(id?: number): Promise<ICalls> {
-    return await instance.get(`/api/ringApi/${id}`, {
+    return await instance.get(`https://bilimge.kz/admins/api/ringApi/${id}`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },

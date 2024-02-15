@@ -17,14 +17,14 @@ const LoginForms = () => {
 
       <Formik
         initialValues={{
-          email: "",
+          username: "",
           password: "",
         }}
         onSubmit={async (values) => {
-          if (values.email && values.password) {
+          if (values.username && values.password) {
             await instance
               .post("https://www.bilimge.kz/admins/login/", {
-                username: values.email,
+                username: values.username,
                 password: values.password,
               })
               .then(async (res) => {
@@ -64,8 +64,8 @@ const LoginForms = () => {
             <Form>
               <div className="login_forms-label_black">Email</div>
               <Input
-                type="email"
-                name="email"
+                type="text"
+                name="username"
                 placeholder="Почта"
                 label="Email"
               />

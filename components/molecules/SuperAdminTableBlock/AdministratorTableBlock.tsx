@@ -77,12 +77,12 @@ const AdministratorTableBlock: FC<IProps> = ({
   const formik = useFormik({
     initialValues: {
       username: "",
-      email: "",
+      // email: "",
       password: "",
     },
     validationSchema: Yup.object({
       username: Yup.string().required("Обязательно*"),
-      email: Yup.string().email().required("Обязательно*"),
+      // email: Yup.string().email().required("Обязательно*"),
       password: Yup.string()
         .min(8, "Должно быть как минимум 8 символов")
         .required("Обязательно*"),
@@ -93,7 +93,7 @@ const AdministratorTableBlock: FC<IProps> = ({
           .post(
             "https://www.bilimge.kz/admins/api/users/",
             {
-              email: values.email,
+              // email: values.email,
               username: values.username,
               password: values.password,
               school: schoolId,
@@ -111,7 +111,7 @@ const AdministratorTableBlock: FC<IProps> = ({
               formik.resetForm({
                 values: {
                   username: "",
-                  email: "",
+                  // email: "",
                   password: "",
                 },
               });
@@ -132,7 +132,7 @@ const AdministratorTableBlock: FC<IProps> = ({
           .put(
             `https://www.bilimge.kz/admins/api/users/${getId}/`,
             {
-              email: values.email,
+              // email: values.email,
               username: values.username,
               school: schoolId,
             },
@@ -166,7 +166,7 @@ const AdministratorTableBlock: FC<IProps> = ({
       formik.resetForm({
         values: {
           username: usersid.username || "",
-          email: usersid.email || "",
+          // email: usersid.email || "",
           password: "12345678",
         },
       });
@@ -178,7 +178,7 @@ const AdministratorTableBlock: FC<IProps> = ({
     formik.resetForm({
       values: {
         username: "",
-        email: "",
+        // email: "",
         password: "12345678",
       },
     });
@@ -213,24 +213,24 @@ const AdministratorTableBlock: FC<IProps> = ({
                   />
                 </div>
 
-                <div style={{ width: "75%" }}>
-                  <div className="login_forms-label_pink">Email *</div>
-                  {formik.touched.email && formik.errors.email ? (
-                    <div style={{ color: "red" }}>{formik.errors.email}</div>
-                  ) : null}
-                  <Input
-                    name={"email"}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values.email}
-                    style={{
-                      borderColor:
-                        formik.touched.email && formik.errors.email
-                          ? "red"
-                          : "#c1bbeb",
-                    }}
-                  />
-                </div>
+                {/*<div style={{ width: "75%" }}>*/}
+                {/*  <div className="login_forms-label_pink">Email *</div>*/}
+                {/*  {formik.touched.email && formik.errors.email ? (*/}
+                {/*    <div style={{ color: "red" }}>{formik.errors.email}</div>*/}
+                {/*  ) : null}*/}
+                {/*  <Input*/}
+                {/*    name={"email"}*/}
+                {/*    onChange={formik.handleChange}*/}
+                {/*    onBlur={formik.handleBlur}*/}
+                {/*    value={formik.values.email}*/}
+                {/*    style={{*/}
+                {/*      borderColor:*/}
+                {/*        formik.touched.email && formik.errors.email*/}
+                {/*          ? "red"*/}
+                {/*          : "#c1bbeb",*/}
+                {/*    }}*/}
+                {/*  />*/}
+                {/*</div>*/}
 
                 {getId ? (
                   <div></div>

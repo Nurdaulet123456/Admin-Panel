@@ -195,7 +195,6 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
             <div className="main_table-modal_upload">
               <div className="login_forms-label_pink">Фото *</div>
               <Input type="file" name="photo" onChange={(event) => {
-                console.log(event?.target?.files?.[0]);
                 return formik.setFieldValue('photo', event?.target?.files?.[0]);
               }}
                      accept=".png, .jpg, .jpeg, .svg"

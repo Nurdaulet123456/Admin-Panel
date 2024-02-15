@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import { Button } from "../../atoms/UI/Buttons/Button";
-import { Input } from "../../atoms/UI/Inputs/Input";
+import {Input, Select} from "../../atoms/UI/Inputs/Input";
 import NumberModal from "@/components/modals/NumberModal";
 import { instance } from "@/api/axios.instance";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
@@ -17,6 +17,8 @@ import { ICalls } from "@/types/assets.type";
 import { useModalLogic } from "@/hooks/useModalLogic";
 import ErrorModal from "@/components/modals/ErrorModal";
 import SuccessModal from "@/components/modals/SuccessModal";
+import {useFormik} from "formik";
+import * as Yup from "yup";
 
 interface UpdateInputProps {
   start?: string;
@@ -33,14 +35,6 @@ interface IProps {
 const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
   const dispatch = useAppDispatch();
   const [show, setShow] = useState([false, false, false]);
-  const [text1, setText1] = useState<string>("");
-  const [text2, setText2] = useState<string>("");
-  const [text3, setText3] = useState<string>("");
-
-  const [updateInput, setUpdateInput] = useState<UpdateInputProps>({
-    start: "",
-    end: "",
-  });
 
   const {
     showSuccessModal,
@@ -51,252 +45,229 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
     showError,
   } = useModalLogic();
 
-  const showModal = (index: number) => {
-    const updatedShow = show.map((value, i) => i === index);
-    setShow(updatedShow);
-  };
+  const formik = useFormik({
+    initialValues: {
+      start: "",
+      end: "",
+      plan: "",
+      number: "",
+      smena: "",
+    },
+    validationSchema: Yup.object({
+      start: Yup.string().required("Обязательно*"),
+      end: Yup.string().required("Обязательно*"),
+      plan: Yup.string().required("Обязательно*"),
+      number: Yup.string().required("Обязательно*"),
+      smena: Yup.string().required("Обязательно*"),
+    }),
+    onSubmit: async (values) => {
+      console.log(values);
+      if (!getId) {
+        const res = await instance.post(
+            "https://bilimge.kz/admins/api/DopUrokRingApi/",
+            {
+              plan: String(values.plan),
+              number: String(values.number),
+              smena: String(values.smena),
+              start_time: values.start,
+              end_time: values.end,
+            },
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            },
+        ).then((res) => {
+          if (res) {
+            dispatch(getDopThunk());
+            showSuccess();
+            onDelete();
+            if (showSuccessModal && onReject) {
+              onReject(false);
+            }
+          }
+        })
+            .catch((e) => {
+              showError();
+              if (showErrorModal && onReject) {
+                onReject(false);
+              }
+            });
 
-  const hideModal = () => {
-    setShow([false, false, false]);
-  };
-
-  const onChangeUpdateInput = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-
-    setUpdateInput({
-      ...updateInput,
-      [name]: value,
-    });
-  };
+      } else {
+        const res = await instance.put(
+            `https://bilimge.kz/admins/api/DopUrokRingApi/${getId}/`,
+            {
+              plan: String(values.plan),
+              number: String(values.number),
+              smena: String(values.smena),
+              start_time: values.start,
+              end_time: values.end,
+            },
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            },
+        ).then((res) => {
+          if (res) {
+            dispatch(getDopThunk());
+            showSuccess();
+            if (showSuccessModal && onReject) {
+              onReject(false);
+            }
+          }
+        })
+            .catch((e) => {
+              showError();
+              if (showErrorModal && onReject) {
+                onReject(false);
+              }
+            });
+      }
+    },
+  });
 
   useEffect(() => {
-    if (dopid && dopid?.plan && dopid?.number && dopid?.smena) {
-      setUpdateInput({
-        start: dopid.start_time || "",
-        end: dopid.end_time || "",
+    if (dopid && getId) {
+      formik.resetForm({
+        values: {
+          start: dopid.start_time || "",
+          end: dopid.end_time || "",
+          plan: String(dopid.plan) || "",
+          number: String(dopid.number) || "",
+          smena: String(dopid.smena) || "",
+        },
       });
-
-      setText1((String(dopid?.plan) as string) || "");
-      setText2((String(dopid?.number) as string) || "");
-      setText3((String(dopid?.smena) as string) || "");
     }
-  }, [dopid]);
+  }, [dopid, getId]);
 
-  const onSave = async () => {
-    if (updateInput.start && updateInput.end && text1 && text2 && text3) {
-      if (!getId) {
-        try {
-          await instance.post(
-            "/api/DopUrokRingApi/",
-            {
-              plan: Number(text1),
-              number: Number(text2),
-              smena: Number(text3),
-              start_time: updateInput.start,
-              end_time: updateInput.end,
-            },
-            {
-              headers: {
-                Authorization: `Token ${getTokenInLocalStorage()}`,
-              },
-            },
-          );
-
-          showSuccess();
-          dispatch(getDopThunk());
-        } catch (err) {
-          console.error(err);
-          showError();
-        }
-      } else {
-        try {
-          await instance.put(
-            `/api/DopUrokRingApi/${getId}/`,
-            {
-              plan: Number(text1),
-              number: Number(text2),
-              smena: Number(text3),
-              start_time: updateInput.start,
-              end_time: updateInput.end,
-            },
-            {
-              headers: {
-                Authorization: `Token ${getTokenInLocalStorage()}`,
-              },
-            },
-          );
-
-          showSuccess();
-          dispatch(getDopThunk());
-        } catch (err) {
-          console.error(err);
-          showError();
-        }
-      }
-    }
-  };
-
+  function onDelete() {
+    formik.resetForm({
+      values: {
+        start: "",
+        end: "",
+        plan: "",
+        number: "",
+        smena: "",
+      },
+    });
+  }
   return (
     <>
       {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
       {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
       <div className="main_table-modal">
-        <div className="login_forms-label_pink">Основной урок</div>
-        <div className="main_table-modal_forms">
-          <div
-            className="forms flex"
-            style={{
-              alignItems: "flex-start",
-              justifyContent: "flex-start",
-              gap: "5.2rem",
-            }}
-          >
-            <div>
-              <div className="login_forms-label_pink">План звонков</div>
-              <Input
-                type="text"
-                name="cabinet"
-                readOnly={true}
-                style={{ cursor: "pointer" }}
-                onClick={() => showModal(0)}
-                value={text1}
-              />
-
-              {show.map(
-                (isShown, index) =>
-                  isShown && (
-                    <NumberModal
-                      key={index}
-                      setText={setText1}
-                      setShowActive={hideModal}
-                      timeArr={
-                        index === 0
-                          ? Array.from({ length: 10 }, (_, i) => ({
-                              id: i + 1,
-                              type: (i + 1).toString(),
-                            }))
-                          : []
-                      }
-                    />
-                  ),
-              )}
-            </div>
-
-            <div>
-              <div className="login_forms-label_pink">Номер урока</div>
-              <Input
-                type="text"
-                name="lang"
-                readOnly={true}
-                style={{ cursor: "pointer" }}
-                onClick={() => showModal(1)}
-                value={text2}
-              />
-
-              {show.map(
-                (isShown, index) =>
-                  isShown && (
-                    <NumberModal
-                      key={index}
-                      setText={setText2}
-                      setShowActive={hideModal}
-                      timeArr={
-                        index === 1
-                          ? Array.from({ length: 10 }, (_, i) => ({
-                              id: i + 1,
-                              type: (i + 1).toString(),
-                            }))
-                          : []
-                      }
-                    />
-                  ),
-              )}
-            </div>
-
-            <div>
+        <form onSubmit={formik.handleSubmit}>
+          <div className="login_forms-label_pink">Дополнительный урок</div>
+          <div className="main_table-modal_forms">
+            <div
+                className="forms flex"
+                style={{
+                  alignItems: "flex-start",
+                  justifyContent: "flex-start",
+                  gap: "5.2rem",
+                }}
+            >
               <div>
-                <div className="login_forms-label_pink">Смена</div>
-                <Input
-                  type="text"
-                  name="end"
-                  readOnly={true}
-                  style={{ cursor: "pointer" }}
-                  onClick={() => showModal(2)}
-                  value={text3}
-                />
+                <div className="login_forms-label_pink">План звонков</div>
+                <Select {...formik.getFieldProps("plan")}>
+                  <option value="">Выберите план звонка</option>
+                  {timeArr.map((item) => (
+                      <option key={item} value={item}>{item}</option>
+                  ))}
+                </Select>
+              </div>
 
-                {show.map(
-                  (isShown, index) =>
-                    isShown && (
-                      <NumberModal
-                        key={index}
-                        setText={setText3}
-                        setShowActive={hideModal}
-                        timeArr={
-                          index === 2
-                            ? Array.from({ length: 4 }, (_, i) => ({
-                                id: i + 1,
-                                type: (i + 1).toString(),
-                              }))
-                            : []
-                        }
-                      />
-                    ),
-                )}
+              <div>
+                <div className="login_forms-label_pink">Номер урока</div>
+                <Select {...formik.getFieldProps("number")}>
+                  <option value="">Выберите номер урока</option>
+                  {timeArr.map((item) => (
+                      <option key={item} value={item}>{item}</option>
+                  ))}
+                </Select>
+              </div>
+
+              <div>
+                <div>
+                  <div className="login_forms-label_pink">Смена</div>
+                  <Select {...formik.getFieldProps("smena")}>
+                    <option value="">Выберите смену</option>
+                    {timeArr.map((item) => (
+                        <option key={item} value={item}>{item}</option>
+                    ))}
+                  </Select>
+                </div>
               </div>
             </div>
+
+            <div className="forms">
+              <div className="login_forms-label_pink">Смена начало</div>
+              {formik.touched.start && formik.errors.start ? (
+                  <div style={{color: "red"}}>{formik.errors.start}</div>
+              ) : null}
+              <Input
+                  name={"start"}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.start}
+                  style={{
+                    borderColor:
+                        formik.touched.start && formik.errors.start
+                            ? "red"
+                            : "#c1bbeb",
+                  }}
+              />
+            </div>
+
+            <div className="forms">
+              <div className="login_forms-label_pink">Смена конец</div>
+              {formik.touched.end && formik.errors.end ? (
+                  <div style={{color: "red"}}>{formik.errors.end}</div>
+              ) : null}
+              <Input
+                  name={"end"}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.end}
+                  style={{
+                    borderColor:
+                        formik.touched.end && formik.errors.end
+                            ? "red"
+                            : "#c1bbeb",
+                  }}
+              />
+            </div>
           </div>
 
-          <div className="forms">
-            <div className="login_forms-label_pink">Смена начало</div>
-
-            <Input
-              type="text"
-              placeholder="смена начало"
-              name="start"
-              value={updateInput.start}
-              onChange={(e) => onChangeUpdateInput(e)}
-            />
-          </div>
-
-          <div className="forms">
-            <div className="login_forms-label_pink">Смена конец</div>
-
-            <Input
-              type="text"
-              placeholder="смена конец"
-              name="end"
-              value={updateInput.end}
-              onChange={(e) => onChangeUpdateInput(e)}
-            />
-          </div>
-        </div>
-
-        <div
-          className="flex"
-          style={{ justifyContent: "flex-end", gap: "1.6rem" }}
-        >
-          <Button
-            background="#CACACA"
-            color="#645C5C"
-            style={{ width: "auto" }}
-            onClick={() =>
-              getId ? onEdit && onEdit(false) : onReject && onReject(false)
-            }
+          <div
+              className="flex"
+              style={{justifyContent: "flex-end", gap: "1.6rem"}}
           >
-            Удалить
-          </Button>
-          <Button
-            background="#27AE60"
-            style={{ width: "auto" }}
-            onClick={onSave}
-          >
-            Сохранить
-          </Button>
-        </div>
+            <Button
+                background="#CACACA"
+                color="#645C5C"
+                style={{width: "auto"}}
+                onClick={onDelete}
+                type="button"
+            >
+              Удалить
+            </Button>
+            <Button
+                background="#27AE60"
+                style={{width: "auto"}}
+                type="submit"
+            >
+              Сохранить
+            </Button>
+          </div>
+        </form>
       </div>
     </>
-  );
+);
 };
+
+const timeArr = [1, 2, 3, 4, 5, 6,7,8,9,10];
 
 export default CallsTableBlock2;

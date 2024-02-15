@@ -26,7 +26,7 @@ export interface ISchoolInfo {
   schooladminid?: ISchoolAdmin;
   schoolphotos?: ISchoolPhotos[];
   schoolphotosid?: ISchoolPhotos;
-  schoolpassport?: ISchoolPassport[];
+  schoolpassport?: ISchoolPassport;
   schoolsocial?: ISchoolSocialMedia[];
   schoolsocialid?: ISchoolSocialMedia;
   class?: IClass[];
@@ -40,7 +40,7 @@ export const initaialStateSchoolInfo: ISchoolInfo = {
   school: [],
   users: [],
   schooladmin: [],
-  schoolpassport: [],
+  schoolpassport: {},
   schoolphotos: [],
   schoolsocial: [],
   teachers: [],

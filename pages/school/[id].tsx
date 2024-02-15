@@ -1,6 +1,6 @@
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { useRouter } from "next/router";
-import { PlusIcons } from "@/components/atoms/Icons";
+import {LogoutIcons, PlusIcons} from "@/components/atoms/Icons";
 import { Button } from "@/components/atoms/UI/Buttons/Button";
 import Tabs from "@/components/molecules/Tabs/Tabs";
 import SchoolTable from "@/components/organisms/SchoolIdTable/SchoolTable";
@@ -14,8 +14,8 @@ import { ITabs } from "@/types/assets.type";
 import SchoolTableBlock3 from "@/components/molecules/SchoolTableId/SchoolTableBlock3";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import {
-  getSchoolAdminIdThunk,
-  getSchoolPhotosIdThunk,
+  getSchoolAdminIdThunk, getSchoolPassportThunk,
+  getSchoolPhotosIdThunk, getSchoolPhotosThunk,
   getSchoolSocialIdThunk,
 } from "@/store/thunks/schoolnfo.thunk";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
@@ -31,11 +31,18 @@ const SchoolComponents = () => {
   const socialid = useTypedSelector((state) => state.system.schoolsocialid);
   const adminid = useTypedSelector((state) => state.system.schooladminid);
   const photosid = useTypedSelector((state) => state.system.schoolphotosid);
-
+  const schoolPassword = useTypedSelector((state) => state.system.schoolpassport);
   const handleAddButtonClick = () => {
     setEditActive(false);
     setShowActive(!showActive);
+    setId(undefined);
   };
+
+  useEffect(() => {
+    if (schoolPassword) {
+      dispatch(getSchoolPassportThunk());
+    }
+  }, [dispatch]);
 
   const handleClickGetIdDop = (id?: number) => {
     setEditActive(true);
@@ -67,6 +74,8 @@ const SchoolComponents = () => {
     }
   };
 
+
+
   return (
     <MainLayouts>
       <div
@@ -78,20 +87,26 @@ const SchoolComponents = () => {
         }}
       >
         <Tabs link="school" tabs={tabs} />
-        <Button
-          background="#27AE60"
+        {router.query.id !== "2" &&
+            < Button
+          background={showActive || editActive ? "#CACACA" : "#27AE60"}
           radius="14px"
           style={{
-            width: "auto",
-            display: "flex",
-            alignItems: "center",
-            gap: ".8rem",
-          }}
+          width: "auto",
+        }}
           onClick={handleAddButtonClick}
-        >
-          <PlusIcons />
-          Добавить
-        </Button>
+          >
+          <div
+          style={{
+          display: "flex",
+          alignItems: "center",
+          gap: ".8rem",
+        }}
+          >
+        {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
+        {showActive || editActive ? "Закрыть" : "Добавить"}
+          </div>
+          </Button>}
       </div>
 
       {(showActive || editActive) && router.query.id === "1" && (
@@ -102,7 +117,7 @@ const SchoolComponents = () => {
           onEdit={setEditActive}
         />
       )}
-      {router.query.id === "2" && <SchoolTableBlock3 />}
+      {router.query.id === "2" && <SchoolTableBlock3 schoolPassport={schoolPassword}/>}
       {(showActive || editActive) && router.query.id === "3" && (
         <SchoolTableBlock2
           onReject={setShowActive}

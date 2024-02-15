@@ -70,7 +70,7 @@ const AdministratorTable: FC<IProps> = ({ users, handleClickGetId }) => {
               .map((item, index) => (
                 <Tr key={item.id}>
                   <Td>{index + 1}</Td>
-                  <Td>{item.email}</Td>
+                  <Td>{item.username}</Td>
                   <Td>{getSchoolLabelById(item.school) || "null"}</Td>
                   <Td>{getSchoolUrlById(item.school) || "null"}</Td>
                   <Td>

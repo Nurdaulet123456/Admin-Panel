@@ -7,17 +7,19 @@ import {
   useState,
 } from "react";
 import { Button } from "../../atoms/UI/Buttons/Button";
-import { Input } from "../../atoms/UI/Inputs/Input";
+import {Input, Select} from "../../atoms/UI/Inputs/Input";
 import TypeModal from "../../modals/TypeModal";
 import { instance } from "@/api/axios.instance";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { getSchoolSocialThunk } from "@/store/thunks/schoolnfo.thunk";
+import {getSchoolAdminThunk, getSchoolSocialThunk} from "@/store/thunks/schoolnfo.thunk";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { ISchoolSocialMedia } from "@/types/assets.type";
 import SanatyModalModal from "@/components/modals/SanatyModal";
 import { useModalLogic } from "@/hooks/useModalLogic";
 import ErrorModal from "@/components/modals/ErrorModal";
 import SuccessModal from "@/components/modals/SuccessModal";
+import {useFormik} from "formik";
+import * as Yup from "yup";
 
 interface UpdateInputProps {
   url?: string;
@@ -41,12 +43,6 @@ const SchoolTableBlock4: FC<IProps> = ({
   const [showActive, setShowActive] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
   const [id, setId] = useState<number>();
-
-  const [updateInput, setUpdateInput] = useState<UpdateInputProps>({
-    url: "",
-    name: "",
-  });
-
   const {
     showSuccessModal,
     showErrorModal,
@@ -56,96 +52,100 @@ const SchoolTableBlock4: FC<IProps> = ({
     showError,
   } = useModalLogic();
 
-  useEffect(() => {
-    if (socialid) {
-      setUpdateInput({
-        url: "",
-        name: socialid.account_name || "",
-      });
-
-      setText((socialid.type as string) || "");
-    }
-  }, [socialid]);
-
-  const onChangeUpdateInput = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-
-    setUpdateInput({
-      ...updateInput,
-      [name]: value,
-    });
-  };
-
-  const onSave = async () => {
-    try {
-      if (!updateInput.name || !updateInput.url || !text) {
-        showError();
-        return;
-      }
-
-      if (updateInput.name && updateInput.url) {
-        if (!getId) {
-          await instance
+  const formik = useFormik({
+    initialValues: {
+      name: "",
+      type: ""
+    },
+    validationSchema: Yup.object({
+      name: Yup.string().required("Обязательно*"),
+      type: Yup.string().required("Обязательно*"),
+    }),
+    onSubmit: async (values) => {
+      if (!getId) {
+        await instance
             .post(
-              "/api/School_SocialMediaApi/",
-              {
-                account_name: updateInput.name,
-                type: text.toLowerCase(),
-              },
-              {
-                headers: {
-                  Authorization: `Token ${getTokenInLocalStorage()}`,
+                "https://bilimge.kz/admins/api/School_SocialMediaApi/",
+                {
+                  account_name: values.name,
+                  type: values.type,
                 },
-              },
+                {
+                  headers: {
+                    Authorization: `Token ${getTokenInLocalStorage()}`,
+                  },
+                },
             )
             .then((res) => {
               if (res) {
                 dispatch(getSchoolSocialThunk());
                 showSuccess();
-                setText("");
-                setUpdateInput({
-                  name: "",
-                  url: "",
-                });
+                onDelete();
+                if (showSuccessModal && onReject) {
+                  onReject(false);
+                }
               }
             })
             .catch((e) => {
-              console.log(e.message);
+              showError();
+              if (showErrorModal && onReject) {
+                onReject(false);
+              }
             });
-        } else {
-          await instance
+      } else {
+        await instance
             .put(
-              `/api/School_SocialMediaApi/${getId}/`,
-              {
-                account_name: updateInput.name,
-                type: text.toLowerCase(),
-              },
-              {
-                headers: {
-                  Authorization: `Token ${getTokenInLocalStorage()}`,
+                `https://bilimge.kz/admins/api/School_SocialMediaApi/${getId}/`,
+                {
+                  account_name: values.name,
+                  type: values.type,
                 },
-              },
+                {
+                  headers: {
+                    Authorization: `Token ${getTokenInLocalStorage()}`,
+                  },
+                },
             )
             .then((res) => {
               if (res) {
                 dispatch(getSchoolSocialThunk());
                 showSuccess();
-                setText("");
-                setUpdateInput({
-                  name: "",
-                  url: "",
-                });
+                if (showSuccessModal && onReject) {
+                  onReject(false);
+                }
               }
             })
             .catch((e) => {
-              console.log(e.message);
+              showError();
+              if (showErrorModal && onReject) {
+                onReject(false);
+              }
             });
-        }
       }
-    } catch (error) {
-      showError();
     }
-  };
+  });
+
+
+  useEffect(() => {
+    if (socialid && getId) {
+      formik.resetForm({
+        values: {
+          name: socialid.account_name || "",
+          type: socialid.type || "",
+        },
+      });
+    }
+  }, [socialid, getId]);
+
+
+  function onDelete() {
+    formik.resetForm({
+      values: {
+        name: "",
+        type: ""
+      },
+    });
+  }
 
   return (
     <>
@@ -153,100 +153,94 @@ const SchoolTableBlock4: FC<IProps> = ({
       {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
 
       <div className="main_table-modal">
-        <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
-          <div className="main_table-modal_upload sanaty">
-            <div className="login_forms-label_pink">Тип</div>
-            <Input
-              type="text"
-              name="eat"
-              readOnly={true}
-              style={{ cursor: "pointer" }}
-              onClick={() => setShowActive(!showActive)}
-              value={text}
-            />
+        <form onSubmit={formik.handleSubmit}>
+          <div className="main_table-modal_flex" style={{gap: "1.6rem"}}>
+            <div className="main_table-modal_upload sanaty">
+              <div className="login_forms-label_pink">Тип</div>
+              <Select {...formik.getFieldProps("type")}>
+                <option value="">Выберите тип</option>
+                <option value={"instagram"}>
+                  Instagram
+                </option>
+                <option value={"faceboook"}>
+                  Facebook
+                </option>
+                <option value={"Youtube"}>
+                  Youtube
+                </option>
+              </Select>
+            </div>
 
-            <div
-              className="sanaty_dropdown"
-              style={{ textAlign: "center", width: "100%" }}
-            >
-              {showActive && (
-                <SanatyModalModal
-                  setText={setText}
-                  setId={setId}
-                  setShowActive={setShowActive}
-                  timeArr={[
-                    {
-                      id: 1,
-                      type: "Instagram",
-                    },
+            <div className="main_table-modal_forms">
+              {/*<div className="forms">*/}
+              {/*  <div className="login_forms-label_pink">URL</div>*/}
 
-                    {
-                      id: 2,
-                      type: "Facebook",
-                    },
+              {/*  {formik.touched.url && formik.errors.url ? (*/}
+              {/*      <div style={{color: "red"}}>{formik.errors.url}</div>*/}
+              {/*  ) : null}*/}
+              {/*  <Input*/}
+              {/*      name={"url"}*/}
+              {/*      onChange={formik.handleChange}*/}
+              {/*      onBlur={formik.handleBlur}*/}
+              {/*      value={formik.values.url}*/}
+              {/*      style={{*/}
+              {/*        borderColor:*/}
+              {/*            formik.touched.url && formik.errors.url*/}
+              {/*                ? "red"*/}
+              {/*                : "#c1bbeb",*/}
+              {/*      }}*/}
+              {/*  />*/}
+              {/*</div>*/}
 
-                    {
-                      id: 3,
-                      type: "Youtube",
-                    },
-                  ]}
+              <div className="forms">
+                <div className="login_forms-label_pink">Наименование</div>
+
+                {formik.touched.name && formik.errors.name ? (
+                    <div style={{color: "red"}}>{formik.errors.name}</div>
+                ) : null}
+                <Input
+                    name={"name"}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.name}
+                    style={{
+                      borderColor:
+                          formik.touched.name && formik.errors.name
+                              ? "red"
+                              : "#c1bbeb",
+                    }}
                 />
-              )}
+              </div>
+
+              <div
+                  className="flex"
+                  style={{justifyContent: "flex-end", gap: "1.6rem"}}
+              >
+                <Button
+                    background="#CACACA"
+                    color="#645C5C"
+                    style={{width: "auto"}}
+                    type="button"
+                    onClick={() =>
+                        getId ? onEdit && onEdit(false) : onReject && onReject(false)
+                    }
+                >
+                  Удалить
+                </Button>
+                <Button
+                    background="#27AE60"
+                    style={{width: "auto"}}
+                    type="submit"
+                >
+                  Сохранить
+                </Button>
+              </div>
             </div>
           </div>
-
-          <div className="main_table-modal_forms">
-            <div className="forms">
-              <div className="login_forms-label_pink">URL</div>
-
-              <Input
-                type="text"
-                placeholder="url"
-                name="url"
-                value={updateInput.url}
-                onChange={(e) => onChangeUpdateInput(e)}
-              />
-            </div>
-
-            <div className="forms">
-              <div className="login_forms-label_pink">Наименование</div>
-
-              <Input
-                type="text"
-                placeholder="@fkffk.kd"
-                name="name"
-                value={updateInput.name}
-                onChange={(e) => onChangeUpdateInput(e)}
-              />
-            </div>
-
-            <div
-              className="flex"
-              style={{ justifyContent: "flex-end", gap: "1.6rem" }}
-            >
-              <Button
-                background="#CACACA"
-                color="#645C5C"
-                style={{ width: "auto" }}
-                onClick={() =>
-                  getId ? onEdit && onEdit(false) : onReject && onReject(false)
-                }
-              >
-                Удалить
-              </Button>
-              <Button
-                background="#27AE60"
-                style={{ width: "auto" }}
-                onClick={onSave}
-              >
-                Сохранить
-              </Button>
-            </div>
-          </div>
-        </div>
+        </form>
       </div>
     </>
-  );
+);
 };
 
 export default SchoolTableBlock4;

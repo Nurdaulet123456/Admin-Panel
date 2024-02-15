@@ -11,11 +11,13 @@ import { Input } from "../../atoms/UI/Inputs/Input";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { getSchoolPhotosThunk } from "@/store/thunks/schoolnfo.thunk";
+import {getSchoolAdminThunk, getSchoolPhotosThunk} from "@/store/thunks/schoolnfo.thunk";
 import { ISchoolPhotos } from "@/types/assets.type";
 import { useModalLogic } from "@/hooks/useModalLogic";
 import ErrorModal from "@/components/modals/ErrorModal";
 import SuccessModal from "@/components/modals/SuccessModal";
+import {useFormik} from "formik";
+import * as Yup from "yup";
 
 interface UpdateInputProps {
   name?: string;
@@ -136,6 +138,9 @@ const SchoolTableBlock2: FC<IProps> = ({
       showError();
     }
   };
+
+
+
 
   return (
     <>
