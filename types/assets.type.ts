@@ -258,6 +258,7 @@ interface ISpecialityHistory {
   end_date?: number;
   speciality_university?: string;
   degree?: string;
+  mamandygy?:string;
 }
 
 // News

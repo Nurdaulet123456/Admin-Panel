@@ -27,7 +27,6 @@ import { IKruzhok } from "@/types/assets.type";
 import {useFormik} from "formik";
 import * as Yup from "yup";
 import {array} from "yup";
-import {log} from "console";
 
 interface IUpdateInput {
   name?: string;
@@ -73,8 +72,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
     if (Array.isArray(arr)) {
       arr.forEach((item, i) => {
         if(item)
-        temp.push({week_day: String(i+1), start_end_time
-              : String(item)});
+        temp.push({week_day: String(i+1), start_end_time: String(item)});
       });
     }
     return temp;

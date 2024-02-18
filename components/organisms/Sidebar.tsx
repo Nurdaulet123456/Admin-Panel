@@ -3,37 +3,39 @@ import { useRouter } from "next/router";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { useEffect, useState } from "react";
 import { instance } from "@/api/axios.instance";
+import {useTypedSelector} from "@/hooks/useTypedSelector";
+import {getMenuThunk} from "@/store/thunks/schoolnfo.thunk";
+import {useAppDispatch} from "@/hooks/useAppDispatch";
+import {getUserIdThunk} from "@/store/thunks/available.thunk";
 
 const Sidebar = () => {
   const router = useRouter();
-  const [schoolId, setSchoolId] = useState<number>();
+  const [schoolName, setSchoolName] = useState<string>();
 
-  console.log(getTokenInLocalStorage());
+  useEffect(() => {
+    async function getSchool() {
+      await instance
+          .get("https://www.bilimge.kz/admins/users/me/", {
+            headers: {
+              Authorization: `Token ${
+                  getTokenInLocalStorage()
+              }`,
+            },
+          })
+          .then((res) => {
+            if (res) {
+              setSchoolName(res.school_name)
+            }
+          });
+    }
 
-  // useEffect(() => {
-  //   async function getSchool() {
-  //     await instance
-  //         .get("https://www.bilimge.kz/admins/users/me/", {
-  //           headers: {
-  //             Authorization: `Token ${
-  //                 getTokenInLocalStorage()
-  //             }`,
-  //           },
-  //         })
-  //         .then((res) => {
-  //           if (res) {
-  //             console.log(res)
-  //           }
-  //         });
-  //   }
-  //
-  //   getSchool();
-  // }, []);
+    getSchool();
+  }, []);
 
   return (
     <div className="sidebar">
       <Link href={"/"}>
-        <div className="sidebar_top">KESTESI.KZ</div>
+        <div className="sidebar_top">{schoolName}</div>
       </Link>
 
       <nav className="sidebar_links">

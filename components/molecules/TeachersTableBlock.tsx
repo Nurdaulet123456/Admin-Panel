@@ -16,9 +16,9 @@ import { getTeachersThunk } from "@/store/thunks/pride.thunk";
 import { ITeachers } from "@/types/assets.type";
 import { AddIcons } from "../atoms/Icons";
 import styled from "@emotion/styled";
-import { log } from "console";
-import { useFormik, useField, Formik, Form } from "formik";
+import { useFormik, } from "formik";
 import * as Yup from "yup";
+import {getKruzhokInfoThunk} from "@/store/thunks/schoolnfo.thunk";
 
 interface UpdateInputProps {
   name?: string;
@@ -62,209 +62,55 @@ const TeachersTableBlock: FC<IProps> = ({
   const [updateInput, setUpdateInput] = useState<UpdateInputProps>({});
   const dispatch = useAppDispatch();
 
-  // const [workExperience, setWorkExperience] = useState<IHistoryProps[]>([
-  //   {
-  //     start_date: "",
-  //     end_date: "",
-  //     job_characteristic: "",
-  //   },
-  // ]);
+  const reset = (isDelete, isJob, index) => {
+    const file = formik.values.file;
+    const name = formik.values.name;
+    const sanaty = formik.values.sanaty;
+    const pan = formik.values.pan;
+    let jobH = formik.values.jobHistory;
+    let specification = formik.values.specification;
 
-  // const [mamandygyList, setMamandygyList] = useState<ISpecificationProps[]>([
-  //   {
-  //     end_date: "",
-  //     speciality_university: "",
-  //     mamandygy: "",
-  //     degree: "",
-  //   },
-  // ]);
+    if(isDelete && isJob) {
+      if(index != 0)
+      jobH = jobH.filter((_, i) => i !== index);
+    }else if(!isDelete && isJob) {
+      jobH.push({
+        start_date: "",
+        end_date: "",
+        job_characteristic: ""
+      })
+    }else if(isDelete && !isJob) {
+      if(index != 0)
+        specification = specification.filter((_, i) => i !== index);
+    }else {
+      specification.push({
+        end_date: "",
+        speciality_university: "",
+        mamandygy: "",
+        degree: "",
+      })
+    }
 
-  // const [file, setFile] = useState<any>(null);
-  // console.log(teachersid);
-  
-
-  // useEffect(() => {
-  //   if (teachersid && getId) {
-  //     setUpdateInput({
-  //       name: teachersid.full_name || "",
-  //       pan: teachersid.subject || "",
-  //     });
-
-  //     if (teachersid.job_history && teachersid.job_history.length > 0) {
-  //       setWorkExperience(teachersid.job_history as IHistoryProps[]);
-  //     }
-
-  //     if (
-  //       teachersid.speciality_history &&
-  //       teachersid.speciality_history.length > 0
-  //     ) {
-  //       setMamandygyList(
-  //         teachersid.speciality_history as ISpecificationProps[],
-  //       );
-  //     }
-
-  //     setText(teachersid.pedagog as string);
-  //   }
-  // }, [teachersid]);
-
-  // const onChangeUpdateInput = (
-  //   e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  // ) => {
-  //   const { name, value } = e.target;
-
-  //   setUpdateInput({
-  //     ...updateInput,
-  //     [name]: value,
-  //   });
-  // };
-
-  const [jobAdded, setJobAdded] = useState(true);
-
-  useEffect(()=> {
-        formik.values.jobHistory.push({
-          start_date: "",
-          end_date: "",
-          job_characteristic: ""
-        })
-      }, [jobAdded]
-  )
-
-
-
-
-  // const handleWorkExperienceChange = (
-  //   index: number,
-  //   fieldName: string,
-  //   value: any,
-  // ) => {
-  //   setWorkExperience((prevExperience) =>
-  //     prevExperience.map((experience, i) =>
-  //       i === index ? { ...experience, [fieldName]: value } : experience,
-  //     ),
-  //   );
-  // };
-
-  // const handleAddMamandygy = () => {
-  //   setMamandygyList((prevList) => [
-  //     ...prevList,
-  //     {
-  //       end_date: "",
-  //       speciality_university: "",
-  //       mamandygy: "",
-  //       degree: "",
-  //     },
-  //   ]);
-  // };
-
-  // const handleMamandygyChange = (
-  //   index: number,
-  //   fieldName: string,
-  //   value: any,
-  // ) => {
-  //   setMamandygyList((prevList) =>
-  //     prevList.map((item, i) =>
-  //       i === index ? { ...item, [fieldName]: value } : item,
-  //     ),
-  //   );
-  // };
-
-  // const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-  //   const selectedFile = e.target.files?.[0];
-  //   console.log("Selected File:", selectedFile);
-  //   if (selectedFile) {
-  //     setFile(selectedFile);
-  //   }
-  // };
-
-  // const onSave = async () => {
-  //   console.log(updateInput.name, updateInput.pan, text);
-
-  //   if (!updateInput.name || !updateInput.pan || !text) {
-  //     return;
-  //   }
-
-    
-
-  //   if (updateInput.name && updateInput.pan && text) {
-  //     if (!getId) {
-  //       await instance
-  //         .post(
-  //           "https://bilimge.kz/admins/api/teacher/",
-  //           {
-  //             full_name: updateInput.name,
-  //             subject: updateInput.pan,
-  //             pedagog: text,
-  //             job_history: workExperience,
-  //             speciality_history: mamandygyList,
-  //           },
-  //           {
-  //             headers: {
-  //               Authorization: `Token ${getTokenInLocalStorage()}`,
-  //             },
-  //           },
-  //         )
-  //         .then(async (res) => {
-  //           if (res) {
-  //             const formData = new FormData();
-
-  //             formData.append("photo3x4", file);
-  //             formData.append("id", String((res as any).id));
-
-  //             console.log("adasdasd");
-  //             try {
-  //               const uploadPhotoResponse = await instance.post(
-  //                 "https://bilimge.kz/admins/api/teacher/upload_photo/",
-  //                 formData,
-  //                 {
-  //                   headers: {
-  //                     Authorization: `Token ${getTokenInLocalStorage()}`,
-  //                   },
-  //                 },
-  //               );
-
-  //               if (uploadPhotoResponse) {
-  //                 dispatch(getTeachersThunk());
-  //               }
-  //             } catch (err) {
-  //               console.log(err);
-  //             }
-  //           }
-  //         })
-  //         .catch((err) => console.log(err));
-  //     } else {
-  //       await instance
-  //         .put(
-  //           `https://bilimge.kz/admins/api/teacher/${getId}/`,
-  //           {
-  //             full_name: updateInput.name,
-  //             subject: updateInput.pan,
-  //             pedagog: text,
-  //             job_history: workExperience,
-  //             speciality_history: mamandygyList,
-  //           },
-  //           {
-  //             headers: {
-  //               Authorization: `Token ${getTokenInLocalStorage()}`,
-  //             },
-  //           },
-  //         )
-  //         .then((res) => {
-  //           if (res) {
-  //             dispatch(getTeachersThunk());
-  //           }
-  //         })
-  //         .catch((err) => console.log(err));
-  //     }
-  //   }
-  // };\
+    formik.resetForm({
+      values: {
+        file: file,
+        name: name,
+        sanaty: sanaty,
+        pan: pan,
+        // lau: lau,
+        jobHistory: jobH,
+        specification: specification
+      },
+    });
+  }
 
   const formik= useFormik({
     initialValues: {
-      file: "",
+      file: null,
       name: "",
       sanaty: "",
       pan: "",
-      lau: "",
+      // lau: "",
       jobHistory: [{
         start_date: "",
         end_date: "",
@@ -298,32 +144,131 @@ const TeachersTableBlock: FC<IProps> = ({
     //   )
     // }),
     onSubmit: async (values) => {
-      console.log(values); 
+      console.log(values);
+      if (!getId) {
+              await instance
+                .post(
+                  "https://bilimge.kz/admins/api/teacher/",
+                  {
+                    full_name: values.name,
+                    subject: values.pan,
+                    pedagog: values.sanaty,
+                    job_history: values.jobHistory,
+                    speciality_history: values.specification,
+                  },
+                  {
+                    headers: {
+                      Authorization: `Token ${getTokenInLocalStorage()}`,
+                    },
+                  },
+                )
+                .then(async (res) => {
+                  if (res) {
+                    const formData = new FormData();
+
+                    formData.append("photo3x4", values.file);
+                    formData.append("id", String((res as any).id));
+
+                    try {
+                      const uploadPhotoResponse = await instance.post(
+                        "https://bilimge.kz/admins/api/teacher/upload_photo/",
+                        formData,
+                        {
+                          headers: {
+                            Authorization: `Token ${getTokenInLocalStorage()}`,
+                          },
+                        },
+                      );
+
+                      if (uploadPhotoResponse) {
+                        dispatch(getTeachersThunk());
+                      }
+                    } catch (err) {
+                      console.log(err);
+                    }
+                  }
+                })
+                .catch((err) => console.log(err));
+            } else {
+              await instance
+                .put(
+                  `https://bilimge.kz/admins/api/teacher/${getId}/`,
+                    {
+                      full_name: values.name,
+                      subject: values.pan,
+                      pedagog: values.sanaty,
+                      job_history: values.jobHistory,
+                      speciality_history: values.specification,
+                    },
+                  {
+                    headers: {
+                      Authorization: `Token ${getTokenInLocalStorage()}`,
+                    },
+                  },
+                )
+                .then(async (res) => {
+                  if (res) {
+                    if(values.file) {
+                      const formData = new FormData();
+
+                      formData.append("photo3x4", values.file);
+                      formData.append("id", String((res as any).id));
+
+                      try {
+                        const uploadPhotoResponse = await instance.put(
+                            "https://bilimge.kz/admins/api/teacher/upload_photo/",
+                            formData,
+                            {
+                              headers: {
+                                Authorization: `Token ${getTokenInLocalStorage()}`,
+                                "Content-Type": "multipart/form-data",
+                              },
+                            },
+                        );
+
+                        if (uploadPhotoResponse) {
+                          dispatch(getTeachersThunk());
+                        }
+                      } catch (err) {
+                        console.log(err);
+                      }
+                    dispatch(getTeachersThunk());
+                  }
+                }}).catch((err) => console.log(err));
+
+      }
     }
   });
 
-  const [jobRemove, setJobRemove] = useState(null);
-
   useEffect(() => {
-    if (jobRemove !== null && jobRemove !== undefined) {
-      // Filter the jobHistory array and update Formik's values
-      const filteredJobHistory = formik.values.jobHistory.filter((_, index) => index !== jobRemove);
-      formik.setFieldValue("jobHistory", filteredJobHistory);
+    if (teachersid && getId) {
+      formik.resetForm({
+        values: {
+          file: null,
+          name: teachersid.full_name || "",
+          sanaty: teachersid.pedagog || "",
+          pan: teachersid.subject || "",
+          jobHistory: teachersid.job_history || [{
+            start_date: "",
+            end_date: "",
+            job_characteristic: "",
+          }],
+          specification: teachersid.speciality_history ||  [{
+            end_date: "",
+            speciality_university: "",
+            mamandygy: "",
+            degree: "",
+          }]
+        },
+      });
     }
-  }, [jobRemove]);
+  }, [teachersid, getId]);
 
 
-  // useEffect(() => {
-  //   if (teachersid && getId) {
-  //     formik.resetForm({
-  //       values: {
-  //
-  //       },
-  //     });
-  //   }
-  // }, [teachersid, getId]);
+
 
   return (
+      <>
       <form onSubmit={formik.handleSubmit}>
     <div className="main_table-modal">
       <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
@@ -338,9 +283,9 @@ const TeachersTableBlock: FC<IProps> = ({
           <div style={{ marginTop: "2.4rem" }} className="sanaty">
             <div className="login_forms-label_pink">Біліктілік санаты</div>
             <Select {...formik.getFieldProps("sanaty")}>
-              <option value="">Выберите день недели</option>
+              <option value="">Выберите разряд</option>
               {sanatyArr.map((item) => (
-                  <option value={item.id}>{item.type}</option>
+                  <option value={item.type}>{item.type}</option>
               ))}
             </Select>
           </div>
@@ -386,24 +331,24 @@ const TeachersTableBlock: FC<IProps> = ({
             />
           </div>
 
-          <div className="forms">
-            <div className="login_forms-label_pink">Лауазымы</div>
-            {formik.touched.lau && formik.errors.lau ? (
-                <div style={{ color: "red" }}>{formik.errors.lau}</div>
-            ) : null}
-            <Input
-                name={"lau"}
-                onChange={formik.handleChange}
-                onBlur={formik.handleBlur}
-                value={formik.values.lau}
-                style={{
-                  borderColor:
-                      formik.touched.lau && formik.errors.lau
-                          ? "red"
-                          : "#c1bbeb",
-                }}
-            />
-          </div>
+          {/*<div className="forms">*/}
+          {/*  <div className="login_forms-label_pink">Лауазымы</div>*/}
+          {/*  {formik.touched.lau && formik.errors.lau ? (*/}
+          {/*      <div style={{ color: "red" }}>{formik.errors.lau}</div>*/}
+          {/*  ) : null}*/}
+          {/*  <Input*/}
+          {/*      name={"lau"}*/}
+          {/*      onChange={formik.handleChange}*/}
+          {/*      onBlur={formik.handleBlur}*/}
+          {/*      value={formik.values.lau}*/}
+          {/*      style={{*/}
+          {/*        borderColor:*/}
+          {/*            formik.touched.lau && formik.errors.lau*/}
+          {/*                ? "red"*/}
+          {/*                : "#c1bbeb",*/}
+          {/*      }}*/}
+          {/*  />*/}
+          {/*</div>*/}
         </div>
       </div>
 
@@ -457,14 +402,10 @@ const TeachersTableBlock: FC<IProps> = ({
                 />
               </div>
 
-
               {index !== 0 && (
                   <AddButtton
                       type="button"
-                      onClick={() => {
-                        console.log(index)
-                        setJobRemove(index); // Set the jobRemove state when the button is clicked
-                      }}
+                      onClick={() => reset(true,true,index)}
                   >
                     Remove Job History
                   </AddButtton>
@@ -496,100 +437,116 @@ const TeachersTableBlock: FC<IProps> = ({
 
         <AddButtton
             type={"button"}
-            onClick={() =>
-            setJobAdded(!jobAdded)
-          }
+            onClick= {() => reset(false, true, null)}
           style={{ position: "absolute", bottom: "0", right: "-42px" }}
         >
           <AddIcons />
         </AddButtton>
       </div>
 
-      {/*<div className="forms" style={{ position: "relative" }}>*/}
-      {/*  <div className="login_forms-label_pink" style={{ color: "#E94E29" }}>*/}
-      {/*    Мамандығы*/}
-      {/*  </div>*/}
-      {/*  {mamandygyList.map((item, index) => (*/}
-      {/*    <div key={index}>*/}
-      {/*      <div className="forms flex-grid-20">*/}
-      {/*        <div className="login_forms-label_pink mb-0">Бітірген жылы *</div>*/}
-      {/*        <Input*/}
-      {/*          type="text"*/}
-      {/*          placeholder="Бітірген жылы"*/}
-      {/*          name={`end_date_${index}`}*/}
-      {/*          style={{ width: "40%" }}*/}
-      {/*          value={item.end_date}*/}
-      {/*          onChange={(e) =>*/}
-      {/*            handleMamandygyChange(index, "end_date", e.target.value)*/}
-      {/*          }*/}
-      {/*        />*/}
-      {/*      </div>*/}
+      <div className="forms" style={{ position: "relative" }}>
+        <div className="login_forms-label_pink" style={{ color: "#E94E29" }}>
+          Мамандығы
+        </div>
+        {formik.initialValues.specification.map((item, index) => (
+          <div key={index}>
+            <div className="forms flex-grid-20">
+              <div className="login_forms-label_pink mb-0">Бітірген жылы *</div>
+              {formik.touched.specification && formik.errors.specification && formik.errors.specification[index] && formik.errors.specification[index].end_date ? (
+                  <div style={{ color: "red" }}>{formik.errors.specification[index].end_date}</div>
+              ) : null}
+              <Input
+                  name={`specification[${index}].end_date`}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.specification[index]?.end_date} // Use jobHistory instead of name for the value
+                  style={{
+                    borderColor:
+                        formik.touched.specification && formik.touched.specification[index] && formik.errors.specification && formik.errors.specification[index].end_date ? "red" : "#c1bbeb", // Update the conditional check for touched and errors
+                  }}
+              />
+            </div>
 
-      {/*      <div className="forms flex-grid-20">*/}
-      {/*        <div className="login_forms-label_pink mb-0">Университет *</div>*/}
-      {/*        <Input*/}
-      {/*          type="text"*/}
-      {/*          placeholder="Университет"*/}
-      {/*          name={`speciality_university_${index}`}*/}
-      {/*          style={{ width: "40%" }}*/}
-      {/*          value={item.speciality_university}*/}
-      {/*          onChange={(e) =>*/}
-      {/*            handleMamandygyChange(*/}
-      {/*              index,*/}
-      {/*              "speciality_university",*/}
-      {/*              e.target.value,*/}
-      {/*            )*/}
-      {/*          }*/}
-      {/*        />*/}
-      {/*      </div>*/}
+            <div className="forms flex-grid-20">
+              <div className="login_forms-label_pink mb-0">Университет *</div>
+              {formik.touched.specification && formik.errors.specification && formik.errors.specification[index] && formik.errors.specification[index].speciality_university ? (
+                  <div style={{ color: "red" }}>{formik.errors.specification[index].speciality_university}</div>
+              ) : null}
+              <Input
+                  name={`specification[${index}].speciality_university`}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.specification[index]?.speciality_university} // Use jobHistory instead of name for the value
+                  style={{
+                    borderColor:
+                        formik.touched.specification && formik.touched.specification[index] && formik.errors.specification && formik.errors.specification[index].speciality_university ? "red" : "#c1bbeb", // Update the conditional check for touched and errors
+                  }}
+              />
+            </div>
 
-      {/*      <div className="forms flex-grid-20">*/}
-      {/*        <div*/}
-      {/*          className="login_forms-label_pink mb-0"*/}
-      {/*          style={{ width: "100%" }}*/}
-      {/*        >*/}
-      {/*          Деңгей **/}
-      {/*        </div>*/}
-      {/*        <Input*/}
-      {/*          type="text"*/}
-      {/*          placeholder="Деңгей"*/}
-      {/*          name={`degree_${index}`}*/}
-      {/*          style={{ width: "40%" }}*/}
-      {/*          value={item.degree}*/}
-      {/*          onChange={(e) =>*/}
-      {/*            handleMamandygyChange(index, "degree", e.target.value)*/}
-      {/*          }*/}
-      {/*        />*/}
-      {/*      </div>*/}
+            <div className="forms flex-grid-20">
+              <div
+                className="login_forms-label_pink mb-0"
+                style={{ width: "100%" }}
+              >
+                Деңгей *
+              </div>
+              {formik.touched.specification && formik.errors.specification && formik.errors.specification[index] && formik.errors.specification[index].degree ? (
+                  <div style={{ color: "red" }}>{formik.errors.specification[index].degree}</div>
+              ) : null}
+              <Input
+                  name={`specification[${index}].degree`}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.specification[index]?.degree} // Use jobHistory instead of name for the value
+                  style={{
+                    borderColor:
+                        formik.touched.specification && formik.touched.specification[index] && formik.errors.specification && formik.errors.specification[index].degree ? "red" : "#c1bbeb", // Update the conditional check for touched and errors
+                  }}
+              />
+            </div>
 
-      {/*      <div className="forms flex-grid-20">*/}
-      {/*        <div*/}
-      {/*          className="login_forms-label_pink mb-0"*/}
-      {/*          style={{ width: "100%" }}*/}
-      {/*        >*/}
-      {/*          Мамандығы **/}
-      {/*        </div>*/}
-      {/*        <Input*/}
-      {/*          type="text"*/}
-      {/*          placeholder="Мамандығы"*/}
-      {/*          name={`mamandygy_${index}`}*/}
-      {/*          style={{ width: "40%" }}*/}
-      {/*          value={item.mamandygy}*/}
-      {/*          onChange={(e) =>*/}
-      {/*            handleMamandygyChange(index, "mamandygy", e.target.value)*/}
-      {/*          }*/}
-      {/*        />*/}
-      {/*      </div>*/}
-      {/*    </div>*/}
-      {/*  ))}*/}
+            <div className="forms flex-grid-20">
+              <div
+                className="login_forms-label_pink mb-0"
+                style={{ width: "100%" }}
+              >
+                Мамандығы *
+              </div>
+              {formik.touched.specification && formik.errors.specification && formik.errors.specification[index] && formik.errors.specification[index].mamandygy ? (
+                  <div style={{ color: "red" }}>{formik.errors.specification[index].mamandygy}</div>
+              ) : null}
+              <Input
+                  name={`specification[${index}].mamandygy`}
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.specification[index]?.mamandygy} // Use jobHistory instead of name for the value
+                  style={{
+                    borderColor:
+                        formik.touched.specification && formik.touched.specification[index] && formik.errors.specification && formik.errors.specification[index].mamandygy ? "red" : "#c1bbeb", // Update the conditional check for touched and errors
+                  }}
+              />
+            </div>
+            {index !== 0 && (
+                <AddButtton
+                    type="button"
+                    onClick={() => reset(true,false,index)}
+                >
+                  Remove Job History
+                </AddButtton>
+            )}
+          </div>
 
-      {/*  <AddButtton*/}
-      {/*    onClick={handleAddMamandygy}*/}
-      {/*    style={{ position: "absolute", bottom: "0", right: "45%" }}*/}
-      {/*  >*/}
-      {/*    <AddIcons />*/}
-      {/*  </AddButtton>*/}
-      {/*</div>*/}
+        ))}
+
+        <AddButtton
+            type={"button"}
+            onClick= {() => reset(false, false, null)}
+            style={{ position: "absolute", bottom: "0", right: "-42px" }}
+        >
+          <AddIcons />
+        </AddButtton>
+      </div>
 
       <div
         className="flex"
@@ -612,6 +569,7 @@ const TeachersTableBlock: FC<IProps> = ({
       </div>
     </div>
         </form>
+      </>
   );
 };
 
