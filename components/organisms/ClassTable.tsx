@@ -14,10 +14,9 @@ interface IProps {
 
 const ClassTable: FC<IProps> = ({ classinfo, handleClickGetId }) => {
   const dispatch = useAppDispatch();
-
   const onDelete = async (id?: number) => {
     await instance
-      .delete(`/api/class/${id}/`, {
+      .delete(`https://bilimge.kz/admins/api/class/${id}/`, {
         headers: {
           Authorization: `Token ${getTokenInLocalStorage()}`,
         },

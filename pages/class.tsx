@@ -1,4 +1,4 @@
-import { PlusIcons } from "@/components/atoms/Icons";
+import {LogoutIcons, PlusIcons} from "@/components/atoms/Icons";
 import { Button } from "@/components/atoms/UI/Buttons/Button";
 import ClassTableBlock from "@/components/molecules/ClassTableBlock";
 import ClassTable from "@/components/organisms/ClassTable";
@@ -16,29 +16,31 @@ const ClassPage = () => {
   const handleAddButtonClick = () => {
     setEditActive(false);
     setShowActive(!showActive);
+    setId(undefined);
   };
 
-  const handleClickGetId = (id?: number) => {
-    setEditActive(true);
-
-    setId(id);
-
-    if (id) {
-      dispatch(getClassIdThunk(id));
-    }
-  };
 
   const dispatch = useAppDispatch();
   const classinfo = useTypedSelector((state) => state.system.class);
   const classinfoid = useTypedSelector((state) => state.system.classid);
-
   useEffect(() => {
     if (classinfo) {
       dispatch(getClassThunk());
     }
   }, [dispatch]);
 
-  console.log(classinfo);
+    const handleClickGetId = (id?: number) => {
+        setEditActive(true);
+
+        setId(id);
+
+        if (id) {
+            dispatch(getClassIdThunk(id));
+        }
+    };
+
+
+    console.log(classinfo);
 
   return (
     <MainLayouts>
@@ -50,20 +52,25 @@ const ClassPage = () => {
           marginBottom: "1.6rem",
         }}
       >
-        <Button
-          background="#27AE60"
-          radius="14px"
-          style={{
-            width: "auto",
-            display: "flex",
-            alignItems: "center",
-            gap: ".8rem",
-          }}
-          onClick={handleAddButtonClick}
-        >
-          <PlusIcons />
-          Добавить
-        </Button>
+          <Button
+              background={showActive || editActive ? "#CACACA" : "#27AE60"}
+              radius="14px"
+              style={{
+                  width: "auto",
+              }}
+              onClick={handleAddButtonClick}
+          >
+              <div
+                  style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: ".8rem",
+                  }}
+              >
+                  {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
+                  {showActive || editActive ? "Закрыть" : "Добавить"}
+              </div>
+          </Button>
       </div>
 
       {(showActive || editActive) && (

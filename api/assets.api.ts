@@ -41,7 +41,7 @@ export const assetsApi = {
   },
 
   async getSlassInfoId(id?: number): Promise<IClass> {
-    return await instance.get(`/api/class/${id}`, {
+    return await instance.get(`https://bilimge.kz/admins/api/class/${id}`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -49,7 +49,7 @@ export const assetsApi = {
   },
 
   async getSlassInfo(): Promise<IClass[]> {
-    return await instance.get(`/api/class/`, {
+    return await instance.get(`https://bilimge.kz/admins/api/class/`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -167,7 +167,7 @@ export const assetsApi = {
   },
 
   async getSchoolPhotos(): Promise<ISchoolPhotos[]> {
-    return await instance.get("/api/slider/", {
+    return await instance.get("https://bilimge.kz/admins/api/slider/", {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -175,7 +175,7 @@ export const assetsApi = {
   },
 
   async getSchoolPhotosId(id?: number): Promise<ISchoolPhotos> {
-    return await instance.get(`/api/slider/${id}`, {
+    return await instance.get(`https://bilimge.kz/admins/api/slider/${id}`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -378,7 +378,7 @@ export const assetsApi = {
   },
 
   async getNews(): Promise<INews[]> {
-    return await instance.get("/api/newsApi/", {
+    return await instance.get("https://bilimge.kz/admins/api/newsApi/", {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -386,7 +386,7 @@ export const assetsApi = {
   },
 
   async getNewsId(id?: number): Promise<INews> {
-    return await instance.get(`/api/newsApi/${id}`, {
+    return await instance.get(`https://bilimge.kz/admins/api/newsApi/${id}`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -418,7 +418,7 @@ export const assetsApi = {
   },
 
   async getAvalibaleClassRooms(): Promise<IAClassRooms[]> {
-    return await instance.get(`/api/available_classrooms/`, {
+    return await instance.get(`https://bilimge.kz/admins/api/available_classrooms/`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -426,11 +426,10 @@ export const assetsApi = {
   },
 
   async getAvalibaleRing(start_time?: string): Promise<IARing[]> {
-    return await instance.get(`/api/available_ring/`, {
+    return await instance.get(`https://bilimge.kz/admins/api/available_ring/`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
-
       params: {
         start_time,
       },
@@ -438,7 +437,7 @@ export const assetsApi = {
   },
 
   async getAvalibaleSubject(): Promise<IASubjet[]> {
-    return await instance.get(`/api/available_subject/`, {
+    return await instance.get(`https://bilimge.kz/admins/api/available_subject/`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -446,7 +445,7 @@ export const assetsApi = {
   },
 
   async getAvalibaleTypez(): Promise<IATypeZ[]> {
-    return await instance.get(`/api/available_typez/`, {
+    return await instance.get(`https://bilimge.kz/admins/api/available_typez/`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -454,7 +453,7 @@ export const assetsApi = {
   },
 
   async getSchedule(): Promise<ISchedule[]> {
-    return await instance.get(`/api/schedule/`, {
+    return await instance.get(`https://bilimge.kz/admins/api/schedule/`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },

@@ -62,12 +62,12 @@ const LoginForms = () => {
         {() => {
           return (
             <Form>
-              <div className="login_forms-label_black">Email</div>
+              <div className="login_forms-label_black">Username</div>
               <Input
                 type="text"
                 name="username"
-                placeholder="Почта"
-                label="Email"
+                placeholder="username"
+                label="Username"
               />
               <div className="login_forms-label_black">Пароль</div>
               <Input

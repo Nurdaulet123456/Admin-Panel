@@ -1,4 +1,4 @@
-import { PlusIcons } from "@/components/atoms/Icons";
+import {LogoutIcons, PlusIcons} from "@/components/atoms/Icons";
 import { Button } from "@/components/atoms/UI/Buttons/Button";
 import NewsTableBlock from "@/components/molecules/NewsTableBlock";
 import NewsTable from "@/components/organisms/NewsTable";
@@ -20,6 +20,7 @@ const NewsPage = () => {
   const handleAddButtonClick = () => {
     setEditActive(false);
     setShowActive(!showActive);
+    setId(undefined)
   };
 
   const handleClickGetId = (id?: number) => {
@@ -42,20 +43,25 @@ const NewsPage = () => {
           marginBottom: "1.6rem",
         }}
       >
-        <Button
-          background="#27AE60"
-          radius="14px"
-          style={{
-            width: "auto",
-            display: "flex",
-            alignItems: "center",
-            gap: ".8rem",
-          }}
-          onClick={handleAddButtonClick}
-        >
-          <PlusIcons />
-          Добавить
-        </Button>
+          <Button
+              background={showActive || editActive ? "#CACACA" : "#27AE60"}
+              radius="14px"
+              style={{
+                  width: "auto",
+              }}
+              onClick={handleAddButtonClick}
+          >
+              <div
+                  style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: ".8rem",
+                  }}
+              >
+                  {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
+                  {showActive || editActive ? "Закрыть" : "Добавить"}
+              </div>
+          </Button>
       </div>
 
       {(showActive || editActive) && (

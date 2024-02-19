@@ -16,28 +16,22 @@ import { getTeachersThunk } from "@/store/thunks/pride.thunk";
 import { ITeachers } from "@/types/assets.type";
 import { AddIcons } from "../atoms/Icons";
 import styled from "@emotion/styled";
-import { useFormik, } from "formik";
+import {FormikErrors, useFormik,} from "formik";
 import * as Yup from "yup";
 import {getKruzhokInfoThunk} from "@/store/thunks/schoolnfo.thunk";
-
-interface UpdateInputProps {
-  name?: string;
-  pan?: string;
-  lau?: string;
-
-  jobhistory?: IHistoryProps[];
-
-  specification?: ISpecificationProps[];
-}
+import {array} from "yup";
+import ErrorModal from "@/components/modals/ErrorModal";
+import SuccessModal from "@/components/modals/SuccessModal";
+import {useModalLogic} from "@/hooks/useModalLogic";
 
 interface IHistoryProps {
-  start_date?: string;
-  end_date?: string;
+  start_date?: number;
+  end_date?: number;
   job_characteristic?: string;
 }
 
 interface ISpecificationProps {
-  end_date?: string;
+  end_date?: number;
   speciality_university?: string;
   mamandygy?: string;
   degree?: string;
@@ -49,6 +43,13 @@ interface IProps {
   getId?: number;
   teachersid?: ITeachers;
 }
+
+// Функция для проверки, является ли значение объектом ошибок с определенным свойством
+function isErrorWithProperty<T>(value: any, propertyName: keyof T): value is FormikErrors<T> {
+  return typeof value === 'object' && value !== null && propertyName in value;
+}
+
+
 
 const TeachersTableBlock: FC<IProps> = ({
   onReject,
@@ -62,7 +63,17 @@ const TeachersTableBlock: FC<IProps> = ({
   const [updateInput, setUpdateInput] = useState<UpdateInputProps>({});
   const dispatch = useAppDispatch();
 
-  const reset = (isDelete, isJob, index) => {
+  const {
+    showSuccessModal,
+    showErrorModal,
+    onSuccessModalClose,
+    onErrorModalClose,
+    showSuccess,
+    showError,
+  } = useModalLogic();
+
+
+  const reset = (isDelete: boolean, isJob: boolean, index: number) => {
     const file = formik.values.file;
     const name = formik.values.name;
     const sanaty = formik.values.sanaty;
@@ -71,7 +82,7 @@ const TeachersTableBlock: FC<IProps> = ({
     let specification = formik.values.specification;
 
     if(isDelete && isJob) {
-      if(index != 0)
+      if(index !== 0)
       jobH = jobH.filter((_, i) => i !== index);
     }else if(!isDelete && isJob) {
       jobH.push({
@@ -111,11 +122,13 @@ const TeachersTableBlock: FC<IProps> = ({
       sanaty: "",
       pan: "",
       // lau: "",
-      jobHistory: [{
-        start_date: "",
-        end_date: "",
-        job_characteristic: "",
-      }],
+      jobHistory: [
+        {
+          start_date: "",
+          end_date: "",
+          job_characteristic: "",
+        }
+      ],
       specification: [{
         end_date: "",
         speciality_university: "",
@@ -166,7 +179,7 @@ const TeachersTableBlock: FC<IProps> = ({
                   if (res) {
                     const formData = new FormData();
 
-                    formData.append("photo3x4", values.file);
+                    formData.append("photo3x4", values.file ? values.file : "");
                     formData.append("id", String((res as any).id));
 
                     try {
@@ -182,9 +195,17 @@ const TeachersTableBlock: FC<IProps> = ({
 
                       if (uploadPhotoResponse) {
                         dispatch(getTeachersThunk());
+                        showSuccess();
+                        onDelete();
+                        if (showSuccessModal && onReject) {
+                          onReject(false);
+                        }
                       }
                     } catch (err) {
-                      console.log(err);
+                      showError();
+                      if (showErrorModal && onReject) {
+                        onReject(false);
+                      }
                     }
                   }
                 })
@@ -228,9 +249,16 @@ const TeachersTableBlock: FC<IProps> = ({
 
                         if (uploadPhotoResponse) {
                           dispatch(getTeachersThunk());
+                          showSuccess();
+                          if (showSuccessModal && onReject) {
+                            onReject(false);
+                          }
                         }
                       } catch (err) {
-                        console.log(err);
+                        showError();
+                        if (showErrorModal && onReject) {
+                          onReject(false);
+                        }
                       }
                     dispatch(getTeachersThunk());
                   }
@@ -242,18 +270,44 @@ const TeachersTableBlock: FC<IProps> = ({
 
   useEffect(() => {
     if (teachersid && getId) {
+      let job: {start_date: string; end_date: string; job_characteristic: string;}[] =
+          teachersid.job_history?.map(item => ({
+            start_date: item.start_date?.toString() ?? "", // Преобразование в строку
+            end_date: item.end_date?.toString() ?? "",
+            job_characteristic: item.job_characteristic ?? ""
+          })) || [{
+            start_date: "",
+            end_date: "",
+            job_characteristic: "",
+          }];
+
+
+      let spec: {end_date: string; speciality_university: string; mamandygy: string; degree: string;}[] =
+          teachersid.speciality_history?.map(item => ({
+            end_date: item.end_date?.toString() ?? "",
+            speciality_university: item.speciality_university ?? "",
+            mamandygy: item.mamandygy ?? "",
+            degree: item.degree ?? ""
+          })) || [{
+            end_date: "",
+            speciality_university: "",
+            mamandygy: "",
+            degree: "",
+          }];
+
+
       formik.resetForm({
         values: {
           file: null,
           name: teachersid.full_name || "",
           sanaty: teachersid.pedagog || "",
           pan: teachersid.subject || "",
-          jobHistory: teachersid.job_history || [{
+          jobHistory: job || [{
             start_date: "",
             end_date: "",
             job_characteristic: "",
           }],
-          specification: teachersid.speciality_history ||  [{
+          specification: spec ||  [{
             end_date: "",
             speciality_university: "",
             mamandygy: "",
@@ -264,11 +318,37 @@ const TeachersTableBlock: FC<IProps> = ({
     }
   }, [teachersid, getId]);
 
+  function onDelete() {
+    formik.resetForm({
+      values: {
+        file: null,
+        name: "",
+        sanaty: "",
+        pan: "",
+        jobHistory: [
+          {
+            start_date: "",
+            end_date: "",
+            job_characteristic: "",
+          }
+        ],
+        specification: [{
+          end_date: "",
+          speciality_university: "",
+          mamandygy: "",
+          degree: "",
+        }]
+      },
+    });
+  }
+
 
 
 
   return (
       <>
+        {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
+        {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
       <form onSubmit={formik.handleSubmit}>
     <div className="main_table-modal">
       <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
@@ -276,7 +356,7 @@ const TeachersTableBlock: FC<IProps> = ({
           <div>
             <div className="login_forms-label_pink">Фото *</div>
             <Input type="file" name="file" onChange={(event) => {
-              return formik.setFieldValue('file', event?.target?.files[0]);
+              return formik.setFieldValue('file', event?.target?.files?.[0]);
             }} />
           </div>
 
@@ -366,9 +446,9 @@ const TeachersTableBlock: FC<IProps> = ({
                 >
                   Бастаған жылы *
                 </div>
-                {formik.touched.jobHistory && formik.errors.jobHistory && formik.errors.jobHistory[index] && formik.errors.jobHistory[index]?.start_date ? (
-                    <div style={{ color: "red" }}>{formik.errors.jobHistory[index]?.start_date}</div>
-                ) : null}
+                {/*{formik.touched.jobHistory && formik.errors.jobHistory && isErrorWithProperty<{start_date: string}>(formik.errors.jobHistory[index], 'start_date') ? (*/}
+                {/*    <div style={{ color: "red" }}>{formik.errors.jobHistory[index].start_date}</div>*/}
+                {/*) : null}*/}
                 <Input
                     name={`jobHistory[${index}].start_date`}
                     onChange={formik.handleChange}
@@ -387,9 +467,9 @@ const TeachersTableBlock: FC<IProps> = ({
                 >
                   Аяқтаған жылы *
                 </div>
-                {formik.touched.jobHistory && formik.errors.jobHistory && formik.errors.jobHistory[index] && formik.errors.jobHistory[index].end_date ? (
-                    <div style={{ color: "red" }}>{formik.errors.jobHistory[index].end_date}</div>
-                ) : null}
+                {/*{formik.touched.jobHistory && formik.errors.jobHistory && formik.errors.jobHistory[index] && formik.errors.jobHistory[index].end_date ? (*/}
+                {/*    <div style={{ color: "red" }}>{formik.errors.jobHistory[index].end_date}</div>*/}
+                {/*) : null}*/}
                 <Input
                     name={`jobHistory[${index}].end_date`}
                     onChange={formik.handleChange}
@@ -416,9 +496,9 @@ const TeachersTableBlock: FC<IProps> = ({
               <div className="login_forms-label_pink">
                 Жұмыс жасаған аймақ *
               </div>
-              {formik.touched.jobHistory && formik.errors.jobHistory && formik.errors.jobHistory[index] && formik.errors.jobHistory[index].job_characteristic ? (
-                  <div style={{ color: "red" }}>{formik.errors.jobHistory[index].job_characteristic}</div>
-              ) : null}
+              {/*{formik.touched.jobHistory && formik.errors.jobHistory && formik.errors.jobHistory[index] && formik.errors.jobHistory[index].job_characteristic ? (*/}
+              {/*    <div style={{ color: "red" }}>{formik.errors.jobHistory[index].job_characteristic}</div>*/}
+              {/*) : null}*/}
               <TextArea
                   name={`jobHistory[${index}].job_characteristic`}
                   onChange={formik.handleChange}
@@ -437,7 +517,7 @@ const TeachersTableBlock: FC<IProps> = ({
 
         <AddButtton
             type={"button"}
-            onClick= {() => reset(false, true, null)}
+            onClick= {() => reset(false, true, 999)}
           style={{ position: "absolute", bottom: "0", right: "-42px" }}
         >
           <AddIcons />
@@ -452,9 +532,9 @@ const TeachersTableBlock: FC<IProps> = ({
           <div key={index}>
             <div className="forms flex-grid-20">
               <div className="login_forms-label_pink mb-0">Бітірген жылы *</div>
-              {formik.touched.specification && formik.errors.specification && formik.errors.specification[index] && formik.errors.specification[index].end_date ? (
-                  <div style={{ color: "red" }}>{formik.errors.specification[index].end_date}</div>
-              ) : null}
+              {/*{formik.touched.specification && formik.errors.specification && formik.errors.specification[index] && formik.errors.specification[index].end_date ? (*/}
+              {/*    <div style={{ color: "red" }}>{formik.errors.specification[index].end_date}</div>*/}
+              {/*) : null}*/}
               <Input
                   name={`specification[${index}].end_date`}
                   onChange={formik.handleChange}
@@ -462,16 +542,16 @@ const TeachersTableBlock: FC<IProps> = ({
                   value={formik.values.specification[index]?.end_date} // Use jobHistory instead of name for the value
                   style={{
                     borderColor:
-                        formik.touched.specification && formik.touched.specification[index] && formik.errors.specification && formik.errors.specification[index].end_date ? "red" : "#c1bbeb", // Update the conditional check for touched and errors
+                        formik.touched.specification && formik.touched.specification[index] && formik.errors.specification ? "red" : "#c1bbeb", // Update the conditional check for touched and errors
                   }}
               />
             </div>
 
             <div className="forms flex-grid-20">
               <div className="login_forms-label_pink mb-0">Университет *</div>
-              {formik.touched.specification && formik.errors.specification && formik.errors.specification[index] && formik.errors.specification[index].speciality_university ? (
-                  <div style={{ color: "red" }}>{formik.errors.specification[index].speciality_university}</div>
-              ) : null}
+              {/*{formik.touched.specification && formik.errors.specification && formik.errors.specification[index] && formik.errors.specification[index].speciality_university ? (*/}
+              {/*    <div style={{ color: "red" }}>{formik.errors.specification[index].speciality_university}</div>*/}
+              {/*) : null}*/}
               <Input
                   name={`specification[${index}].speciality_university`}
                   onChange={formik.handleChange}
@@ -479,7 +559,7 @@ const TeachersTableBlock: FC<IProps> = ({
                   value={formik.values.specification[index]?.speciality_university} // Use jobHistory instead of name for the value
                   style={{
                     borderColor:
-                        formik.touched.specification && formik.touched.specification[index] && formik.errors.specification && formik.errors.specification[index].speciality_university ? "red" : "#c1bbeb", // Update the conditional check for touched and errors
+                        formik.touched.specification && formik.touched.specification[index] && formik.errors.specification ? "red" : "#c1bbeb", // Update the conditional check for touched and errors
                   }}
               />
             </div>
@@ -491,9 +571,9 @@ const TeachersTableBlock: FC<IProps> = ({
               >
                 Деңгей *
               </div>
-              {formik.touched.specification && formik.errors.specification && formik.errors.specification[index] && formik.errors.specification[index].degree ? (
-                  <div style={{ color: "red" }}>{formik.errors.specification[index].degree}</div>
-              ) : null}
+              {/*{formik.touched.specification && formik.errors.specification && formik.errors.specification[index] && formik.errors.specification[index].degree ? (*/}
+              {/*    <div style={{ color: "red" }}>{formik.errors.specification[index].degree}</div>*/}
+              {/*) : null}*/}
               <Input
                   name={`specification[${index}].degree`}
                   onChange={formik.handleChange}
@@ -501,7 +581,7 @@ const TeachersTableBlock: FC<IProps> = ({
                   value={formik.values.specification[index]?.degree} // Use jobHistory instead of name for the value
                   style={{
                     borderColor:
-                        formik.touched.specification && formik.touched.specification[index] && formik.errors.specification && formik.errors.specification[index].degree ? "red" : "#c1bbeb", // Update the conditional check for touched and errors
+                        formik.touched.specification && formik.touched.specification[index] && formik.errors.specification && formik.errors.specification[index] ? "red" : "#c1bbeb", // Update the conditional check for touched and errors
                   }}
               />
             </div>
@@ -513,9 +593,9 @@ const TeachersTableBlock: FC<IProps> = ({
               >
                 Мамандығы *
               </div>
-              {formik.touched.specification && formik.errors.specification && formik.errors.specification[index] && formik.errors.specification[index].mamandygy ? (
-                  <div style={{ color: "red" }}>{formik.errors.specification[index].mamandygy}</div>
-              ) : null}
+              {/*{formik.touched.specification && formik.errors.specification && formik.errors.specification[index] && formik.errors.specification[index] ? (*/}
+              {/*    <div style={{ color: "red" }}>{formik.errors.specification[index]}</div>*/}
+              {/*) : null}*/}
               <Input
                   name={`specification[${index}].mamandygy`}
                   onChange={formik.handleChange}
@@ -523,7 +603,7 @@ const TeachersTableBlock: FC<IProps> = ({
                   value={formik.values.specification[index]?.mamandygy} // Use jobHistory instead of name for the value
                   style={{
                     borderColor:
-                        formik.touched.specification && formik.touched.specification[index] && formik.errors.specification && formik.errors.specification[index].mamandygy ? "red" : "#c1bbeb", // Update the conditional check for touched and errors
+                        formik.touched.specification && formik.touched.specification[index] && formik.errors.specification && formik.errors.specification[index] ? "red" : "#c1bbeb", // Update the conditional check for touched and errors
                   }}
               />
             </div>
@@ -541,7 +621,7 @@ const TeachersTableBlock: FC<IProps> = ({
 
         <AddButtton
             type={"button"}
-            onClick= {() => reset(false, false, null)}
+            onClick= {() => reset(false, false, 999)}
             style={{ position: "absolute", bottom: "0", right: "-42px" }}
         >
           <AddIcons />

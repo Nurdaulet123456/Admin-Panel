@@ -2,12 +2,12 @@ import {
   ChangeEvent,
   Dispatch,
   FC,
-  SetStateAction,
+  SetStateAction, useCallback,
   useEffect,
   useState,
 } from "react";
 import { Button } from "../atoms/UI/Buttons/Button";
-import { Input, TextArea } from "../atoms/UI/Inputs/Input";
+import {Input, Select, TextArea} from "../atoms/UI/Inputs/Input";
 import { instance } from "@/api/axios.instance";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
@@ -17,6 +17,11 @@ import SanatyModalModal from "../modals/SanatyModal";
 import { useModalLogic } from "@/hooks/useModalLogic";
 import ErrorModal from "../modals/ErrorModal";
 import SuccessModal from "../modals/SuccessModal";
+import {useFormik} from "formik";
+import * as Yup from "yup";
+import {getMenuThunk} from "@/store/thunks/schoolnfo.thunk";
+import {useDropzone} from 'react-dropzone'
+import news from "@/pages/news";
 
 interface UpdateInputProps {
   text?: string;
@@ -30,6 +35,7 @@ interface IProps {
   newsid?: INews;
   getId?: number;
 }
+
 
 const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
   const dispatch = useAppDispatch();
@@ -47,234 +53,183 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
     showError,
   } = useModalLogic();
 
-  const onChangeUpdateInput = (
-    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
-  ) => {
-    const { name, type } = e.target;
+  const onDrop = useCallback((acceptedFiles: any[])=> {
+    console.log(acceptedFiles)
+    formik.setFieldValue('files', acceptedFiles);
+  }, [])
+  const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
 
-    if (type === "file") {
-      const fileInput = e.target as HTMLInputElement;
-      setUpdateInput((prevUpdateInput) => ({
-        ...prevUpdateInput,
-        [name]: [
-          ...(prevUpdateInput[name as keyof UpdateInputProps] || []),
-          ...Array.from(fileInput.files || []),
-        ],
-      }));
-    } else {
-      setUpdateInput({
-        ...updateInput,
-        [name]: e.target.value,
-      });
-    }
-  };
 
-  useEffect(() => {
-    if (newsid) {
-      setUpdateInput({
-        text: newsid.text || "",
-        date: newsid.date || "",
-      });
+  const formik = useFormik({
+    initialValues: {
+      text: "",
+      date: "",
+      files: [],
+      type: "",
+    },
+    validationSchema: Yup.object({
 
-      setText((newsid.type as string) || "");
-    }
-  }, [newsid]);
+    }),
+    onSubmit: async (values) => {
+      console.log(values)
+      const formData = new FormData();
 
-  console.log(updateInput.file);
-
-  const onSave = async () => {
-    try {
-      if (
-        !updateInput.date ||
-        !updateInput.text ||
-        !updateInput.file ||
-        !text
-      ) {
-        showError();
-        return;
-      }
-
-      if (updateInput.date && updateInput.text && updateInput.file && text) {
-        const formData = new FormData();
-
-        formData.append("type", text.toLowerCase());
-        formData.append("text", updateInput.text);
-        formData.append("date", updateInput.date);
-
-        updateInput.file.forEach((item: any, index: any) => {
+      formData.append("type", values.type.toLowerCase());
+      formData.append("text", values.text);
+      formData.append("date", values.date);
+      if(values.files) {
+        values.files.forEach((item: any, index: any) => {
           formData.append(`photos[${index}]`, item);
         });
+      }
+      console.log(formData.get("photos[0]"))
 
-        if (!getId) {
-          await instance
-            .post("/api/newsApi/", formData, {
+      if (!getId) {
+        await instance
+            .post("https://bilimge.kz/admins/api/newsApi/", formData, {
               headers: {
                 Authorization: `Token ${getTokenInLocalStorage()}`,
+                "Content-Type": "multipart/form-data",
               },
             })
             .then((res) => {
               if (res) {
                 dispatch(getNewsThunk());
-
                 showSuccess();
-                setUpdateInput({
-                  text: "",
-                  date: "",
-                  file: null,
-                });
-
-                setText("");
               }
             })
             .catch((err) => showError());
-        } else {
-          await instance
+      } else {
+        await instance
             .put(
-              `/api/newsApi/${getId}/`,
-              {
-                type: text.toLowerCase(),
-                // photos: updateInput.file,
-                text: updateInput.text,
-                date: updateInput.date,
-              },
-              {
-                headers: {
-                  Authorization: `Token ${getTokenInLocalStorage()}`,
+                `https://bilimge.kz/admins/api/newsApi/${getId}/`,
+                formData,
+                {
+                  headers: {
+                    Authorization: `Token ${getTokenInLocalStorage()}`,
+                    "Content-Type": "multipart/form-data",
+                  },
                 },
-              },
             )
             .then((res) => {
               if (res) {
                 dispatch(getNewsThunk());
-
                 showSuccess();
-                setUpdateInput({
-                  text: "",
-                  date: "",
-                  file: null,
-                });
-
-                setText("");
               }
             })
             .catch((err) => showError());
-        }
       }
-    } catch (error) {
-      showError();
     }
-  };
+  });
 
   return (
     <>
       {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
       {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
       <div className="main_table-modal">
-        <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
-          <div className="main_table-modal_upload">
-            <div style={{ marginBottom: "2.4rem" }} className="sanaty">
-              <div className="login_forms-label_pink">Тип</div>
-              <Input
-                type="text"
-                name="eat"
-                readOnly={true}
-                style={{ cursor: "pointer" }}
-                onClick={() => setShowActive(!showActive)}
-                value={text}
-              />
+        <form onSubmit={formik.handleSubmit}>
+          <div className="main_table-modal_flex" style={{gap: "1.6rem"}}>
+            <div className="main_table-modal_upload">
+              <div style={{marginBottom: "2.4rem"}} className="sanaty">
+                <div className="login_forms-label_pink">Тип</div>
+                <Select {...formik.getFieldProps("class_id")}>
+                  <option value="">Выберите тип</option>
+                  <option value="instagram">Instagram</option>
+                  <option value="facebook">Facebook</option>
+                  <option value="manual">Ручной</option>
+                </Select>
+              </div>
+              <div className="login_forms-label_pink">Фото *</div>
+              <div {...getRootProps()} style={{
+                border: '2px dashed #ccc', /* Штрихованный бордер */
+                padding: '20px', /* Паддинг внутри div */
+                borderRadius: '5px', /* Скругленные углы */
+                textAlign: 'center', /* Текст по центру */
+                marginBottom: '20px', /* Отступ снизу */
+                backgroundColor:"white",
+              }}>
+                <input {...getInputProps()}/>
+                {
+                  isDragActive ?
+                      <p>Drop the files here ...</p> :
+                      <p>Drag and drop some files here, or click to select files</p>
+                }
+              </div>
 
-              <div
-                className="sanaty_dropdown"
-                style={{ textAlign: "center", width: "100%" }}
-              >
-                {showActive && (
-                  <SanatyModalModal
-                    setText={setText}
-                    setId={setId}
-                    setShowActive={setShowActive}
-                    timeArr={[
-                      {
-                        id: 1,
-                        type: "Instagram",
-                      },
+            </div>
 
-                      {
-                        id: 2,
-                        type: "Facebook",
-                      },
+            <div className="main_table-modal_forms">
+              <div className="forms">
+                <div className="login_forms-label_pink">Уақыты</div>
 
-                      {
-                        id: 3,
-                        type: "Manual",
-                      },
-                    ]}
+                {formik.touched.date && formik.errors.date ? (
+                    <div style={{color: "red"}}>{formik.errors.date}</div>
+                ) : null}
+                <Input
+                    name={"date"}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.date}
+                    style={{
+                      borderColor:
+                          formik.touched.date && formik.errors.date
+                              ? "red"
+                              : "#c1bbeb",
+                    }}
+                />
+
+                <div className="forms">
+                  <div className="login_forms-label_pink">Текст</div>
+                  {formik.touched.text && formik.errors.text ? (
+                      <div style={{color: "red"}}>{formik.errors.text}</div>
+                  ) : null}
+                  <TextArea
+                      name={"text"}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.text}
+                      style={{
+                        borderColor:
+                            formik.touched.text && formik.errors.text
+                                ? "red"
+                                : "#c1bbeb",
+                      }}
                   />
-                )}
+
+                  <div className="length">{formik.values.text?.length}/2000</div>
+
+                </div>
+
+                <div
+                    className="flex"
+                    style={{justifyContent: "flex-end", gap: "1.6rem"}}
+                >
+                  <Button
+                      background="#CACACA"
+                      color="#645C5C"
+                      style={{width: "auto"}}
+                      onClick={() =>
+                          getId ? onEdit && onEdit(false) : onReject && onReject(false)
+                      }
+                      type="button"
+                  >
+                    Удалить
+                  </Button>
+                  <Button
+                      background="#27AE60"
+                      style={{width: "auto"}}
+                      type="submit"
+                  >
+                    Сохранить
+                  </Button>
+                </div>
               </div>
             </div>
-            <div className="login_forms-label_pink">Фото *</div>
-            <Input
-              type="file"
-              name="file"
-              readOnly={false}
-              onChange={(e) => onChangeUpdateInput(e)}
-              multiple
-            />
           </div>
-
-          <div className="main_table-modal_forms">
-            <div className="forms">
-              <div className="login_forms-label_pink">Уақыты</div>
-
-              <Input
-                type="text"
-                placeholder="уақыты"
-                name="date"
-                value={updateInput.date}
-                onChange={(e) => onChangeUpdateInput(e)}
-              />
-            </div>
-
-            <div className="forms">
-              <div className="login_forms-label_pink">Текст</div>
-
-              <TextArea
-                rows={10}
-                name="text"
-                value={updateInput.text}
-                onChange={(e) => onChangeUpdateInput(e)}
-              />
-
-              <div className="length">0/2000</div>
-            </div>
-
-            <div
-              className="flex"
-              style={{ justifyContent: "flex-end", gap: "1.6rem" }}
-            >
-              <Button
-                background="#CACACA"
-                color="#645C5C"
-                style={{ width: "auto" }}
-                onClick={() =>
-                  getId ? onEdit && onEdit(false) : onReject && onReject(false)
-                }
-              >
-                Удалить
-              </Button>
-              <Button
-                background="#27AE60"
-                style={{ width: "auto" }}
-                onClick={onSave}
-              >
-                Сохранить
-              </Button>
-            </div>
-          </div>
-        </div>
+        </form>
       </div>
     </>
-  );
+);
 };
 
 export default NewsTableBlock;

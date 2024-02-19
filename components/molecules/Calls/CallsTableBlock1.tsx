@@ -61,7 +61,6 @@ const CallsTableBlock1: FC<IProps> = ({ onReject, osid, getId, onEdit }) => {
       smena: Yup.string().required("Обязательно*"),
     }),
     onSubmit: async (values) => {
-      console.log(values);
       if (!getId) {
         const res = await instance.post(
             "https://bilimge.kz/admins/api/ringApi/",

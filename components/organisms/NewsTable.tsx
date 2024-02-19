@@ -20,6 +20,7 @@ const NewsTable: FC<IProps> = ({ handleClickGetId }) => {
       dispatch(getNewsThunk());
     }
   }, [dispatch]);
+  console.log(news)
 
   const onDelete = async (id: number) => {
     await instance
