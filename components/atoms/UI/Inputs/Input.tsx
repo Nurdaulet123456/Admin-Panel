@@ -30,7 +30,7 @@ export const Input = styled.input`
 
 export const TextArea = styled.textarea`
   display: inline-block;
-
+    height: 175px;
   width: 100%;
 
   background-color: white;
@@ -56,10 +56,8 @@ export const Select = styled.select`
   background-color: white;
   border: 1px solid #c1bbeb;
   border-radius: 5px;
-
   padding-block: 1.5rem;
   padding-inline: 1.5rem;
-
   font-size: 1.4rem;
 
   &::placeholder {
@@ -69,4 +67,5 @@ export const Select = styled.select`
   &[name="file"] {
     background: none;
   }
+    
 `;

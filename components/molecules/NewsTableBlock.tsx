@@ -122,6 +122,8 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
     }
   });
 
+
+
   return (
     <>
       {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
@@ -155,7 +157,6 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
                       <p>Drag and drop some files here, or click to select files</p>
                 }
               </div>
-
             </div>
 
             <div className="main_table-modal_forms">

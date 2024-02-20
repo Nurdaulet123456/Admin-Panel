@@ -2,7 +2,7 @@ import {
   ChangeEvent,
   Dispatch,
   FC,
-  SetStateAction,
+  SetStateAction, useCallback,
   useEffect,
   useState,
 } from "react";
@@ -27,6 +27,7 @@ import { IKruzhok } from "@/types/assets.type";
 import {useFormik} from "formik";
 import * as Yup from "yup";
 import {array} from "yup";
+import {useDropzone} from "react-dropzone";
 
 interface IUpdateInput {
   name?: string;
@@ -143,6 +144,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
 
                       if (uploadPhotoResponse) {
                         dispatch(getKruzhokInfoThunk());
+                        onDelete();
                       }
                     } catch (err) {
                       console.log(err);
@@ -254,6 +256,13 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
     });
   }
 
+  const onDrop = useCallback((acceptedFiles: any[])=> {
+    console.log(acceptedFiles)
+    formik.setFieldValue('photo', acceptedFiles[0]);
+  }, [])
+  const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
+
+
 
   return (
       <div className="main_table-modal">
@@ -263,15 +272,24 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
           <div className="main_table-modal_flex" style={{gap: "1.6rem"}}>
             <div className="main_table-modal_upload">
               <div className="login_forms-label_pink">Фото *</div>
-              <Input type="file" name="photo" onChange={(event) => {
-                return formik.setFieldValue('photo', event?.target?.files?.[0]);
-              }}
-                     accept=".png, .jpg, .jpeg, .svg"
-                     key={formik.values.photo}
-              />
+              <div {...getRootProps()} style={{
+                border: '2px dashed #ccc', /* Штрихованный бордер */
+                padding: '20px', /* Паддинг внутри div */
+                borderRadius: '5px', /* Скругленные углы */
+                textAlign: 'center', /* Текст по центру */
+                marginBottom: '20px', /* Отступ снизу */
+                backgroundColor:"white",
+              }}>
+                <input {...getInputProps()} />
+                {
+                  isDragActive ?
+                      <p>Drop the files here ...</p> :
+                      <p>Drag and drop some files here, or click to select files</p>
+                }
+              </div>
             </div>
 
-            <div className="main_table-modal_forms">
+              <div className="main_table-modal_forms">
               <div className="forms">
                 <div className="login_forms-label_pink">Кружок (Үйірме атауы)</div>
 
@@ -324,47 +342,47 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
                 <div className="length">{formik.values.goal?.length}/2000</div>
               </div>
               <div className="login_forms-label_pink">Күні</div>
-              <div className="forms flex">
-                <div>
-                  {formik.values.times.slice(0, 3).map((time, index) => (
-                      <div key={index} className="flex-grid">
-                        <label htmlFor={`times.${index}`} className="login_forms-label_pink">{weekDay[index]}</label>
-                        <Input
-                            id={`times.${index}`}
-                            name={`times.${index}`}
-                            type="text"
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={time}
-                            style={{
-                              borderColor: formik.touched.times && formik.errors.times && formik.errors.times[index] ? "red" : "#c1bbeb",
-                            }}
-                        />
-                      </div>
-                  ))}
-                </div>
+              <div className="forms flex-between">
+                  <div>
+                    {formik.values.times.slice(0, 3).map((time, index) => (
+                        <div key={index} className="flex-grid">
+                          <label htmlFor={`times.${index}`} className="login_forms-label_pink">{weekDay[index]}</label>
+                          <Input
+                              id={`times.${index}`}
+                              name={`times.${index}`}
+                              type="text"
+                              onChange={formik.handleChange}
+                              onBlur={formik.handleBlur}
+                              value={time}
+                              style={{
+                                borderColor: formik.touched.times && formik.errors.times && formik.errors.times[index] ? "red" : "#c1bbeb",
+                              }}
+                          />
+                        </div>
+                    ))}
+                  </div>
 
-                <div>
-                  {formik.values.times.slice(3, 6).map((time, index) => (
-                      <div key={index + 3} className="flex-grid">
-                        <label htmlFor={`times.${index + 3}`}
-                               className="login_forms-label_pink">{weekDay[index + 3]}</label>
-                        {/*{formik.touched.times && formik.errors.times && formik.errors.times[index+3] && (*/}
-                        {/*    <div style={{ color: "red" }}>{formik.errors.times[index+3]}</div>*/}
-                        {/*)}*/}
-                        <Input
-                            id={`times.${index + 3}`}
-                            name={`times.${index + 3}`}
-                            type="text"
-                            onChange={formik.handleChange}
-                            onBlur={formik.handleBlur}
-                            value={time}
-                            style={{
-                              borderColor: formik.touched.times && formik.errors.times && formik.errors.times[index + 3] ? "red" : "#c1bbeb",
-                            }}
-                        />
-                      </div>
-                  ))}
+                  <div>
+                    {formik.values.times.slice(3, 6).map((time, index) => (
+                        <div key={index + 3} className="flex-grid">
+                          <label htmlFor={`times.${index + 3}`}
+                                 className="login_forms-label_pink">{weekDay[index + 3]}</label>
+                          {/*{formik.touched.times && formik.errors.times && formik.errors.times[index+3] && (*/}
+                          {/*    <div style={{ color: "red" }}>{formik.errors.times[index+3]}</div>*/}
+                          {/*)}*/}
+                          <Input
+                              id={`times.${index + 3}`}
+                              name={`times.${index + 3}`}
+                              type="text"
+                              onChange={formik.handleChange}
+                              onBlur={formik.handleBlur}
+                              value={time}
+                              style={{
+                                borderColor: formik.touched.times && formik.errors.times && formik.errors.times[index + 3] ? "red" : "#c1bbeb",
+                              }}
+                          />
+                        </div>
+                    ))}
                 </div>
               </div>
 

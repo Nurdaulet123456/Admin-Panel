@@ -35,7 +35,7 @@ const Sidebar = () => {
   return (
     <div className="sidebar">
       <Link href={"/"}>
-        <div className="sidebar_top">{schoolName}</div>
+        <div className="sidebar_top">{schoolName || "KESTESI.KZ"}</div>
       </Link>
 
       <nav className="sidebar_links">
