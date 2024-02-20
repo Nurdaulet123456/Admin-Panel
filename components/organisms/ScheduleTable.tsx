@@ -12,6 +12,7 @@ import ScheduleModal from "../forms/ScheduleModal";
 import { useState } from "react";
 import { useRouter } from "next/router";
 import { IARing, ISchedule } from "@/types/assets.type";
+import {getTokenInLocalStorage} from "@/utils/assets.utils";
 
 interface IProps {
   schedule?: ISchedule[];
@@ -22,6 +23,7 @@ interface IProps {
   handleCheckboxClick?: any;
   handleCheckboxClickPaste?: any;
   iaring?: any;
+  selectedCheckboxId?: any;
 }
 
 const ScheduleTable = ({
@@ -33,6 +35,7 @@ const ScheduleTable = ({
   handleCheckboxClick,
   iaring,
   handleCheckboxClickPaste,
+                         selectedCheckboxId
 }: IProps) => {
   const [openModal, setOpenModal] = useState<boolean>(false);
 
@@ -41,8 +44,8 @@ const ScheduleTable = ({
     start_time?: any;
     end_time?: any;
     timeId?: any;
+    day_index?: any;
   }>();
-
   const router = useRouter();
 
   const handleCellClick = (
@@ -50,9 +53,10 @@ const ScheduleTable = ({
     start_time: any,
     end_time: any,
     timeId?: any,
+    day_index?:any,
   ) => {
     setOpenModal(true);
-    setSelectedCell({ day, start_time, end_time, timeId });
+    setSelectedCell({ day, start_time, end_time, timeId, day_index });
   };
 
   const handleCloseModal = () => {
@@ -183,6 +187,15 @@ const ScheduleTable = ({
                     <TableCell
                       key={dayIndex}
                       style={{ border: "2px solid #4090FF" }}
+                      onClick={() => !selectMode &&
+                          handleCellClick(
+                              day,
+                              timeRange.start_time,
+                              timeRange.end_time,
+                              timeRange.id,
+                              dayIndex+1,
+                          )
+                      }
                     >
                       {scheduleItem ? (
                         <div style={{ textAlign: "center" }}>
@@ -218,7 +231,8 @@ const ScheduleTable = ({
 
                           {selectMode && (
                             <Checkbox
-                              defaultChecked={isSelected}
+                              // defaultChecked={isSelected}
+                                checked={selectedCheckboxId === scheduleItem.id}
                               onClick={() =>
                                 handleCheckboxClick(
                                   day,
@@ -230,6 +244,7 @@ const ScheduleTable = ({
                                   scheduleItem?.subject?.id,
                                   scheduleItem?.classroom?.id,
                                   scheduleItem?.typez?.id,
+                                    scheduleItem?.id
                                 )
                               }
                             />

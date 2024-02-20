@@ -1,6 +1,6 @@
 import { FC, use, useEffect, useState } from "react";
 import { Button } from "../atoms/UI/Buttons/Button";
-import { Input } from "../atoms/UI/Inputs/Input";
+import {Input, Select} from "../atoms/UI/Inputs/Input";
 import { Modal, ModalContent, ModalInner } from "../atoms/UI/Modal/Modal";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
@@ -18,6 +18,10 @@ import { getKruzhokTeachersInfoThunk } from "@/store/thunks/schoolnfo.thunk";
 import { useRouter } from "next/router";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage, getWeekDayNumber } from "@/utils/assets.utils";
+import {useFormik} from "formik";
+import * as Yup from "yup";
+import {getNewsThunk} from "@/store/thunks/pride.thunk";
+import {XIcon} from "@/components/atoms/Icons";
 
 interface IProps {
   onReject?: () => void;
@@ -35,36 +39,7 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
   const iaring = useTypedSelector((state) => state.ia.iaring);
   const iasubject = useTypedSelector((state) => state.ia.iasubject);
   const teachers = useTypedSelector((state) => state.system.teachers);
-
-  const [showActive, setShowActive] = useState<boolean>(false);
-  const [showActive2, setShowActive2] = useState<boolean>(false);
-  const [showActive3, setShowActive3] = useState<boolean>(false);
-  const [showActive4, setShowActive4] = useState<boolean>(false);
-  const [showActive5, setShowActive5] = useState<boolean>(false);
-  const [showActive6, setShowActive6] = useState<boolean>(false);
-  const [showActive7, setShowActive7] = useState<boolean>(false);
-
-  const [text, setText] = useState<string>("");
-  const [id, setId] = useState<number>();
-
-  const [text2, setText2] = useState<string>("");
-  const [id2, setId2] = useState<number>();
-
-  const [text3, setText3] = useState<string>("");
-  const [id3, setId3] = useState<number>();
-
-  const [text4, setText4] = useState<string>("");
-  const [id4, setId4] = useState<number>();
-
-  const [text5, setText5] = useState<string>("");
-  const [id5, setId5] = useState<number>();
-
-  const [text6, setText6] = useState<string>("");
-  const [id6, setId6] = useState<number>();
-
-  const [text7, setText7] = useState<string>("");
-  const [id7, setId7] = useState<number>();
-
+  const [scheduleId, setScheduleId] = useState<any>();
   useEffect(() => {
     if (
       iaschool &&
@@ -88,417 +63,287 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
     }
   }, [dispatch]);
 
-  const handelClickOpen = () => {
-    setShowActive(!showActive);
-    setShowActive2(false);
-    setShowActive3(false);
-    setShowActive4(false);
-    setShowActive5(false);
-    setShowActive6(false);
-    setShowActive7(false);
-  };
 
-  const handelClickOpen2 = () => {
-    setShowActive(false);
-    setShowActive2(!showActive2);
-    setShowActive3(false);
-    setShowActive4(false);
-    setShowActive5(false);
-    setShowActive6(false);
-    setShowActive7(false);
-  };
+  useEffect(() => {
+    const fetchSchedule = async () => {
+      try {
+        const response = await instance.get(
+            `https://bilimge.kz/admins/api/schedule/?week_day=${selectedCell.day_index}&ring=${selectedCell.timeId}`,
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            }
+        );
 
-  const handelClickOpen3 = () => {
-    setShowActive(false);
-    setShowActive2(false);
-    setShowActive3(!showActive3);
-    setShowActive4(false);
-    setShowActive5(false);
-    setShowActive6(false);
-    setShowActive7(false);
-  };
-
-  const handelClickOpen4 = () => {
-    setShowActive(false);
-    setShowActive2(false);
-    setShowActive3(false);
-    setShowActive4(!showActive4);
-    setShowActive5(false);
-    setShowActive6(false);
-    setShowActive7(false);
-  };
-
-  const handelClickOpen5 = () => {
-    setShowActive(false);
-    setShowActive2(false);
-    setShowActive3(false);
-    setShowActive4(false);
-    setShowActive5(!showActive5);
-    setShowActive6(false);
-    setShowActive7(false);
-  };
-
-  const handelClickOpen6 = () => {
-    setShowActive(false);
-    setShowActive2(false);
-    setShowActive3(false);
-    setShowActive4(false);
-    setShowActive5(false);
-    setShowActive6(!showActive6);
-    setShowActive7(false);
-  };
-
-  const handelClickOpen7 = () => {
-    setShowActive(false);
-    setShowActive2(false);
-    setShowActive3(false);
-    setShowActive4(false);
-    setShowActive5(false);
-    setShowActive6(false);
-    setShowActive7(!showActive7);
-  };
-
-  const onSave = async () => {
-    await instance
-      .post(
-        "/api/schedule/",
-        {
-          week_day: getWeekDayNumber(selectedCell.day),
-          teacher: id2,
-          teacher2: id6,
-          ring: selectedCell.timeId,
-          classl: iaclass && iaclass[0]?.id,
-          subject: id,
-          subject2: id5,
-          classroom: id3,
-          classroom2: id7,
-          typez: id4,
-        },
-        {
-          headers: {
-            Authorization: `Token ${getTokenInLocalStorage()}`,
-          },
-        },
-      )
-      .then((res) => {
-        if (res && onReject) {
-          dispatch(getScheduleThunk());
-          onReject();
+        if (response) {
+          setScheduleId(response);
         }
-      })
-      .catch((err) => console.log(err));
-  };
+      } catch (err) {
+        console.error(err);
+      }
+    };
 
-  console.log(decodeURIComponent(router.asPath?.split("/")?.at(-1) as string));
+    fetchSchedule();
+  }, [selectedCell]);
+
+
+  const formik = useFormik({
+    initialValues: {
+      subject: '',
+      teacher: '',
+      classroom: '',
+      subject2: '',
+      teacher2: '',
+      classroom2: '',
+      typez: '',
+    },
+    validationSchema: Yup.object({
+
+    }),
+    onSubmit: async (values) => {
+      console.log(values.teacher, "teacher")
+      if(!scheduleId?.[0]) {
+        await instance
+            .post(
+                "https://bilimge.kz/admins/api/schedule/",
+                {
+                  week_day: getWeekDayNumber(selectedCell.day),
+                  teacher: values.teacher,
+                  teacher2: values.teacher2,
+                  ring: selectedCell.timeId,
+                  classl: iaclass && iaclass[0]?.id,
+                  subject: values.subject,
+                  subject2: values.subject2,
+                  classroom: values.classroom,
+                  classroom2: values.classroom2,
+                  typez: values.typez,
+                },
+                {
+                  headers: {
+                    Authorization: `Token ${getTokenInLocalStorage()}`,
+                  },
+                },
+            )
+            .then((res) => {
+              if (res && onReject) {
+                dispatch(getScheduleThunk());
+                onReject();
+              }
+            })
+            .catch((err) => console.log(err));
+      }else {
+        await instance
+            .put(
+                `https://bilimge.kz/admins/api/schedule/${scheduleId[0].id}/`,
+                {
+                  week_day: getWeekDayNumber(selectedCell.day),
+                  teacher: Number(values.teacher),
+                  teacher2: values.teacher2,
+                  ring: selectedCell.timeId,
+                  classl: iaclass && iaclass[0]?.id,
+                  subject: values.subject,
+                  subject2: values.subject2,
+                  classroom: values.classroom,
+                  classroom2: values.classroom2,
+                  typez: values.typez,
+                },
+                {
+                  headers: {
+                    Authorization: `Token ${getTokenInLocalStorage()}`,
+                  },
+                },
+            )
+            .then((res) => {
+              if (res && onReject) {
+                dispatch(getScheduleThunk());
+                onReject();
+              }
+            })
+            .catch((err) => console.log(err));
+      }
+    }
+  });
+
+  useEffect(() => {
+    if (scheduleId?.[0]) {
+      formik.resetForm({
+        values: {
+          subject: scheduleId[0].subject.id || '',
+          teacher: scheduleId[0].teacher.id || '',
+          classroom: scheduleId[0].classroom.id || '',
+          subject2: scheduleId[0].subject2.id || '',
+          teacher2: scheduleId[0].teacher2.id || '',
+          classroom2: scheduleId[0].classroom2.id || '',
+          typez: scheduleId[0].typez.id || '',
+        },
+      });
+    }
+  }, [scheduleId]);
+
+  function onDelete() {
+    formik.resetForm({
+      values: {
+        subject: '',
+        teacher: '',
+        classroom: '',
+        subject2: '',
+        teacher2: '',
+        classroom2: '',
+        typez: '',
+      },
+    });
+  }
+
 
   return (
     <>
       <Modal>
         <ModalInner>
           <ModalContent>
-            <div className="modal_header">Расписание</div>
-
-            <div className="modal_body">
-              <div className="forms flex-grid">
-                <div>День недели:</div>
-                <span>{selectedCell.day}</span>
+            <form onSubmit={formik.handleSubmit}>
+              <div  style={{display: "flex", justifyContent: "end"}}>
+                <div onClick={() => onReject && onReject()}>
+                  <XIcon />
+                </div>
               </div>
-
-              <div className="forms flex-grid">
-                <div>Класс:</div>
-                <span>{classnames?.split("")?.join(" ")}</span>
+              <div className="modal_header">
+                Расписание
               </div>
+              <div className="modal_body">
+                <div className="forms flex-grid">
+                  <div>День недели:</div>
+                  <span>{selectedCell.day}</span>
+                </div>
 
-              <div className="forms flex-grid">
-                <div>Время:</div>
-                <span>
+                <div className="forms flex-grid">
+                  <div>Класс:</div>
+                  <span>{classnames?.split("")?.join(" ")}</span>
+                </div>
+
+                <div className="forms flex-grid">
+                  <div>Время:</div>
+                  <span>
                   {selectedCell.start_time}-{selectedCell.end_time}
                 </span>
-              </div>
+                </div>
 
-              <div className="forms flex-grid">
-                <div>Предмет:</div>
-                <div className="sanaty">
-                  <Input
-                    type="text"
-                    name="pred"
-                    readOnly
-                    style={{ cursor: "pointer", paddingBlock: ".8rem" }}
-                    onClick={() => handelClickOpen()}
-                    value={text}
-                  />
+                <div className="forms flex-grid">
+                  <div>Предмет:</div>
+                  <div className="sanaty">
+                    <Select {...formik.getFieldProps("subject")}>
+                      <option value="">Выберите предмет</option>
+                      {iasubject?.map((item, index) => (
+                          <option key={index} value={item.id}>{item.full_name}</option>
+                      ))}
+                    </Select>
+                  </div>
+                </div>
 
-                  <div
-                    className="sanaty_dropdown"
-                    style={{ textAlign: "center", width: "100%" }}
-                  >
-                    {showActive && (
-                      <SanatyModalModal
-                        setText={setText}
-                        setId={setId}
-                        setShowActive={setShowActive}
-                        timeArr={
-                          iasubject
-                            ? iasubject.map((item, index) => ({
-                                id: item.id as number,
-                                type: item.full_name as string,
-                              }))
-                            : []
-                        }
-                      />
-                    )}
+                <div className="forms flex-grid">
+                  <div>Преподаватель:</div>
+                  <div className="sanaty">
+                    <Select {...formik.getFieldProps("teacher")}>
+                      <option value="">Выберите преподавателя</option>
+                      {teachers?.map((item, index) => (
+                          <option key={index} value={item.id}>{item.full_name}</option>
+                      ))}
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="forms flex-grid">
+                  <div>Кабинет:</div>
+                  <div className="sanaty">
+                    <Select {...formik.getFieldProps("classroom")}>
+                      <option value="">Выберите кабинет</option>
+                      {iaclassrooms?.map((item, index) => (
+                          <option key={index} value={item.id}>{item.classroom_name}</option>
+                      ))}
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="forms flex-grid">
+                  <div>Предмет2:</div>
+                  <div className="sanaty">
+                    <Select {...formik.getFieldProps("subject2")}>
+                      <option value="">Выберите предмет</option>
+                      {iasubject?.map((item, index) => (
+                          <option key={index} value={item.id}>{item.full_name}</option>
+                      ))}
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="forms flex-grid">
+                  <div>Преподаватель2:</div>
+                  <div className="sanaty">
+                    <Select {...formik.getFieldProps("teacher2")}>
+                      <option value="">Выберите преподавателя</option>
+                      {teachers?.map((item, index) => (
+                          <option key={index} value={item.id}>{item.full_name}</option>
+                      ))}
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="forms flex-grid">
+                  <div>Кабинет2:</div>
+                  <div className="sanaty">
+                    <Select {...formik.getFieldProps("classroom2")}>
+                      <option value="">Выберите кабинет</option>
+                      {iaclassrooms?.map((item, index) => (
+                          <option key={index} value={item.id}>{item.classroom_name}</option>
+                      ))}
+                    </Select>
+                  </div>
+                </div>
+
+                <div className="forms flex-grid">
+                  <div>Тип занятия:</div>
+                  <div className="sanaty">
+                    <Select {...formik.getFieldProps("typez")}>
+                      <option value="">Выберите кабинет</option>
+                      {iatypez?.map((item, index) => (
+                          <option key={index} value={item.id}>{item.type_full_name}</option>
+                      ))}
+                    </Select>
                   </div>
                 </div>
               </div>
 
-              <div className="forms flex-grid">
-                <div>Преподаватель:</div>
-                <div className="sanaty">
-                  <Input
-                    type="text"
-                    name="pred"
-                    readOnly
-                    style={{ cursor: "pointer", paddingBlock: ".8rem" }}
-                    onClick={() => handelClickOpen2()}
-                    value={text2}
-                  />
-
-                  <div
-                    className="sanaty_dropdown"
-                    style={{ textAlign: "center", width: "100%" }}
-                  >
-                    {showActive2 && (
-                      <SanatyModalModal
-                        setText={setText2}
-                        setId={setId2}
-                        setShowActive={setShowActive2}
-                        timeArr={
-                          teachers
-                            ? teachers.map((item) => {
-                                return {
-                                  id: item.id as number,
-                                  type: item.full_name as string,
-                                };
-                              })
-                            : []
-                        }
-                      />
-                    )}
-                  </div>
-                </div>
+              <div className="modal_footer">
+                <Button
+                    background="#CACACA"
+                    radius="14px"
+                    color="#645C5C"
+                    style={{width: "auto"}}
+                    type="button"
+                    onClick={onDelete}
+                >
+                  Удалить
+                </Button>
+                <Button
+                    background="#27AE60"
+                    radius="14px"
+                    style={{
+                      width: "auto",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: ".8rem",
+                    }}
+                    type="submit"
+                >
+                  Сохранить
+                </Button>
               </div>
-
-              <div className="forms flex-grid">
-                <div>Кабинет:</div>
-                <div className="sanaty">
-                  <Input
-                    type="text"
-                    name="pred"
-                    readOnly
-                    style={{ cursor: "pointer", paddingBlock: ".8rem" }}
-                    onClick={() => handelClickOpen3()}
-                    value={text3}
-                  />
-
-                  <div
-                    className="sanaty_dropdown"
-                    style={{ textAlign: "center", width: "100%" }}
-                  >
-                    {showActive3 && (
-                      <SanatyModalModal
-                        setText={setText3}
-                        setId={setId3}
-                        setShowActive={setShowActive3}
-                        timeArr={
-                          iaclassrooms
-                            ? iaclassrooms.map((item) => {
-                                return {
-                                  id: item.id as number,
-                                  type: item.classroom_name as string,
-                                };
-                              })
-                            : []
-                        }
-                      />
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="forms flex-grid">
-                <div>Предмет2:</div>
-                <div className="sanaty">
-                  <Input
-                    type="text"
-                    name="pred"
-                    readOnly
-                    style={{ cursor: "pointer", paddingBlock: ".8rem" }}
-                    onClick={() => handelClickOpen5()}
-                    value={text5}
-                  />
-
-                  <div
-                    className="sanaty_dropdown"
-                    style={{ textAlign: "center", width: "100%" }}
-                  >
-                    {showActive5 && (
-                      <SanatyModalModal
-                        setText={setText5}
-                        setId={setId5}
-                        setShowActive={setShowActive5}
-                        timeArr={
-                          iasubject
-                            ? iasubject.map((item, index) => ({
-                                id: item.id as number,
-                                type: item.full_name as string,
-                              }))
-                            : []
-                        }
-                      />
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="forms flex-grid">
-                <div>Преподаватель2:</div>
-                <div className="sanaty">
-                  <Input
-                    type="text"
-                    name="pred"
-                    readOnly
-                    style={{ cursor: "pointer", paddingBlock: ".8rem" }}
-                    onClick={() => handelClickOpen6()}
-                    value={text6}
-                  />
-
-                  <div
-                    className="sanaty_dropdown"
-                    style={{ textAlign: "center", width: "100%" }}
-                  >
-                    {showActive6 && (
-                      <SanatyModalModal
-                        setText={setText6}
-                        setId={setId6}
-                        setShowActive={setShowActive6}
-                        timeArr={
-                          teachers
-                            ? teachers.map((item) => {
-                                return {
-                                  id: item.id as number,
-                                  type: item.full_name as string,
-                                };
-                              })
-                            : []
-                        }
-                      />
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="forms flex-grid">
-                <div>Кабинет2:</div>
-                <div className="sanaty">
-                  <Input
-                    type="text"
-                    name="pred"
-                    readOnly
-                    style={{ cursor: "pointer", paddingBlock: ".8rem" }}
-                    onClick={() => handelClickOpen7()}
-                    value={text7}
-                  />
-
-                  <div
-                    className="sanaty_dropdown"
-                    style={{ textAlign: "center", width: "100%" }}
-                  >
-                    {showActive7 && (
-                      <SanatyModalModal
-                        setText={setText7}
-                        setId={setId7}
-                        setShowActive={setShowActive7}
-                        timeArr={
-                          iaclassrooms
-                            ? iaclassrooms.map((item) => {
-                                return {
-                                  id: item.id as number,
-                                  type: item.classroom_name as string,
-                                };
-                              })
-                            : []
-                        }
-                      />
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="forms flex-grid">
-                <div>Тип занятия:</div>
-                <div className="sanaty">
-                  <Input
-                    type="text"
-                    name="pred"
-                    readOnly
-                    style={{ cursor: "pointer", paddingBlock: ".8rem" }}
-                    onClick={() => handelClickOpen4()}
-                    value={text4}
-                  />
-
-                  <div
-                    className="sanaty_dropdown"
-                    style={{ textAlign: "center", width: "100%" }}
-                  >
-                    {showActive4 && (
-                      <SanatyModalModal
-                        setText={setText4}
-                        setId={setId4}
-                        setShowActive={setShowActive4}
-                        timeArr={
-                          iatypez
-                            ? iatypez.map((item, index) => ({
-                                id: item.id as number,
-                                type: item.type_full_name as string,
-                              }))
-                            : []
-                        }
-                      />
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="modal_footer">
-              <Button
-                background="#CACACA"
-                radius="14px"
-                color="#645C5C"
-                style={{ width: "auto" }}
-                onClick={onReject}
-              >
-                Удалить
-              </Button>
-              <Button
-                background="#27AE60"
-                radius="14px"
-                style={{
-                  width: "auto",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: ".8rem",
-                }}
-                onClick={onSave}
-              >
-                Сохранить
-              </Button>
-            </div>
+            </form>
           </ModalContent>
         </ModalInner>
       </Modal>
     </>
-  );
+);
 };
 
 export default ScheduleModal;

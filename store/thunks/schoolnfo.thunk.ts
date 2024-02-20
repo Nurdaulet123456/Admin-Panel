@@ -95,3 +95,4 @@ export const getClassIdThunk = createAsyncThunk(
   "getClassIdThunk",
   async (id?: number) => await assetsApi.getSlassInfoId(id),
 );
+

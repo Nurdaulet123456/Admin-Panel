@@ -22,9 +22,9 @@ const Sidebar = () => {
               }`,
             },
           })
-          .then((res) => {
+          .then((res?: any) => {
             if (res) {
-              setSchoolName(res.school_name)
+              setSchoolName(res?.school_name)
             }
           });
     }

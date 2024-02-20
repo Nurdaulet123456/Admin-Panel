@@ -53,7 +53,7 @@ const ScheduleComponents = () => {
     setSelectMode(!selectMode);
     setSelectModePaste(false);
   };
-
+    const [selectedCheckboxId, setSelectedCheckboxId] = useState(null);
   const handleCheckboxClick = (
     day: any,
     start_time: any,
@@ -64,6 +64,7 @@ const ScheduleComponents = () => {
     subjectId: any,
     classroomId: any,
     typezId: any,
+    itemId: any,
   ) => {
     const cell = {
       day,
@@ -77,6 +78,7 @@ const ScheduleComponents = () => {
       typezId,
     };
 
+    setSelectedCheckboxId(itemId);
     if (selectMode) {
       setSelectedCells([]);
     }
@@ -136,6 +138,7 @@ const ScheduleComponents = () => {
     } else {
       setSelectedCellsPaste([cell]);
     }
+      console.log(selectedCellsPaste)
   };
 
   const handleCopyClick = () => {
@@ -144,10 +147,18 @@ const ScheduleComponents = () => {
     setSelectModePaste(true);
   };
 
+  const handleBack = () => {
+      setSelectModePaste(false);
+      setSelectMode(false);
+      setCopiedData([]);
+      setSelectedCells([]);
+      setSelectedCellsPaste([]);
+  }
+
   const handlePasteClick = async () => {
     await instance
       .post(
-        "https://www.bilimge.kz/admins/schedule/",
+        "https://bilimge.kz/admins/api/schedule/",
         {
           week_day: getWeekDayNumber(selectedCellsPaste[0]?.day),
           teacher: copiedData[0]?.teacherId,
@@ -198,7 +209,10 @@ const ScheduleComponents = () => {
         >
           <div
             style={{ cursor: "pointer" }}
-            onClick={() => router.push("/schedule/1")}
+            onClick={() => {
+                router.push("/schedule/1");
+                handleBack();
+            }}
           >
             <ArrowLeftIcons />
           </div>
@@ -282,6 +296,7 @@ const ScheduleComponents = () => {
           handleCheckboxClick={handleCheckboxClick}
           handleCheckboxClickPaste={handleCheckboxClickPaste}
           iaring={iaring}
+          selectedCheckboxId={selectedCheckboxId}
         />
       )}
     </MainLayouts>
