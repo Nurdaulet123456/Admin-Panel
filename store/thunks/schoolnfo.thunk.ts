@@ -56,6 +56,11 @@ export const getSchoolAdminThunk = createAsyncThunk(
   async () => await assetsApi.getSchoolAdministration(),
 );
 
+export const getSchoolDirectorThunk = createAsyncThunk(
+    "getSchoolDirectorThunk",
+    async () => await assetsApi.getSchoolDirector(),
+);
+
 export const getSchoolAdminIdThunk = createAsyncThunk(
   "getSchoolAdminIdThunk",
   async (id?: number) => await assetsApi.getSchoolAdministrationId(id),
@@ -95,4 +100,5 @@ export const getClassIdThunk = createAsyncThunk(
   "getClassIdThunk",
   async (id?: number) => await assetsApi.getSlassInfoId(id),
 );
+
 

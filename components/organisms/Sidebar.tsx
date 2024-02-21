@@ -10,32 +10,12 @@ import {getUserIdThunk} from "@/store/thunks/available.thunk";
 
 const Sidebar = () => {
   const router = useRouter();
-  const [schoolName, setSchoolName] = useState<string>();
 
-  useEffect(() => {
-    async function getSchool() {
-      await instance
-          .get("https://www.bilimge.kz/admins/users/me/", {
-            headers: {
-              Authorization: `Token ${
-                  getTokenInLocalStorage()
-              }`,
-            },
-          })
-          .then((res?: any) => {
-            if (res) {
-              setSchoolName(res?.school_name)
-            }
-          });
-    }
-
-    getSchool();
-  }, []);
 
   return (
     <div className="sidebar">
       <Link href={"/"}>
-        <div className="sidebar_top">{schoolName || "KESTESI.KZ"}</div>
+        <div className="sidebar_top">KESTESI.KZ</div>
       </Link>
 
       <nav className="sidebar_links">

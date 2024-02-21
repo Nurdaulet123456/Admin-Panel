@@ -101,7 +101,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
       times: Yup.array().of(
           Yup.string().nullable()
               .matches(
-                  /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/,
+                  /^([01][0-9]|2[0-3]):[0-5][0-9]-([01][0-9]|2[0-3]):[0-5][0-9]$/,
                   'Неправильно'
               )
       ).min(1),

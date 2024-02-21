@@ -5,10 +5,12 @@ export const IdBlock = styled.div<{
   color?: string;
   border?: string;
 }>`
-  padding: 1rem 3rem;
+  padding: 1rem 2rem;
+  
 
   border: 1px solid #092c4c;
   border-radius: 66px;
+  
 
   font-size: 1.6rem;
   font-weight: 500;

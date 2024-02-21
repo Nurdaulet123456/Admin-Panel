@@ -8,7 +8,7 @@ import {
   ISchoolPassport,
   ISchoolPhotos,
   ISchoolSocialMedia,
-  IUsers,
+  IUsers, ISchoolDirector,
 } from "@/types/assets.type";
 
 export interface ISchoolInfo {
@@ -29,6 +29,8 @@ export interface ISchoolInfo {
   schoolpassport?: ISchoolPassport;
   schoolsocial?: ISchoolSocialMedia[];
   schoolsocialid?: ISchoolSocialMedia;
+  schooldirectorid?: ISchoolDirector;
+  schooldirector?: ISchoolDirector[];
   class?: IClass[];
   classid?: IClass;
 }
@@ -52,4 +54,7 @@ export const initaialStateSchoolInfo: ISchoolInfo = {
   schooladminid: {},
   class: [],
   classid: {},
+  schooldirector:[],
+  schooldirectorid: {}
+
 };

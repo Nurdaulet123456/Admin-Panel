@@ -4,7 +4,7 @@ import {
   IARing,
   IASchool,
   IASubjet,
-  IATypeZ,
+  IATypeZ, IDopSchedule,
   ISchedule,
   ITeachers,
   IUsers,
@@ -20,6 +20,7 @@ export interface ISchoolInfo {
   userid?: IUsers;
   teachersid?: ITeachers;
   sch?: ISchedule[];
+  dopSch?: IDopSchedule[];
 }
 
 export const initaialStateIA: ISchoolInfo = {
@@ -32,4 +33,5 @@ export const initaialStateIA: ISchoolInfo = {
   userid: {},
   teachersid: {},
   sch: [],
+  dopSch: [],
 };

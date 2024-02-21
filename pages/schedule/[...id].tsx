@@ -9,8 +9,9 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import { useEffect, useState } from "react";
 import {
-  getIARingThunk,
-  getScheduleThunk,
+    getDopScheduleThunk,
+    getIARingThunk,
+    getScheduleThunk,
 } from "@/store/thunks/available.thunk";
 import { Button } from "@/components/atoms/UI/Buttons/Button";
 import { instance } from "@/api/axios.instance";
@@ -20,8 +21,8 @@ const ScheduleComponents = () => {
   const router = useRouter();
 
   const dispatch = useAppDispatch();
-  const sch = useTypedSelector((state) => state.ia.sch);
   const iaring = useTypedSelector((state) => state.ia.iaring);
+
 
   const [selectMode, setSelectMode] = useState<boolean>(false);
   const [selectModePaste, setSelectModePaste] = useState<boolean>(false);
@@ -52,6 +53,9 @@ const ScheduleComponents = () => {
   const handleSelectClick = () => {
     setSelectMode(!selectMode);
     setSelectModePaste(false);
+    setCopiedData([]);
+    setSelectedCells([]);
+    setSelectedCellsPaste([]);
   };
     const [selectedCheckboxId, setSelectedCheckboxId] = useState(null);
   const handleCheckboxClick = (
@@ -185,9 +189,8 @@ const ScheduleComponents = () => {
   };
 
   useEffect(() => {
-    if (sch) {
       dispatch(getScheduleThunk());
-    }
+      dispatch(getDopScheduleThunk());
   }, [dispatch]);
 
   useEffect(() => {
@@ -196,7 +199,9 @@ const ScheduleComponents = () => {
     }
   }, [dispatch]);
 
-  return (
+
+
+    return (
     <MainLayouts>
       {router.asPath !== "/schedule/1" && (
         <div
@@ -287,8 +292,8 @@ const ScheduleComponents = () => {
       {router.asPath === "/schedule/1" ? (
         <TabsClass />
       ) : (
+          <>
         <ScheduleTable
-          schedule={sch && sch}
           selectModePaste={selectModePaste}
           selectMode={selectMode}
           selectedCellsPaste={selectedCellsPaste}
@@ -297,7 +302,21 @@ const ScheduleComponents = () => {
           handleCheckboxClickPaste={handleCheckboxClickPaste}
           iaring={iaring}
           selectedCheckboxId={selectedCheckboxId}
+          isOsnova={true}
         />
+              {/*    <ScheduleTable*/}
+              {/*    selectModePaste={selectModePaste}*/}
+              {/*    selectMode={selectMode}*/}
+              {/*    selectedCellsPaste={selectedCellsPaste}*/}
+              {/*    selectedCells={selectedCells}*/}
+              {/*    handleCheckboxClick={handleCheckboxClick}*/}
+              {/*    handleCheckboxClickPaste={handleCheckboxClickPaste}*/}
+              {/*    iaring={iaring}*/}
+              {/*    selectedCheckboxId={selectedCheckboxId}*/}
+              {/*    isOsnova={false}*/}
+              {/*/>*/}
+          </>
+
       )}
     </MainLayouts>
   );

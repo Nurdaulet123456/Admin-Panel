@@ -63,8 +63,6 @@ const CabinetTableBlock: FC<IProps> = ({
     validationSchema: Yup.object({
       name: Yup.string().required("Обязательно*"),
       gr: Yup.string().required("Обязательно*"),
-      floor: Yup.string().required("Обязательно*"),
-      corpuse: Yup.string().required("Обязательно*"),
     }),
     onSubmit: async (values) => {
       if (!getId) {
@@ -186,7 +184,7 @@ const CabinetTableBlock: FC<IProps> = ({
             </div>
 
             <div className="flex">
-              <div className="forms">
+              <div className="forms" style={{width:"30%"}}>
                 <div className="login_forms-label_pink">Номер кабинета *</div>
                 {formik.touched.gr && formik.errors.gr ? (
                   <div style={{ color: "red" }}>{formik.errors.gr}</div>
@@ -203,7 +201,7 @@ const CabinetTableBlock: FC<IProps> = ({
                 />
               </div>
 
-              <div className="forms">
+              <div className="forms" style={{width:"30%"}}>
                 <div className="login_forms-label_pink">Этаж</div>
                 {formik.touched.floor && formik.errors.floor ? (
                   <div style={{ color: "red" }}>{formik.errors.floor}</div>
@@ -219,10 +217,11 @@ const CabinetTableBlock: FC<IProps> = ({
                         ? "red"
                         : "#c1bbeb",
                   }}
+                  placeholder={"Не написано"}
                 />
               </div>
 
-              <div className="forms">
+              <div className="forms" style={{width:"30%"}}>
                 <div className="login_forms-label_pink">Корпус</div>
                 {formik.touched.corpuse && formik.errors.corpuse ? (
                   <div style={{ color: "red" }}>{formik.errors.corpuse}</div>
@@ -238,6 +237,7 @@ const CabinetTableBlock: FC<IProps> = ({
                         ? "red"
                         : "#c1bbeb",
                   }}
+                  placeholder={"Не написано"}
                 />
               </div>
             </div>

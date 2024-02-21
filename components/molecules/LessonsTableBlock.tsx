@@ -49,7 +49,6 @@ const LessonsTableBlock: FC<IProps> = ({
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Обязательно*"),
-      sanat: Yup.string().required("Обязательно*"),
     }),
     onSubmit: async (values) => {
       if (!getId) {
@@ -165,7 +164,7 @@ const LessonsTableBlock: FC<IProps> = ({
                 <div className="sanaty">
                   <div className="login_forms-label_pink">Уровень занятий</div>
                   <Select {...formik.getFieldProps("sanat")}>
-                    <option value="">Выберите сложность</option>
+                    <option value="">Не выбрано</option>
                     {timeArr.map((item) => (
                       <option value={item.type}>{item.type}</option>
                     ))}

@@ -150,6 +150,14 @@ export const assetsApi = {
     });
   },
 
+  async getSchoolDirector(): Promise<ISchoolAdmin[]> {
+    return await instance.get("https://bilimge.kz/admins/api/school_director/", {
+      headers: {
+        Authorization: `Token ${getTokenInLocalStorage()}`,
+      },
+    });
+  },
+
   async getSchoolAdministrationId(id?: number): Promise<ISchoolAdmin> {
     return await instance.get(`https://bilimge.kz/admins/api/school_administration/${id}`, {
       headers: {
@@ -454,6 +462,14 @@ export const assetsApi = {
 
   async getSchedule(): Promise<ISchedule[]> {
     return await instance.get(`https://bilimge.kz/admins/api/schedule/`, {
+      headers: {
+        Authorization: `Token ${getTokenInLocalStorage()}`,
+      },
+    });
+  },
+
+  async getDopSchedule(): Promise<ISchedule[]> {
+    return await instance.get(`https://bilimge.kz/admins/api/DopUrokApi/`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },

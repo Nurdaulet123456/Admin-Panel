@@ -80,6 +80,15 @@ export interface ISchoolAdmin {
   position?: string;
 }
 
+export interface ISchoolDirector {
+  id?: number;
+  director_name?: string;
+  director_photo?: string;
+  phone_number?: string;
+  email?:string;
+  school?: number;
+}
+
 // School Passport
 
 export interface ISchoolPassport {
@@ -137,6 +146,8 @@ export interface ISchoolSocialMedia {
   school?: number;
   qr_code?:string;
 }
+
+
 
 // School Sport
 
@@ -339,6 +350,19 @@ export interface ISchedule {
   classroom?: IClassRoomSch;
   typez?: ITypezSch;
 }
+
+export interface IDopSchedule {
+  id?: number;
+  week_day?: string;
+  school?: number;
+  teacher?: ITeacherSch;
+  ring?: IRingSchedule;
+  classl?: IClasslSch;
+  subject?: ISubjectSch;
+  classroom?: IClassRoomSch;
+  typez?: ITypezSch;
+}
+
 
 interface ITypezSch {
   id?: number;

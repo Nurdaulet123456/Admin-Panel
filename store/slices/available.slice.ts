@@ -1,25 +1,26 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
-  IAClass,
-  IAClassRooms,
-  IARing,
-  IASchool,
-  IASubjet,
-  IATypeZ,
-  ISchedule,
-  ITeachers,
-  IUsers,
+    IAClass,
+    IAClassRooms,
+    IARing,
+    IASchool,
+    IASubjet,
+    IATypeZ, IDopSchedule,
+    ISchedule,
+    ITeachers,
+    IUsers,
 } from "@/types/assets.type";
 import {
-  getIAClassRoomThunk,
-  getIAClassThunk,
-  getIARingThunk,
-  getIASchoolThunk,
-  getIASubjectThunk,
-  getIATypeZThunk,
-  getScheduleThunk,
-  getTeacherIdThunk,
-  getUserIdThunk,
+    getDopScheduleThunk,
+    getIAClassRoomThunk,
+    getIAClassThunk,
+    getIARingThunk,
+    getIASchoolThunk,
+    getIASubjectThunk,
+    getIATypeZThunk,
+    getScheduleThunk,
+    getTeacherIdThunk,
+    getUserIdThunk,
 } from "../thunks/available.thunk";
 import { initaialStateIA } from "../types/available.system";
 
@@ -136,7 +137,18 @@ export const availabelInfoSlice = createSlice({
           }
           return state;
         },
-      );
+      ).addCase(
+        getDopScheduleThunk.fulfilled,
+        (state, action: PayloadAction<IDopSchedule[]>) => {
+            if (action.payload) {
+                return {
+                    ...state,
+                    dopSch: action.payload,
+                };
+            }
+            return state;
+        },
+    );
   },
 });
 

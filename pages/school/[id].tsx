@@ -14,11 +14,12 @@ import { ITabs } from "@/types/assets.type";
 import SchoolTableBlock3 from "@/components/molecules/SchoolTableId/SchoolTableBlock3";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import {
-  getSchoolAdminIdThunk, getSchoolPassportThunk,
+  getSchoolAdminIdThunk, getSchoolDirectorThunk, getSchoolPassportThunk,
   getSchoolPhotosIdThunk, getSchoolPhotosThunk,
   getSchoolSocialIdThunk,
 } from "@/store/thunks/schoolnfo.thunk";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
+import SchoolTableBlock from "@/components/molecules/SchoolTableId/SchoolTableBlock";
 
 const SchoolComponents = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
@@ -32,6 +33,8 @@ const SchoolComponents = () => {
   const adminid = useTypedSelector((state) => state.system.schooladminid);
   const photosid = useTypedSelector((state) => state.system.schoolphotosid);
   const schoolPassword = useTypedSelector((state) => state.system.schoolpassport);
+  const directorid = useTypedSelector((state) => state.system.schooldirector);
+
   const handleAddButtonClick = () => {
     setEditActive(false);
     setShowActive(!showActive);
@@ -53,6 +56,13 @@ const SchoolComponents = () => {
       dispatch(getSchoolSocialIdThunk(id));
     }
   };
+
+  useEffect(() => {
+    if (directorid) {
+      dispatch(getSchoolDirectorThunk());
+    }
+  }, [dispatch]);
+
 
   const handleClickGetId1 = (id?: number) => {
     setEditActive(true);
@@ -87,29 +97,39 @@ const SchoolComponents = () => {
         }}
       >
         <Tabs link="school" tabs={tabs} />
-        {router.query.id !== "2" &&
-            < Button
-          background={showActive || editActive ? "#CACACA" : "#27AE60"}
-          radius="14px"
-          style={{
-          width: "auto",
-        }}
-          onClick={handleAddButtonClick}
-          >
-          <div
-          style={{
-          display: "flex",
-          alignItems: "center",
-          gap: ".8rem",
-        }}
-          >
-        {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
-        {showActive || editActive ? "Закрыть" : "Добавить"}
-          </div>
-          </Button>}
       </div>
+      {(router.query.id !== "3" && router.query.id !== "1") &&
+          <div
+              style={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "flex-end",
+                marginBottom: "1.6rem",
+              }}
+          >
+            <Button
+                background={showActive || editActive ? "#CACACA" : "#27AE60"}
+                radius="14px"
+                style={{
+                  width: "auto",
+                }}
+                onClick={handleAddButtonClick}
+            >
+              <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: ".8rem",
+                  }}
+              >
+                {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
+                {showActive || editActive ? "Закрыть" : "Добавить"}
+              </div>
+            </Button>
+          </div>
+      }
 
-      {(showActive || editActive) && router.query.id === "1" && (
+      {(showActive || editActive) && router.query.id === "2" && (
         <SchoolTableBlock1
           onReject={setShowActive}
           adminid={adminid}
@@ -117,8 +137,12 @@ const SchoolComponents = () => {
           onEdit={setEditActive}
         />
       )}
-      {router.query.id === "2" && <SchoolTableBlock3 schoolPassport={schoolPassword}/>}
-      {(showActive || editActive) && router.query.id === "3" && (
+      {router.query.id === "1" && <SchoolTableBlock  onReject={setShowActive}
+                                                     directorId={directorid}
+                                                     getId={getId}
+                                                     onEdit={setEditActive}/>}
+      {router.query.id === "3" && <SchoolTableBlock3 schoolPassport={schoolPassword}/>}
+      {(showActive || editActive) && router.query.id === "4" && (
         <SchoolTableBlock2
           onReject={setShowActive}
           photosid={photosid}
@@ -126,7 +150,7 @@ const SchoolComponents = () => {
           onEdit={setEditActive}
         />
       )}
-      {(showActive || editActive) && router.query.id === "4" && (
+      {(showActive || editActive) && router.query.id === "5" && (
         <SchoolTableBlock4
           onReject={setShowActive}
           socialid={socialid}
@@ -135,13 +159,13 @@ const SchoolComponents = () => {
         />
       )}
 
-      {router.query.id === "1" && (
+      {router.query.id === "2" && (
         <SchoolTable handleClickGetId1={handleClickGetId1} />
       )}
-      {router.query.id === "3" && (
+      {router.query.id === "4" && (
         <SchoolTable2 handleClickGetId2={handleClickGetId2} />
       )}
-      {router.query.id === "4" && (
+      {router.query.id === "5" && (
         <SchoolTable3 handleClickGetIdDop={handleClickGetIdDop} />
       )}
     </MainLayouts>
@@ -151,21 +175,26 @@ const SchoolComponents = () => {
 const tabs: ITabs[] = [
   {
     id: 1,
-    type: "Мектеп әкімшілігі",
+    type: "Мектеп директоры",
   },
 
   {
     id: 2,
-    type: "Мектеп төлқұжаты",
+    type: "Мектеп әкімшілігі",
   },
 
   {
     id: 3,
-    type: "Фото-суреттер",
+    type: "Мектеп төлқұжаты",
   },
 
   {
     id: 4,
+    type: "Фото-суреттер",
+  },
+
+  {
+    id: 5,
     type: "Әлеуметтік желілер",
   },
 ];

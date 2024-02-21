@@ -242,15 +242,21 @@ const PrideSchoolTableBlock2: FC<IProps> = ({
 
               <div className="forms sanaty">
                 <div className="login_forms-label_pink">Класс</div>
-                <Select {...formik.getFieldProps("class_id")}>
-                  <option value="">Выберите класс</option>
-                  {classes?.map((item) => (
-                      <option key={item.id} value={item.id}>
-                        {item.class_name}
-                      </option>
-                  ))
-                  }
-                </Select>
+                {formik.touched.class_id && formik.errors.class_id ? (
+                    <div style={{color: "red"}}>{formik.errors.class_id}</div>
+                ) : null}
+                <Input
+                    name={"class_id"}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.class_id}
+                    style={{
+                      borderColor:
+                          formik.touched.class_id && formik.errors.class_id
+                              ? "red"
+                              : "#c1bbeb",
+                    }}
+                />
               </div>
 
               <div

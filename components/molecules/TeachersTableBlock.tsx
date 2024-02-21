@@ -365,7 +365,7 @@ const TeachersTableBlock: FC<IProps> = ({
             <Select {...formik.getFieldProps("sanaty")}>
               <option value="">Выберите разряд</option>
               {sanatyArr.map((item) => (
-                  <option value={item.type}>{item.type}</option>
+                  <option value={item.id}>{item.type}</option>
               ))}
             </Select>
           </div>
@@ -410,25 +410,6 @@ const TeachersTableBlock: FC<IProps> = ({
                 }}
             />
           </div>
-
-          {/*<div className="forms">*/}
-          {/*  <div className="login_forms-label_pink">Лауазымы</div>*/}
-          {/*  {formik.touched.lau && formik.errors.lau ? (*/}
-          {/*      <div style={{ color: "red" }}>{formik.errors.lau}</div>*/}
-          {/*  ) : null}*/}
-          {/*  <Input*/}
-          {/*      name={"lau"}*/}
-          {/*      onChange={formik.handleChange}*/}
-          {/*      onBlur={formik.handleBlur}*/}
-          {/*      value={formik.values.lau}*/}
-          {/*      style={{*/}
-          {/*        borderColor:*/}
-          {/*            formik.touched.lau && formik.errors.lau*/}
-          {/*                ? "red"*/}
-          {/*                : "#c1bbeb",*/}
-          {/*      }}*/}
-          {/*  />*/}
-          {/*</div>*/}
         </div>
       </div>
 
@@ -574,16 +555,23 @@ const TeachersTableBlock: FC<IProps> = ({
               {/*{formik.touched.specification && formik.errors.specification && formik.errors.specification[index] && formik.errors.specification[index].degree ? (*/}
               {/*    <div style={{ color: "red" }}>{formik.errors.specification[index].degree}</div>*/}
               {/*) : null}*/}
-              <Input
-                  name={`specification[${index}].degree`}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.specification[index]?.degree} // Use jobHistory instead of name for the value
-                  style={{
-                    borderColor:
-                        formik.touched.specification && formik.touched.specification[index] && formik.errors.specification && formik.errors.specification[index] ? "red" : "#c1bbeb", // Update the conditional check for touched and errors
-                  }}
-              />
+              {/*<Input*/}
+              {/*    name={`specification[${index}].degree`}*/}
+              {/*    onChange={formik.handleChange}*/}
+              {/*    onBlur={formik.handleBlur}*/}
+              {/*    value={formik.values.specification[index]?.degree} // Use jobHistory instead of name for the value*/}
+              {/*    style={{*/}
+              {/*      borderColor:*/}
+              {/*          formik.touched.specification && formik.touched.specification[index] && formik.errors.specification && formik.errors.specification[index] ? "red" : "#c1bbeb", // Update the conditional check for touched and errors*/}
+              {/*    }}*/}
+              {/*/>*/}
+              <Select {...formik.getFieldProps(`specification[${index}].degree`)}>
+                <option value="">Выберите уровень образования</option>
+                <option value={"bakalavr"}>Бакалавр</option>
+                <option value={"magistratura"}>Магистрант</option>
+                <option value={"doktorantura"}>Докторант</option>
+                <option value={"srednee"}>Среднее образование</option>
+              </Select>
             </div>
 
             <div className="forms flex-grid-20">
@@ -655,44 +643,53 @@ const TeachersTableBlock: FC<IProps> = ({
 
 const sanatyArr = [
   {
-    id: 1,
-    type: "Pedagog Sheber",
+    id: 'pedagog_sheber',
+    type: "Педагог шебер",
   },
 
   {
-    id: 2,
-    type: "Pedagog Zertteushy",
+    id: "pedagog_zertteushy",
+    type: "Педагог зерттеуші",
   },
 
   {
-    id: 3,
-    type: "Pedagog Sarapshy",
+    id: 'pedagog_sarapshy',
+    type: "Педагог сарапшы",
   },
 
   {
-    id: 4,
-    type: "Pedagog Moderator",
+    id: 'pedagog_moderator',
+    type: "Педагог модератор",
   },
 
   {
-    id: 5,
-    type: "Pedagog Zhogary",
+    id: 'pedagog_zhogary',
+    type: "Жоғары санатты",
   },
 
   {
-    id: 6,
-    type: "Pedagog Stazher",
+    id: 'pedagog_stazher',
+    type: "Педагог стажер",
   },
 
   {
-    id: 7,
-    type: "Pedagog 1 sanat",
+    id: 'pedagog1sanat',
+    type: "1 санатты",
   },
 
   {
-    id: 8,
-    type: "Pedagog 2 sanat",
+    id: 'pedagog2sanat',
+    type: "2 санатты",
   },
+  {
+    id: 'pedagog_sanat_zhok',
+    type: "Санаты жоқ",
+  },
+  {
+    id: 'pedagog',
+    type: "Педагог",
+  },
+
 ];
 
 const AddButtton = styled.button`

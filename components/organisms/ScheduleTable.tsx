@@ -13,9 +13,9 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { IARing, ISchedule } from "@/types/assets.type";
 import {getTokenInLocalStorage} from "@/utils/assets.utils";
+import {useTypedSelector} from "@/hooks/useTypedSelector";
 
 interface IProps {
-  schedule?: ISchedule[];
   selectModePaste?: boolean;
   selectMode?: boolean;
   selectedCellsPaste?: any;
@@ -24,10 +24,10 @@ interface IProps {
   handleCheckboxClickPaste?: any;
   iaring?: any;
   selectedCheckboxId?: any;
+  isOsnova?:boolean;
 }
 
 const ScheduleTable = ({
-  schedule,
   selectModePaste,
   selectMode,
   selectedCellsPaste,
@@ -35,10 +35,10 @@ const ScheduleTable = ({
   handleCheckboxClick,
   iaring,
   handleCheckboxClickPaste,
-                         selectedCheckboxId
+                         selectedCheckboxId,
+    isOsnova,
 }: IProps) => {
   const [openModal, setOpenModal] = useState<boolean>(false);
-
   const [selectedCell, setSelectedCell] = useState<{
     day?: any;
     start_time?: any;
@@ -47,7 +47,10 @@ const ScheduleTable = ({
     day_index?: any;
   }>();
   const router = useRouter();
-
+  const sch = useTypedSelector((state) => state.ia.sch);
+  const dopSch = useTypedSelector((state) => state.ia.dopSch);
+  const schedule = isOsnova ? useTypedSelector((state) => state.ia.sch) : useTypedSelector((state) => state.ia.dopSch);
+  console.log(schedule, isOsnova);
   const handleCellClick = (
     day: any,
     start_time: any,
@@ -69,233 +72,239 @@ const ScheduleTable = ({
 
     return timeA.getTime() - timeB.getTime();
   });
-
   return (
-    <>
-      {openModal && (
-        <ScheduleModal
-          onReject={handleCloseModal}
-          selectedCell={selectedCell}
-          classnames={decodeURIComponent(
-            router.asPath.split("/").at(-1) as string,
-          )}
-        />
-      )}
+      <>
+        {openModal && (
+            <ScheduleModal
+                onReject={handleCloseModal}
+                selectedCell={selectedCell}
+                classnames={decodeURIComponent(
+                    router.asPath.split("/").at(-1) as string,
+                )}
+                isOsnova={isOsnova}
+            />
+        )}
+      <div style={{marginBottom: "5vh"}}>
+        <div className="main_table-title">
+          {isOsnova ? "Основные уроки" : "Дополнительные уроки"}
+        </div>
+        <TableContainer
+            component={Paper}
+            elevation={0}
+            style={{boxShadow: "none"}}
+        >
 
-      <TableContainer
-        component={Paper}
-        elevation={0}
-        style={{ boxShadow: "none" }}
-      >
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell
-                style={{ border: "2px solid #4090FF", textAlign: "center" }}
-              >
-                <div
-                  style={{
-                    color: "#000000",
-                    fontSize: "2rem",
-                    fontWeight: "500",
-                    marginBottom: "1.6rem",
-                  }}
-                >
-                  Дата
-                </div>{" "}
-                <div
-                  style={{
-                    color: "#878787",
-                    fontSize: "2rem",
-                    fontWeight: "500",
-                  }}
-                >
-                  Время
-                </div>
-              </TableCell>
-              {days.map((day, index) => (
+          <Table>
+            <TableHead>
+              <TableRow>
                 <TableCell
-                  key={index}
-                  style={{
-                    border: "2px solid #4090FF",
-                    color: "#000000",
-                    fontSize: "2rem",
-                    fontWeight: "500",
-                    textAlign: "center",
-                  }}
-                >
-                  {day}
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {sortArr.map((timeRange: any, timeIndex: any) => (
-              <TableRow key={timeIndex}>
-                <TableCell
-                  style={{ border: "2px solid #4090FF", textAlign: "center" }}
+                    style={{border: "2px solid #4090FF", textAlign: "center"}}
                 >
                   <div
-                    style={{
-                      color: "#000000",
-                      fontSize: "2rem",
-                      fontWeight: "500",
-                    }}
+                      style={{
+                        color: "#000000",
+                        fontSize: "2rem",
+                        fontWeight: "500",
+                        marginBottom: "1.6rem",
+                      }}
                   >
-                    {timeRange.start_time.split(":")[0]}:
-                    {timeRange.start_time.split(":")[1]}
+                    Дата
                   </div>
+                  {" "}
                   <div
-                    style={{
-                      color: "#878787",
-                      fontSize: "2rem",
-                      fontWeight: "500",
-                    }}
+                      style={{
+                        color: "#878787",
+                        fontSize: "2rem",
+                        fontWeight: "500",
+                      }}
                   >
-                    {timeRange.end_time.split(":")[0]}:
-                    {timeRange.end_time.split(":")[1]}
+                    Время
                   </div>
                 </TableCell>
-                {days.map((day, dayIndex) => {
-                  const scheduleItem =
-                    schedule &&
-                    schedule.find(
-                      (item) =>
-                        item.week_day === (dayIndex + 1).toString() &&
-                        item?.ring?.start_time === timeRange.start_time &&
-                        item?.classl?.class_name ===
-                          decodeURIComponent(
-                            router.asPath?.split("/")?.at(-1) as string,
-                          ),
-                    );
-
-                  const isSelected = selectedCells.some(
-                    (selectedCell: any) =>
-                      selectedCell.day === day &&
-                      selectedCell.start_time === timeRange.start_time &&
-                      selectedCell.end_time === timeRange.end_time,
-                  );
-
-                  const isSelectedPaste = selectedCellsPaste.some(
-                    (selectedCell: any) =>
-                      selectedCell.day === day &&
-                      selectedCell.start_time === timeRange.start_time &&
-                      selectedCell.end_time === timeRange.end_time,
-                  );
-
-                  return (
+                {days.map((day, index) => (
                     <TableCell
-                      key={dayIndex}
-                      style={{ border: "2px solid #4090FF" }}
-                      onClick={() => !selectMode &&
-                          handleCellClick(
-                              day,
-                              timeRange.start_time,
-                              timeRange.end_time,
-                              timeRange.id,
-                              dayIndex+1,
-                          )
-                      }
+                        key={index}
+                        style={{
+                          border: "2px solid #4090FF",
+                          color: "#000000",
+                          fontSize: "2rem",
+                          fontWeight: "500",
+                          textAlign: "center",
+                        }}
                     >
-                      {scheduleItem ? (
-                        <div style={{ textAlign: "center" }}>
-                          <div
-                            style={{
-                              color: "#000000",
-                              fontSize: "2rem",
-                              fontWeight: "500",
-                              marginBottom: "1.8rem",
-                            }}
-                          >
-                            {scheduleItem?.subject?.full_name}
-                          </div>
-                          <div
-                            style={{
-                              color: "#116AE5",
-                              fontSize: "2rem",
-                              fontWeight: "500",
-                              marginBottom: "1.8rem",
-                            }}
-                          >
-                            {scheduleItem?.classl?.class_name}
-                          </div>
-                          <div
-                            style={{
-                              color: "#116AE5",
-                              fontSize: "2rem",
-                              fontWeight: "500",
-                            }}
-                          >
-                            {scheduleItem?.teacher?.full_name}
-                          </div>
-
-                          {selectMode && (
-                            <Checkbox
-                              // defaultChecked={isSelected}
-                                checked={selectedCheckboxId === scheduleItem.id}
-                              onClick={() =>
-                                handleCheckboxClick(
-                                  day,
-                                  timeRange.start_time,
-                                  timeRange.end_time,
-                                  scheduleItem?.teacher?.id,
-                                  scheduleItem?.ring?.id,
-                                  scheduleItem?.classl?.id,
-                                  scheduleItem?.subject?.id,
-                                  scheduleItem?.classroom?.id,
-                                  scheduleItem?.typez?.id,
-                                    scheduleItem?.id
-                                )
-                              }
-                            />
-                          )}
-                        </div>
-                      ) : (
-                        <>
-                          <div
-                            style={{
-                              color: "#000000",
-                              fontSize: "2rem",
-                              fontWeight: "500",
-                              textAlign: "center",
-                              cursor: "pointer",
-                            }}
-                            onClick={() =>
-                              handleCellClick(
-                                day,
-                                timeRange.start_time,
-                                timeRange.end_time,
-                                timeRange.id,
-                              )
-                            }
-                          >
-                            +
-                          </div>
-
-                          {selectModePaste && (
-                            <Checkbox
-                              checked={isSelectedPaste}
-                              onClick={() =>
-                                handleCheckboxClickPaste(
-                                  day,
-                                  timeRange.start_time,
-                                  timeRange.end_time,
-                                  timeRange.id,
-                                )
-                              }
-                            />
-                          )}
-                        </>
-                      )}
+                      {day}
                     </TableCell>
-                  );
-                })}
+                ))}
               </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    </>
+            </TableHead>
+            <TableBody>
+              {sortArr.map((timeRange: any, timeIndex: any) => (
+                  <TableRow key={timeIndex}>
+                    <TableCell
+                        style={{border: "2px solid #4090FF", textAlign: "center"}}
+                    >
+                      <div
+                          style={{
+                            color: "#000000",
+                            fontSize: "2rem",
+                            fontWeight: "500",
+                          }}
+                      >
+                        {timeRange.start_time.split(":")[0]}:
+                        {timeRange.start_time.split(":")[1]}
+                      </div>
+                      <div
+                          style={{
+                            color: "#878787",
+                            fontSize: "2rem",
+                            fontWeight: "500",
+                          }}
+                      >
+                        {timeRange.end_time.split(":")[0]}:
+                        {timeRange.end_time.split(":")[1]}
+                      </div>
+                    </TableCell>
+                    {days.map((day, dayIndex) => {
+                      const scheduleItem =
+                          schedule &&
+                          schedule.find(
+                              (item) =>
+                                  item.week_day === (dayIndex + 1).toString() &&
+                                  item?.ring?.start_time === timeRange.start_time &&
+                                  item?.classl?.class_name ===
+                                  decodeURIComponent(
+                                      router.asPath?.split("/")?.at(-1) as string,
+                                  ),
+                          );
+
+                      const isSelected = selectedCells.some(
+                          (selectedCell: any) =>
+                              selectedCell.day === day &&
+                              selectedCell.start_time === timeRange.start_time &&
+                              selectedCell.end_time === timeRange.end_time,
+                      );
+
+                      const isSelectedPaste = selectedCellsPaste.some(
+                          (selectedCell: any) =>
+                              selectedCell.day === day &&
+                              selectedCell.start_time === timeRange.start_time &&
+                              selectedCell.end_time === timeRange.end_time,
+                      );
+
+                      return (
+                          <TableCell
+                              key={dayIndex}
+                              style={{border: "2px solid #4090FF"}}
+                              onClick={() => !selectMode &&
+                                  handleCellClick(
+                                      day,
+                                      timeRange.start_time,
+                                      timeRange.end_time,
+                                      timeRange.id,
+                                      dayIndex + 1,
+                                  )
+                              }
+                          >
+                            {scheduleItem ? (
+                                <div style={{textAlign: "center"}}>
+                                  <div
+                                      style={{
+                                        color: "#000000",
+                                        fontSize: "2rem",
+                                        fontWeight: "500",
+                                        marginBottom: "1.8rem",
+                                      }}
+                                  >
+                                    {scheduleItem?.subject?.full_name}
+                                  </div>
+                                  <div
+                                      style={{
+                                        color: "#116AE5",
+                                        fontSize: "2rem",
+                                        fontWeight: "500",
+                                        marginBottom: "1.8rem",
+                                      }}
+                                  >
+                                    {scheduleItem?.classroom?.classroom_number} кабинет
+                                  </div>
+                                  <div
+                                      style={{
+                                        color: "#116AE5",
+                                        fontSize: "2rem",
+                                        fontWeight: "500",
+                                      }}
+                                  >
+                                    {scheduleItem?.teacher?.full_name}
+                                  </div>
+
+                                  {selectMode && (
+                                      <Checkbox
+                                          // defaultChecked={isSelected}
+                                          checked={selectedCheckboxId === scheduleItem.id}
+                                          onClick={() =>
+                                              handleCheckboxClick(
+                                                  day,
+                                                  timeRange.start_time,
+                                                  timeRange.end_time,
+                                                  scheduleItem?.teacher?.id,
+                                                  scheduleItem?.ring?.id,
+                                                  scheduleItem?.classl?.id,
+                                                  scheduleItem?.subject?.id,
+                                                  scheduleItem?.classroom?.id,
+                                                  scheduleItem?.typez?.id,
+                                                  scheduleItem?.id
+                                              )
+                                          }
+                                      />
+                                  )}
+                                </div>
+                            ) : (
+                                <>
+                                  <div
+                                      style={{
+                                        color: "#000000",
+                                        fontSize: "2rem",
+                                        fontWeight: "500",
+                                        textAlign: "center",
+                                        cursor: "pointer",
+                                      }}
+                                      onClick={() =>
+                                          handleCellClick(
+                                              day,
+                                              timeRange.start_time,
+                                              timeRange.end_time,
+                                              timeRange.id,
+                                          )
+                                      }
+                                  >
+                                    +
+                                  </div>
+
+                                  {selectModePaste && (
+                                      <Checkbox
+                                          checked={isSelectedPaste}
+                                          onClick={() =>
+                                              handleCheckboxClickPaste(
+                                                  day,
+                                                  timeRange.start_time,
+                                                  timeRange.end_time,
+                                                  timeRange.id,
+                                              )
+                                          }
+                                      />
+                                  )}
+                                </>
+                            )}
+                          </TableCell>
+                      );
+                    })}
+                  </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </TableContainer>
+      </div>
+      </>
   );
 };
 

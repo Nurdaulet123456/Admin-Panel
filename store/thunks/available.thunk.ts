@@ -46,3 +46,8 @@ export const getScheduleThunk = createAsyncThunk(
   "getScheduleThunk",
   async () => await assetsApi.getSchedule(),
 );
+
+export const getDopScheduleThunk = createAsyncThunk(
+    "getDopScheduleThunk",
+    async () => await assetsApi.getDopSchedule(),
+);

@@ -246,9 +246,8 @@ const ClassTableBlock: FC<IProps> = ({
                 <Select {...formik.getFieldProps("language")}>
                   <option value="">Выберите язык</option>
                   <option value="KZ">KZ</option>
-                  <option value="ENG">ENG</option>
+                  <option value="ENG">EN</option>
                   <option value="RU">RU</option>
-
                 </Select>
               </div>
             </div>

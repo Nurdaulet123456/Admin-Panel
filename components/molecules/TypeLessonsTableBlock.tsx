@@ -9,6 +9,8 @@ import { getExtraThunk } from "@/store/thunks/pride.thunk";
 import { ColorCheckIcons } from "../atoms/Icons";
 import { IExtraLessons } from "@/types/assets.type";
 import { useModalLogic } from "@/hooks/useModalLogic";
+import ErrorModal from "@/components/modals/ErrorModal";
+import SuccessModal from "@/components/modals/SuccessModal";
 
 const typeColor = [
   "#27AE60",
@@ -79,6 +81,8 @@ const TypeLessonsTableBlock: FC<IProps> = ({
               if (res) {
                 dispatch(getExtraThunk());
                 showSuccess();
+                setUpdateInput("");
+                setChooseColor("");
                 if (showSuccessModal && onReject) {
                   onReject(false);
                 }
@@ -121,61 +125,64 @@ const TypeLessonsTableBlock: FC<IProps> = ({
   };
 
   return (
-    <div className="main_table-modal">
-      <div className="login_forms-label_pink">Тип занятий</div>
-      <div className="main_table-modal_forms">
-        <div className="forms">
+      <>
+        {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
+        {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
+        <div className="main_table-modal">
           <div className="login_forms-label_pink">Тип занятий</div>
+          <div className="main_table-modal_forms">
+            <div className="forms">
+              <Input
+                  type="text"
+                  placeholder="Тип занятий"
+                  name="type"
+                  value={updateInput}
+                  onChange={(e) => setUpdateInput(e.target.value)}
+              />
+            </div>
 
-          <Input
-            type="text"
-            placeholder="Тип занятий"
-            name="type"
-            value={updateInput}
-            onChange={(e) => setUpdateInput(e.target.value)}
-          />
-        </div>
+            <div className="login_forms-label_pink">Цвет</div>
 
-        <div className="login_forms-label_pink">Цвет</div>
-
-        <div
-          className="forms flex"
-          style={{
-            flexWrap: "wrap",
-            justifyContent: "flex-start",
-            gap: "1rem",
-            width: "70%",
-          }}
-        >
-          {typeColor.map((item) => (
-            <ColorBlock
-              color={item}
-              key={item}
-              onClick={() => setChooseColor(item)}
+            <div
+                className="forms flex"
+                style={{
+                  flexWrap: "wrap",
+                  justifyContent: "flex-start",
+                  gap: "1rem",
+                  width: "70%",
+                }}
             >
-              {chooseColor === item && <ColorCheckIcons />}
-            </ColorBlock>
-          ))}
-        </div>
-      </div>
+              {typeColor.map((item) => (
+                  <ColorBlock
+                      color={item}
+                      key={item}
+                      onClick={() => setChooseColor(item)}
+                  >
+                    {chooseColor === item && <ColorCheckIcons/>}
+                  </ColorBlock>
+              ))}
+            </div>
+          </div>
 
-      <div
-        className="flex"
-        style={{ justifyContent: "flex-end", gap: "1.6rem" }}
-      >
-        <Button
-          background="#CACACA"
-          color="#645C5C"
-          style={{ width: "auto" }}
-          onClick={() => onReject && onReject(false)}
-        >
-          Удалить
-        </Button>
-        <Button background="#27AE60" style={{ width: "auto" }} onClick={onSave}>
-          Сохранить
-        </Button>
-      </div>
-    </div>
+          <div
+              className="flex"
+              style={{justifyContent: "flex-end", gap: "1.6rem"}}
+          >
+            <Button
+                background="#CACACA"
+                color="#645C5C"
+                style={{width: "auto"}}
+                onClick={() => onReject && onReject(false)}
+            >
+              Удалить
+            </Button>
+            <Button background="#27AE60" style={{width: "auto"}} onClick={onSave}>
+              Сохранить
+            </Button>
+          </div>
+        </div>
+      </>
+
   );
 };
 

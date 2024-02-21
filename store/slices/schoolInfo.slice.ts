@@ -1,37 +1,37 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { initaialStateSchoolInfo } from "../types/schoolInfo.system";
 import {
-  getClassIdThunk,
-  getClassRoomIdThunk,
-  getClassRoomThunk,
-  getClassThunk,
-  getKruzhokInfoIdThunk,
-  getKruzhokInfoThunk,
-  getKruzhokTeachersInfoThunk,
-  getMenuIdThunk,
-  getMenuThunk,
-  getSchoolAdminIdThunk,
-  getSchoolAdminThunk,
-  getSchoolIdThunk,
-  getSchoolPassportThunk,
-  getSchoolPhotosIdThunk,
-  getSchoolPhotosThunk,
-  getSchoolSocialIdThunk,
-  getSchoolSocialThunk,
-  getSchoolThunk,
-  getUsersThunk,
+    getClassIdThunk,
+    getClassRoomIdThunk,
+    getClassRoomThunk,
+    getClassThunk,
+    getKruzhokInfoIdThunk,
+    getKruzhokInfoThunk,
+    getKruzhokTeachersInfoThunk,
+    getMenuIdThunk,
+    getMenuThunk,
+    getSchoolAdminIdThunk,
+    getSchoolAdminThunk, getSchoolDirectorThunk,
+    getSchoolIdThunk,
+    getSchoolPassportThunk,
+    getSchoolPhotosIdThunk,
+    getSchoolPhotosThunk,
+    getSchoolSocialIdThunk,
+    getSchoolSocialThunk,
+    getSchoolThunk,
+    getUsersThunk,
 } from "../thunks/schoolnfo.thunk";
 import {
-  IClass,
-  IClassRoom,
-  IKruzhok,
-  IMenu,
-  ISchoolAdmin,
-  ISchoolInfo,
-  ISchoolPassport,
-  ISchoolPhotos,
-  ISchoolSocialMedia,
-  IUsers,
+    IClass,
+    IClassRoom,
+    IKruzhok,
+    IMenu,
+    ISchoolAdmin, ISchoolDirector,
+    ISchoolInfo,
+    ISchoolPassport,
+    ISchoolPhotos,
+    ISchoolSocialMedia,
+    IUsers,
 } from "@/types/assets.type";
 
 export const schoolInfoSlice = createSlice({
@@ -249,7 +249,17 @@ export const schoolInfoSlice = createSlice({
                         };
                     }
                 },
-            );
+            ).addCase(
+            getSchoolDirectorThunk.fulfilled,
+            (state, action: PayloadAction<ISchoolDirector[]>) => {
+                if (action.payload) {
+                    return {
+                        ...state,
+                        schooldirector: action.payload,
+                    };
+                }
+            },
+        );
     },
 });
 

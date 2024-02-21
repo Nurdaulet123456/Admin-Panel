@@ -5,6 +5,7 @@ import { Modal, ModalContent, ModalInner } from "../atoms/UI/Modal/Modal";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import {
+  getDopScheduleThunk,
   getIAClassRoomThunk,
   getIAClassThunk,
   getIARingThunk,
@@ -22,14 +23,16 @@ import {useFormik} from "formik";
 import * as Yup from "yup";
 import {getNewsThunk} from "@/store/thunks/pride.thunk";
 import {XIcon} from "@/components/atoms/Icons";
+import {is} from "immutable";
 
 interface IProps {
   onReject?: () => void;
   selectedCell?: any;
   classnames?: string;
+  isOsnova?:boolean;
 }
 
-const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
+const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnova }) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
   const iaschool = useTypedSelector((state) => state.ia.iaschool);
@@ -63,12 +66,13 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
     }
   }, [dispatch]);
 
-
   useEffect(() => {
+    const url = isOsnova ? `https://bilimge.kz/admins/api/schedule/?week_day=${selectedCell.day_index}&ring=${selectedCell.timeId}` :
+        `https://bilimge.kz/admins/api/DopUrokApi/?week_day=${selectedCell.day_index}&ring=${selectedCell.timeId}`
     const fetchSchedule = async () => {
       try {
         const response = await instance.get(
-            `https://bilimge.kz/admins/api/schedule/?week_day=${selectedCell.day_index}&ring=${selectedCell.timeId}`,
+            url,
             {
               headers: {
                 Authorization: `Token ${getTokenInLocalStorage()}`,
@@ -78,6 +82,7 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
 
         if (response) {
           setScheduleId(response);
+          console.log(response)
         }
       } catch (err) {
         console.error(err);
@@ -103,10 +108,11 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
     }),
     onSubmit: async (values) => {
       console.log(values.teacher, "teacher")
+      const urlPost = isOsnova ? "https://bilimge.kz/admins/api/schedule/" : "https://bilimge.kz/admins/api/DopUrokApi/";
       if(!scheduleId?.[0]) {
         await instance
             .post(
-                "https://bilimge.kz/admins/api/schedule/",
+                urlPost,
                 {
                   week_day: getWeekDayNumber(selectedCell.day),
                   teacher: values.teacher,
@@ -128,6 +134,7 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
             .then((res) => {
               if (res && onReject) {
                 dispatch(getScheduleThunk());
+                dispatch(getDopScheduleThunk());
                 onReject();
               }
             })
@@ -135,7 +142,7 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
       }else {
         await instance
             .put(
-                `https://bilimge.kz/admins/api/schedule/${scheduleId[0].id}/`,
+                `${urlPost}${scheduleId[0].id}/`,
                 {
                   week_day: getWeekDayNumber(selectedCell.day),
                   teacher: Number(values.teacher),
@@ -157,6 +164,7 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
             .then((res) => {
               if (res && onReject) {
                 dispatch(getScheduleThunk());
+                dispatch(getDopScheduleThunk());
                 onReject();
               }
             })
@@ -169,13 +177,13 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
     if (scheduleId?.[0]) {
       formik.resetForm({
         values: {
-          subject: scheduleId[0].subject.id || '',
-          teacher: scheduleId[0].teacher.id || '',
-          classroom: scheduleId[0].classroom.id || '',
-          subject2: scheduleId[0].subject2.id || '',
-          teacher2: scheduleId[0].teacher2.id || '',
-          classroom2: scheduleId[0].classroom2.id || '',
-          typez: scheduleId[0].typez.id || '',
+          subject: scheduleId[0].subject?.id || '',
+          teacher: scheduleId[0].teacher?.id || '',
+          classroom: scheduleId[0].classroom?.id || '',
+          subject2: scheduleId[0].subject2?.id || '',
+          teacher2: scheduleId[0].teacher2?.id || '',
+          classroom2: scheduleId[0].classroom2?.id || '',
+          typez: scheduleId[0].typez?.id || '',
         },
       });
     }
@@ -304,7 +312,7 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames }) => {
                   <div>Тип занятия:</div>
                   <div className="sanaty">
                     <Select {...formik.getFieldProps("typez")}>
-                      <option value="">Выберите кабинет</option>
+                      <option value="">Выберите тип занятий</option>
                       {iatypez?.map((item, index) => (
                           <option key={index} value={item.id}>{item.type_full_name}</option>
                       ))}

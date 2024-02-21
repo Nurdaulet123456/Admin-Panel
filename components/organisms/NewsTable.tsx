@@ -60,8 +60,8 @@ const NewsTable: FC<IProps> = ({ handleClickGetId }) => {
                   <div className="img-block" key={index + 1}>
                     <img
                       className="img"
-                      src={item!.photos![0]}
-                      alt={item!.photos![0]}
+                      src={item!.photos?.[0]}
+                      alt={item!.photos?.[0]}
                     />
                   </div>
                 </Td>

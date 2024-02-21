@@ -39,7 +39,7 @@ const SchoolTable: FC<IProps> = ({ handleClickGetId1 }) => {
 
   return (
     <div className="main_table">
-      <div className="main_table-title">Меню</div>
+      <div className="main_table-title">Мектеп әкімшілігі</div>
 
       <div className="main_table-block">
         <Table>
