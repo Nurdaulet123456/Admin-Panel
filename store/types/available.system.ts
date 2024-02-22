@@ -1,6 +1,6 @@
 import {
   IAClass,
-  IAClassRooms,
+  IAClassRooms, IADopRing,
   IARing,
   IASchool,
   IASubjet,
@@ -14,6 +14,7 @@ export interface ISchoolInfo {
   iaclass?: IAClass[];
   iaclassrooms?: IAClassRooms[];
   iaring?: IARing[];
+  iaDopRing?: IADopRing[];
   iaschool?: IASchool[];
   iasubject?: IASubjet[];
   iatypez?: IATypeZ[];
@@ -34,4 +35,5 @@ export const initaialStateIA: ISchoolInfo = {
   teachersid: {},
   sch: [],
   dopSch: [],
+  iaDopRing:[],
 };

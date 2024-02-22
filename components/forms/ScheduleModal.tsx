@@ -66,6 +66,8 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
     }
   }, [dispatch]);
 
+  console.log(isOsnova)
+
   useEffect(() => {
     const url = isOsnova ? `https://bilimge.kz/admins/api/schedule/?week_day=${selectedCell.day_index}&ring=${selectedCell.timeId}` :
         `https://bilimge.kz/admins/api/DopUrokApi/?week_day=${selectedCell.day_index}&ring=${selectedCell.timeId}`
@@ -107,8 +109,9 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
 
     }),
     onSubmit: async (values) => {
-      console.log(values.teacher, "teacher")
+      console.log(values);
       const urlPost = isOsnova ? "https://bilimge.kz/admins/api/schedule/" : "https://bilimge.kz/admins/api/DopUrokApi/";
+      console.log(urlPost)
       if(!scheduleId?.[0]) {
         await instance
             .post(

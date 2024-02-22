@@ -20,11 +20,11 @@ const NewsTable: FC<IProps> = ({ handleClickGetId }) => {
       dispatch(getNewsThunk());
     }
   }, [dispatch]);
-  console.log(news)
+  console.log(news, "af")
 
   const onDelete = async (id: number) => {
     await instance
-      .delete(`/api/newsApi/${id}`, {
+      .delete(`/admins/api/newsApi/${id}/`, {
         headers: {
           Authorization: `Token ${getTokenInLocalStorage()}`,
         },
@@ -60,8 +60,8 @@ const NewsTable: FC<IProps> = ({ handleClickGetId }) => {
                   <div className="img-block" key={index + 1}>
                     <img
                       className="img"
-                      src={item!.photos?.[0]}
-                      alt={item!.photos?.[0]}
+                      src={item!.img1}
+                      alt={item!.img1}
                     />
                   </div>
                 </Td>

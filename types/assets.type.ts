@@ -279,8 +279,17 @@ export interface INews {
   date?: string;
   text?: string;
   type?: string;
-  photos?: string[];
   school?: number;
+  img1?:string;
+  img2?:string;
+  img3?:string;
+  img4?:string;
+  img5?:string;
+  img6?:string;
+  img7?:string;
+  img8?:string;
+  img9?:string;
+  img10?:string;
 }
 
 // Class
@@ -322,6 +331,15 @@ export interface IARing {
   id?: number;
   start_time?: string;
   end_time?: string;
+}
+
+export interface IADopRing {
+  id?: number;
+  start_time?: string;
+  end_time?: string;
+  plan?:number;
+  smena?:number;
+  number?:number;
 }
 
 export interface IASubjet {

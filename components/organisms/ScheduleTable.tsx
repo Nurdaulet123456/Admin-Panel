@@ -14,6 +14,7 @@ import { useRouter } from "next/router";
 import { IARing, ISchedule } from "@/types/assets.type";
 import {getTokenInLocalStorage} from "@/utils/assets.utils";
 import {useTypedSelector} from "@/hooks/useTypedSelector";
+import {log} from "console";
 
 interface IProps {
   selectModePaste?: boolean;
@@ -51,6 +52,8 @@ const ScheduleTable = ({
   const dopSch = useTypedSelector((state) => state.ia.dopSch);
   const schedule = isOsnova ? useTypedSelector((state) => state.ia.sch) : useTypedSelector((state) => state.ia.dopSch);
   console.log(schedule, isOsnova);
+
+  console.log(iaring)
   const handleCellClick = (
     day: any,
     start_time: any,
@@ -61,7 +64,6 @@ const ScheduleTable = ({
     setOpenModal(true);
     setSelectedCell({ day, start_time, end_time, timeId, day_index });
   };
-
   const handleCloseModal = () => {
     setOpenModal(false);
   };
@@ -91,7 +93,7 @@ const ScheduleTable = ({
         <TableContainer
             component={Paper}
             elevation={0}
-            style={{boxShadow: "none"}}
+            style={{boxShadow: "none", }}
         >
 
           <Table>

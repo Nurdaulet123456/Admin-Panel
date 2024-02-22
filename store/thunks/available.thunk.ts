@@ -22,6 +22,11 @@ export const getIARingThunk = createAsyncThunk(
   async (start_time?: string) => await assetsApi.getAvalibaleRing(start_time),
 );
 
+export const getIADopRingThunk = createAsyncThunk(
+    "getIADopRingThunk",
+    async () => await assetsApi.getAvailableDopring(),
+);
+
 export const getIASubjectThunk = createAsyncThunk(
   "getIASubjectThunk",
   async () => await assetsApi.getAvalibaleSubject(),

@@ -35,7 +35,6 @@ const SchoolTableBlock: FC<IProps> = ({
                                            getId,
                                        }) => {
     const dispatch = useAppDispatch();
-
     const {
         showSuccessModal,
         showErrorModal,
@@ -120,9 +119,9 @@ const SchoolTableBlock: FC<IProps> = ({
         if (directorId) {
             formik.resetForm({
                 values: {
-                    name: directorId?.[0].director_name || "",
-                    email: directorId?.[0].email || "",
-                    tel: String(directorId?.[0].phone_number) || "",
+                    name: directorId?.[0]?.director_name || "",
+                    email: directorId?.[0]?.email || "",
+                    tel: String(directorId?.[0]?.phone_number) || "",
                     photo: null,
                 },
             });

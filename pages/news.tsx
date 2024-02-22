@@ -72,7 +72,6 @@ const NewsPage = () => {
           onReject={setShowActive}
         />
       )}
-
       <NewsTable handleClickGetId={handleClickGetId} />
     </MainLayouts>
   );

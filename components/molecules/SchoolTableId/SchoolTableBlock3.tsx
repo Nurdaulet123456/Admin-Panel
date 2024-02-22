@@ -8,7 +8,7 @@ import * as Yup from "yup";
 import {ISchoolPassport, ISchoolPhotos} from "@/types/assets.type";
 
 interface IProps {
-    schoolPassport?: ISchoolPassport;
+    schoolPassport?: ISchoolPassport[];
 }
 
 const SchoolTableBlock3: FC<IProps> = ({
@@ -18,7 +18,7 @@ const SchoolTableBlock3: FC<IProps> = ({
   const formik = useFormik({
     initialValues: {
       photo: null,
-      year: "",
+      year: '',
       school_address:"",
       childNumber: "",
       classComplect:"",
@@ -120,7 +120,7 @@ const SchoolTableBlock3: FC<IProps> = ({
             pedagog_sanat_zhok: values.sanatZhok,
             school_history: values.history,
         };
-        if(!schoolPassport) {
+        if(schoolPassport?.length === 0) {
             await instance
                 .post(
                     "https://bilimge.kz/admins/api/schoolpasport/",
@@ -201,44 +201,44 @@ const SchoolTableBlock3: FC<IProps> = ({
         }
     }
   });
-
+    console.log(schoolPassport)
     useEffect(() => {
         if (schoolPassport) {
             formik.resetForm({
                 values: {
                     photo: null,
-                    year: String(schoolPassport.established) || "",
-                    school_address: schoolPassport?.school_address || "",
-                    childNumber: String(schoolPassport.amount_of_children) || "",
-                    classComplect: String(schoolPassport.number_of_classes) || "",
-                    boyNumber: String(schoolPassport.ul_sany) || "",
-                    girlNumber: String(schoolPassport.kiz_sany) || "",
-                    familyNumber: String(schoolPassport.amount_of_family) || "",
-                    parentsNumber: String(schoolPassport.amount_of_parents) || "",
-                    language: String(schoolPassport.school_lang) || "",
-                    status: String(schoolPassport.status) || "",
-                    capacity: String(schoolPassport.vmestimost) || "",
-                    actualNumber: String(schoolPassport.number_of_students) || "",
-                    preparatoryClassNumber: String(schoolPassport.dayarlyk_class_number) || "",
-                    preparatoryChildNumber: String(schoolPassport.dayarlyk_student_number) || "",
-                    elementarySchoolClass: String(schoolPassport.number_of_1_4_classes) || "",
-                    elementarySchoolChild: String(schoolPassport.number_of_1_4_students) || "",
-                    middleSchoolClass: String(schoolPassport.number_of_5_9_classes) || "",
-                    middleSchoolChild: String(schoolPassport.number_of_5_9_students) || "",
-                    highSchoolClass: String(schoolPassport.number_of_10_11_classes) || "",
-                    highSchoolChild: String(schoolPassport.number_of_10_11_students) || "",
-                    teachersNumber: String(schoolPassport.all_pedagog_number) || "",
-                    pedagogSheber: String(schoolPassport.pedagog_sheber) || "",
-                    pedagogZertteushi: String(schoolPassport.pedagog_zertteushy) || "",
-                    pedagogSarapshy: String(schoolPassport.pedagog_sarapshy) || "",
-                    pedagogModerator: String(schoolPassport.pedagog_moderator) || "",
-                    pedagog: String(schoolPassport.pedagog) || "",
-                    pedagogTagylymdamashy: String(schoolPassport.pedagog_stazher) || "",
-                    pedagogHigh: String(schoolPassport.pedagog_zhogary) || "",
-                    sanat1: String(schoolPassport.pedagog_1sanat) || "",
-                    sanat2: String(schoolPassport.pedagog_2sanat) || "",
-                    sanatZhok: String(schoolPassport.pedagog_sanat_zhok) || "",
-                    history: schoolPassport.school_history || "",
+                    year: String(schoolPassport?.[0]?.established) || "",
+                    school_address: schoolPassport?.[0]?.school_address || "",
+                    childNumber: String(schoolPassport?.[0]?.amount_of_children) || "",
+                    classComplect: String(schoolPassport?.[0]?.number_of_classes) || "",
+                    boyNumber: String(schoolPassport?.[0]?.ul_sany) || "",
+                    girlNumber: String(schoolPassport?.[0]?.kiz_sany) || "",
+                    familyNumber: String(schoolPassport?.[0]?.amount_of_family) || "",
+                    parentsNumber: String(schoolPassport?.[0]?.amount_of_parents) || "",
+                    language: String(schoolPassport?.[0]?.school_lang) || "",
+                    status: String(schoolPassport?.[0]?.status) || "",
+                    capacity: String(schoolPassport?.[0]?.vmestimost) || "",
+                    actualNumber: String(schoolPassport?.[0]?.number_of_students) || "",
+                    preparatoryClassNumber: String(schoolPassport?.[0]?.dayarlyk_class_number) || "",
+                    preparatoryChildNumber: String(schoolPassport?.[0]?.dayarlyk_student_number) || "",
+                    elementarySchoolClass: String(schoolPassport?.[0]?.number_of_1_4_classes) || "",
+                    elementarySchoolChild: String(schoolPassport?.[0]?.number_of_1_4_students) || "",
+                    middleSchoolClass: String(schoolPassport?.[0]?.number_of_5_9_classes) || "",
+                    middleSchoolChild: String(schoolPassport?.[0]?.number_of_5_9_students) || "",
+                    highSchoolClass: String(schoolPassport?.[0]?.number_of_10_11_classes) || "",
+                    highSchoolChild: String(schoolPassport?.[0]?.number_of_10_11_students) || "",
+                    teachersNumber: String(schoolPassport?.[0]?.all_pedagog_number) || "",
+                    pedagogSheber: String(schoolPassport?.[0]?.pedagog_sheber) || "",
+                    pedagogZertteushi: String(schoolPassport?.[0]?.pedagog_zertteushy) || "",
+                    pedagogSarapshy: String(schoolPassport?.[0]?.pedagog_sarapshy) || "",
+                    pedagogModerator: String(schoolPassport?.[0]?.pedagog_moderator) || "",
+                    pedagog: String(schoolPassport?.[0]?.pedagog) || "",
+                    pedagogTagylymdamashy: String(schoolPassport?.[0]?.pedagog_stazher) || "",
+                    pedagogHigh: String(schoolPassport?.[0]?.pedagog_zhogary) || "",
+                    sanat1: String(schoolPassport?.[0]?.pedagog_1sanat) || "",
+                    sanat2: String(schoolPassport?.[0]?.pedagog_2sanat) || "",
+                    sanatZhok: String(schoolPassport?.[0]?.pedagog_sanat_zhok) || "",
+                    history: schoolPassport?.[0]?.school_history || "",
                 },
             });
         }

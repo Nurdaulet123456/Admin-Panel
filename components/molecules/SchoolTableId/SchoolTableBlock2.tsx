@@ -55,21 +55,6 @@ const SchoolTableBlock2: FC<IProps> = ({
     showError,
   } = useModalLogic();
 
-  const onChangeUpdateInput = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value, files } = e.target;
-
-    if (name === "file") {
-      setUpdateInput({
-        ...updateInput,
-        [name]: files?.[0],
-      });
-    } else {
-      setUpdateInput({
-        ...updateInput,
-        [name]: value,
-      });
-    }
-  };
 
   useEffect(() => {
     if (photosid) {
@@ -206,6 +191,8 @@ const SchoolTableBlock2: FC<IProps> = ({
       }
     }
   });
+
+
 
   useEffect(() => {
     if (photosid && getId) {

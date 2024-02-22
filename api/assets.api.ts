@@ -167,7 +167,7 @@ export const assetsApi = {
   },
 
   async getSchoolPassport(): Promise<ISchoolPassport[]> {
-    return await instance.get("https://bilimge.kz/admins/api/schoolpasport/1", {
+    return await instance.get("https://bilimge.kz/admins/api/schoolpasport/", {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
@@ -440,6 +440,14 @@ export const assetsApi = {
       },
       params: {
         start_time,
+      },
+    });
+  },
+
+  async getAvailableDopring(): Promise<IASubjet[]> {
+    return await instance.get(`https://bilimge.kz/admins/api/available_dopurok_ring/`, {
+      headers: {
+        Authorization: `Token ${getTokenInLocalStorage()}`,
       },
     });
   },

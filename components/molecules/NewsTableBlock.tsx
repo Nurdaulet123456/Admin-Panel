@@ -22,6 +22,8 @@ import * as Yup from "yup";
 import {getMenuThunk} from "@/store/thunks/schoolnfo.thunk";
 import {useDropzone} from 'react-dropzone'
 import news from "@/pages/news";
+import { MdClear } from "react-icons/md";
+import {log} from "console";
 
 interface UpdateInputProps {
   text?: string;
@@ -53,36 +55,57 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
     showError,
   } = useModalLogic();
 
+
+
+  const [files, setFiles] = useState<File[]>([]);
+
   const onDrop = useCallback((acceptedFiles: any[])=> {
-    console.log(acceptedFiles)
-    formik.setFieldValue('files', acceptedFiles);
-  }, [])
+    if (files.length >= 10) {
+      console.log('Maximum file limit reached.');
+      return;
+    } else {
+      const newFilesToAdd = acceptedFiles.slice(0, 10 - files.length);
+      const updatedFiles: File[] = [...files, ...newFilesToAdd];
+      setFiles(updatedFiles);
+
+      console.log(updatedFiles)
+    }
+  }, [files])
   const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
 
+  const handleRemoveFile = (index: number) => {
+    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+    console.log(files)
+  };
 
   const formik = useFormik({
     initialValues: {
       text: "",
       date: "",
-      files: [],
       type: "",
     },
     validationSchema: Yup.object({
 
     }),
     onSubmit: async (values) => {
-      console.log(values)
+
       const formData = new FormData();
 
       formData.append("type", values.type.toLowerCase());
       formData.append("text", values.text);
       formData.append("date", values.date);
-      if(values.files) {
-        values.files.forEach((item: any, index: any) => {
-          formData.append(`photos[${index}]`, item);
-        });
+      console.log(files)
+      if(files) {
+        for (let i = 1; i <= 10; i++) {
+          if(files[i-1]) {
+            console.log(i)
+            formData.append(`img${i}`, files[i-1]);
+          }else {
+            formData.append(`img${i}`, "");
+          }
+        }
       }
-      console.log(formData.get("photos[0]"))
+
 
       if (!getId) {
         await instance
@@ -122,6 +145,69 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
     }
   });
 
+  useEffect(() => {
+    if (newsid  && getId) {
+      formik.resetForm({
+        values: {
+          text: newsid.text || "",
+          date: newsid.date || "",
+          type: newsid.type || "",
+        },
+      });
+      updateFilesWithImages(newsid);
+    }
+  }, [newsid, getId]);
+
+  function getFilenameFromUrl(url: string): string {
+    const lastSlashIndex = url.lastIndexOf("/") + 1;
+    const lastUnderscoreIndex = url.lastIndexOf("_");
+    const extensionIndex = url.lastIndexOf(".");
+    const namePart = url.substring(lastSlashIndex, lastUnderscoreIndex);
+    const extension = url.substring(extensionIndex);
+
+    return `${namePart}${extension}`;
+  }
+
+  async function urlToFile(url: string, mimeType: string): Promise<File> {
+    const response = await fetch(url);
+    const blob = await response.blob();
+    const filename = getFilenameFromUrl(url);
+    return new File([blob], filename, { type: mimeType });
+  }
+
+  async function updateFilesWithImages(newsid: any) {
+    const filePromises: Promise<File>[] = [
+      newsid.img1,
+      newsid.img2,
+      newsid.img3,
+      newsid.img4,
+      newsid.img5,
+      newsid.img6,
+      newsid.img7,
+      newsid.img8,
+      newsid.img9,
+      newsid.img10,
+    ]
+        .filter(Boolean)
+        .map((url: string) => {
+          const mimeType = url.endsWith('.jpg') ? 'image/jpeg' : 'image/png';
+          return urlToFile(url, mimeType); // Важно: используйте return для возвращения Promise<File>
+        });
+
+    const files: File[] = await Promise.all(filePromises);
+    setFiles(files);
+  }
+
+  function onDelete() {
+    formik.resetForm({
+      values: {
+        text: "",
+        date: "",
+        type: "",
+      },
+    });
+    setFiles([]);
+  }
 
 
   return (
@@ -134,11 +220,9 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
             <div className="main_table-modal_upload">
               <div style={{marginBottom: "2.4rem"}} className="sanaty">
                 <div className="login_forms-label_pink">Тип</div>
-                <Select {...formik.getFieldProps("class_id")}>
-                  <option value="">Выберите тип</option>
-                  <option value="instagram">Instagram</option>
-                  <option value="facebook">Facebook</option>
+                <Select {...formik.getFieldProps("type")}>
                   <option value="manual">Ручной</option>
+                  <option value="facebook">Facebook</option>
                 </Select>
               </div>
               <div className="login_forms-label_pink">Фото *</div>
@@ -157,6 +241,23 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
                       <p>Drag and drop some files here, or click to select files</p>
                 }
               </div>
+
+              {files.length > 0 && (
+                  <div className="file-list">
+                    <div className="file-list__container">
+                      {files.map((file, index) => (
+                          <div className="file-item" key={index}>
+                            <div className="file-info">
+                              <p>{file.name.substring(0,14)}</p>
+                            </div>
+                            <div className="file-actions">
+                              <MdClear onClick={() => handleRemoveFile(index)} />
+                            </div>
+                          </div>
+                      ))}
+                    </div>
+                  </div>
+              )}
             </div>
 
             <div className="main_table-modal_forms">

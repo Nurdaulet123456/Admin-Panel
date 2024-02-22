@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import {
     IAClass,
-    IAClassRooms,
+    IAClassRooms, IADopRing,
     IARing,
     IASchool,
     IASubjet,
@@ -13,7 +13,7 @@ import {
 import {
     getDopScheduleThunk,
     getIAClassRoomThunk,
-    getIAClassThunk,
+    getIAClassThunk, getIADopRingThunk,
     getIARingThunk,
     getIASchoolThunk,
     getIASubjectThunk,
@@ -144,6 +144,17 @@ export const availabelInfoSlice = createSlice({
                 return {
                     ...state,
                     dopSch: action.payload,
+                };
+            }
+            return state;
+        },
+    ).addCase(
+        getIADopRingThunk.fulfilled,
+        (state, action: PayloadAction<IADopRing[]>) => {
+            if (action.payload) {
+                return {
+                    ...state,
+                    iaDopRing: action.payload,
                 };
             }
             return state;

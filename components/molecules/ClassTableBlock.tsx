@@ -267,13 +267,13 @@ const ClassTableBlock: FC<IProps> = ({
                     // Обновление через контекст
                     const selectedItem = os?.find(item => item.id === Number(event.target.value));
                     if (selectedItem) {
-                        setSmena1(selectedItem.smena);
+                        setSmena1(selectedItem.plan);
                     }
                     formik.handleChange(event);
                 }}>
                   <option value="">Выберите номер звонка</option>
                   {os?.map((item, index) => (
-                          <option key={index} value={item.id}>{item.number}</option>
+                          <option key={index} value={item.plan}>{item.plan}</option>
                   ))}
                 </Select>
               </div>
@@ -291,15 +291,15 @@ const ClassTableBlock: FC<IProps> = ({
                 <div className="login_forms-label_pink">План звонка</div>
                 <Select {...formik.getFieldProps("calls2")} onChange={(event) => {
                     // Обновление через контекст
-                    const selectedItem = os?.find(item => item.id === Number(event.target.value));
+                    const selectedItem = dop?.find(item => item.id === Number(event.target.value));
                     if (selectedItem) {
-                        setSmena2(selectedItem.smena);
+                        setSmena2(selectedItem.plan);
                     }
                     formik.handleChange(event);
                 }}>
                   <option value="">Выберите номер звонка</option>
                   {dop?.map((item, index) => (
-                      <option key={index} onClick={() => setSmena2(item.smena)} value={item.id}>{item.number}</option>
+                      <option key={index} onClick={() => setSmena2(item.plan)} value={item.id}>{item.plan}</option>
                   ))}
                 </Select>
               </div>

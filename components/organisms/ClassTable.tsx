@@ -73,11 +73,11 @@ const ClassTable: FC<IProps> = ({ classinfo, handleClickGetId }) => {
           {classinfo?.map((item, index) => (
             <Tr key={item.id}>
               <Td>{index + 1}</Td>
-              <Td>{item.class_name}</Td>
-              <Td>{item.classroom.classroom_name}</Td>
-              <Td>{item.class_teacher.full_name}</Td>
-              <Td>{item.osnova_plan}</Td>
-              <Td>{item.osnova_smena}</Td>
+              <Td>{item?.class_name}</Td>
+              <Td>{item?.classroom?.classroom_name}</Td>
+              <Td>{item?.class_teacher?.full_name}</Td>
+              <Td>{item?.osnova_plan}</Td>
+              <Td>{item?.osnova_smena}</Td>
               <Td>
                 <div
                   onClick={() => handleClickGetId && handleClickGetId(item.id)}
