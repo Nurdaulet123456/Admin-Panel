@@ -16,7 +16,7 @@ import {
     useState,
 } from "react";
 import {
-    getDopScheduleThunk,
+    getDopScheduleThunk, getIADopRingThunk,
     getIARingThunk,
     getScheduleThunk,
 } from "@/store/thunks/available.thunk";
@@ -74,7 +74,6 @@ const Tables: FC<TablesProps> = ({ isOsnova }) => {
     const dispatch = useAppDispatch();
     const iaring = useTypedSelector((state) => state.ia.iaring);
     const iaDopRing = useTypedSelector((state) => state.ia.iaDopRing);
-    console.log(iaDopRing, "dopring")
 
     const [selectMode, setSelectMode] = useState<boolean>(false);
     const [selectModePaste, setSelectModePaste] = useState<boolean>(false);
@@ -244,6 +243,12 @@ const Tables: FC<TablesProps> = ({ isOsnova }) => {
     useEffect(() => {
         if (iaring) {
             dispatch(getIARingThunk());
+        }
+    }, [dispatch]);
+
+    useEffect(() => {
+        if (iaDopRing) {
+            dispatch(getIADopRingThunk());
         }
     }, [dispatch]);
 

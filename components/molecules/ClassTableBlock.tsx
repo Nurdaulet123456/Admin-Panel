@@ -74,7 +74,7 @@ const ClassTableBlock: FC<IProps> = ({
   //   }
   // }, [classinfoid]);
   //
-
+    console.log(dop)
   const formik = useFormik({
     initialValues: {
       class: "",
@@ -290,16 +290,12 @@ const ClassTableBlock: FC<IProps> = ({
               <div className="sanaty">
                 <div className="login_forms-label_pink">План звонка</div>
                 <Select {...formik.getFieldProps("calls2")} onChange={(event) => {
-                    // Обновление через контекст
-                    const selectedItem = dop?.find(item => item.id === Number(event.target.value));
-                    if (selectedItem) {
-                        setSmena2(selectedItem.plan);
-                    }
+                    setSmena2(Number(event.target.value));
                     formik.handleChange(event);
                 }}>
                   <option value="">Выберите номер звонка</option>
                   {dop?.map((item, index) => (
-                      <option key={index} onClick={() => setSmena2(item.plan)} value={item.id}>{item.plan}</option>
+                      <option key={index} value={item.plan}>{item.plan}</option>
                   ))}
                 </Select>
               </div>

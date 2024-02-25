@@ -381,6 +381,12 @@ export interface IDopSchedule {
   typez?: ITypezSch;
 }
 
+export interface INotification {
+  id?:number;
+  text?:string;
+  created_at?:string;
+  school?:number;
+}
 
 interface ITypezSch {
   id?: number;

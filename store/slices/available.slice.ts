@@ -148,18 +148,19 @@ export const availabelInfoSlice = createSlice({
             }
             return state;
         },
-    ).addCase(
-        getIADopRingThunk.fulfilled,
-        (state, action: PayloadAction<IADopRing[]>) => {
-            if (action.payload) {
-                return {
-                    ...state,
-                    iaDopRing: action.payload,
-                };
-            }
-            return state;
-        },
-    );
+    ).
+      addCase(
+          getIADopRingThunk.fulfilled,
+          (state, action: PayloadAction<IADopRing[]>) => {
+              if (action.payload) {
+                  return {
+                      ...state,
+                      iaDopRing: action.payload,
+                  };
+              }
+              return state;
+          },
+      );
   },
 });
 

@@ -9,12 +9,12 @@ import {
   Checkbox,
 } from "@mui/material";
 import ScheduleModal from "../forms/ScheduleModal";
-import { useState } from "react";
+import {useEffect, useState} from "react";
 import { useRouter } from "next/router";
 import { IARing, ISchedule } from "@/types/assets.type";
 import {getTokenInLocalStorage} from "@/utils/assets.utils";
 import {useTypedSelector} from "@/hooks/useTypedSelector";
-import {log} from "console";
+import {instance} from "@/api/axios.instance";
 
 interface IProps {
   selectModePaste?: boolean;
@@ -48,12 +48,38 @@ const ScheduleTable = ({
     day_index?: any;
   }>();
   const router = useRouter();
-  const sch = useTypedSelector((state) => state.ia.sch);
-  const dopSch = useTypedSelector((state) => state.ia.dopSch);
   const schedule = isOsnova ? useTypedSelector((state) => state.ia.sch) : useTypedSelector((state) => state.ia.dopSch);
-  console.log(schedule, isOsnova);
+  const [classPlan, setClassPlan] = useState<any>({});
+  useEffect(() => {
+    const url = `https://bilimge.kz/admins/api/class/?class_name=${decodeURIComponent(
+        router.asPath?.split("/")?.at(-1) as string,
+    )}`
+    const fetchSchedule = async () => {
+      try {
+        const response = await instance.get(
+            url,
+            {
+              headers: {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+              },
+            }
+        );
 
-  console.log(iaring)
+        if (response) {
+          console.log(response)
+          if(isOsnova)
+          setClassPlan(response[0].osnova_plan);
+          else setClassPlan(response[0].dopurok_plan);
+          console.log(classPlan)
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    fetchSchedule();
+  }, [classPlan]);
+
   const handleCellClick = (
     day: any,
     start_time: any,
@@ -68,7 +94,8 @@ const ScheduleTable = ({
     setOpenModal(false);
   };
 
-  const sortArr = [...(iaring || [])].sort((a: IARing, b: IARing) => {
+
+  const sortArr = [...(iaring.filter(entry => entry.plan === classPlan) || [])].sort((a: IARing, b: IARing) => {
     const timeA = new Date(`2000-01-01 ${a.start_time}`);
     const timeB = new Date(`2000-01-01 ${b.start_time}`);
 

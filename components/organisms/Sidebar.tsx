@@ -115,6 +115,12 @@ const sidebar: IType[] = [
     type: "Звонки",
     link: "calls/1",
   },
+
+  {
+    id: 13,
+    type: "Уведомления",
+    link: "notification",
+  },
 ];
 
 export default Sidebar;

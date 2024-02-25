@@ -8,7 +8,7 @@ import {
   ISchoolPassport,
   ISchoolPhotos,
   ISchoolSocialMedia,
-  IUsers, ISchoolDirector,
+  IUsers, ISchoolDirector, INotification,
 } from "@/types/assets.type";
 
 export interface ISchoolInfo {
@@ -26,13 +26,15 @@ export interface ISchoolInfo {
   schooladminid?: ISchoolAdmin;
   schoolphotos?: ISchoolPhotos[];
   schoolphotosid?: ISchoolPhotos;
-  schoolpassport?: ISchoolPassport;
+  schoolpassport?: ISchoolPassport[];
   schoolsocial?: ISchoolSocialMedia[];
   schoolsocialid?: ISchoolSocialMedia;
   schooldirectorid?: ISchoolDirector;
   schooldirector?: ISchoolDirector[];
   class?: IClass[];
   classid?: IClass;
+  notifications?: INotification[];
+  notificationId?: INotification;
 }
 
 export const initaialStateSchoolInfo: ISchoolInfo = {
@@ -42,7 +44,7 @@ export const initaialStateSchoolInfo: ISchoolInfo = {
   school: [],
   users: [],
   schooladmin: [],
-  schoolpassport: {},
+  schoolpassport: [],
   schoolphotos: [],
   schoolsocial: [],
   teachers: [],
@@ -55,6 +57,7 @@ export const initaialStateSchoolInfo: ISchoolInfo = {
   class: [],
   classid: {},
   schooldirector:[],
-  schooldirectorid: {}
-
+  schooldirectorid: {},
+  notifications:[],
+  notificationId:{},
 };

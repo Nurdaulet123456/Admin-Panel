@@ -66,7 +66,6 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
     }
   }, [dispatch]);
 
-  console.log(isOsnova)
 
   useEffect(() => {
     const url = isOsnova ? `https://bilimge.kz/admins/api/schedule/?week_day=${selectedCell.day_index}&ring=${selectedCell.timeId}` :
@@ -84,7 +83,6 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
 
         if (response) {
           setScheduleId(response);
-          console.log(response)
         }
       } catch (err) {
         console.error(err);

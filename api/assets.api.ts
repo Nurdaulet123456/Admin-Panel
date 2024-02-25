@@ -28,7 +28,8 @@ import {
   ISchoolOlimp,
   ISchoolOner,
   ILessons,
-  IExtraLessons,
+  INotification,
+  IExtraLessons, IADopRing, IDopSchedule,
 } from "@/types/assets.type";
 
 export const assetsApi = {
@@ -444,7 +445,7 @@ export const assetsApi = {
     });
   },
 
-  async getAvailableDopring(): Promise<IASubjet[]> {
+  async getAvailableDopring(): Promise<IADopRing[]> {
     return await instance.get(`https://bilimge.kz/admins/api/available_dopurok_ring/`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
@@ -469,15 +470,31 @@ export const assetsApi = {
   },
 
   async getSchedule(): Promise<ISchedule[]> {
-    return await instance.get(`https://bilimge.kz/admins/api/schedule/`, {
+      return await instance.get(`https://bilimge.kz/admins/api/schedule/`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
     });
   },
 
-  async getDopSchedule(): Promise<ISchedule[]> {
+  async getDopSchedule(): Promise<IDopSchedule[]> {
     return await instance.get(`https://bilimge.kz/admins/api/DopUrokApi/`, {
+      headers: {
+        Authorization: `Token ${getTokenInLocalStorage()}`,
+      },
+    });
+  },
+
+  async getNotification(): Promise<INotification[]> {
+    return await instance.get(`https://bilimge.kz/admins/api/notification/`, {
+      headers: {
+        Authorization: `Token ${getTokenInLocalStorage()}`,
+      },
+    });
+  },
+
+  async getNotificationId(id): Promise<INotification> {
+    return await instance.get(`https://bilimge.kz/admins/api/notification/${id}`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },

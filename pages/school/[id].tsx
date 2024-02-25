@@ -35,6 +35,8 @@ const SchoolComponents = () => {
   const schoolPassword = useTypedSelector((state) => state.system.schoolpassport);
   const directorid = useTypedSelector((state) => state.system.schooldirector);
 
+  console.log(typeof(schoolPassword))
+
   const handleAddButtonClick = () => {
     setEditActive(false);
     setShowActive(!showActive);

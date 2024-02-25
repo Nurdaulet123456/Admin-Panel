@@ -9,7 +9,7 @@ import {
     getKruzhokInfoThunk,
     getKruzhokTeachersInfoThunk,
     getMenuIdThunk,
-    getMenuThunk,
+    getMenuThunk, getNotificationIdThunk, getNotificationThunk,
     getSchoolAdminIdThunk,
     getSchoolAdminThunk, getSchoolDirectorThunk,
     getSchoolIdThunk,
@@ -25,7 +25,7 @@ import {
     IClass,
     IClassRoom,
     IKruzhok,
-    IMenu,
+    IMenu, INotification,
     ISchoolAdmin, ISchoolDirector,
     ISchoolInfo,
     ISchoolPassport,
@@ -256,6 +256,26 @@ export const schoolInfoSlice = createSlice({
                     return {
                         ...state,
                         schooldirector: action.payload,
+                    };
+                }
+            },
+        ).addCase(
+            getNotificationThunk.fulfilled,
+            (state, action: PayloadAction<INotification[]>) => {
+                if (action.payload) {
+                    return {
+                        ...state,
+                        notifications: action.payload,
+                    };
+                }
+            },
+        ).addCase(
+            getNotificationIdThunk.fulfilled,
+            (state, action: PayloadAction<INotification>) => {
+                if (action.payload) {
+                    return {
+                        ...state,
+                        notificationId: action.payload,
                     };
                 }
             },

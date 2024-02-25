@@ -101,4 +101,15 @@ export const getClassIdThunk = createAsyncThunk(
   async (id?: number) => await assetsApi.getSlassInfoId(id),
 );
 
+export const getNotificationThunk = createAsyncThunk(
+    "getNotificationThunk",
+    async () => await assetsApi.getNotification(),
+);
+
+export const getNotificationIdThunk = createAsyncThunk(
+    "getNotificationIdThunk",
+    async (id?: number) => await assetsApi.getNotificationId(id),
+);
+
+
 
