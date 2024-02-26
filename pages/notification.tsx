@@ -17,7 +17,7 @@ const NotificationsPage = () => {
     const [getId, setId] = useState<number>();
 
     const dispatch = useAppDispatch();
-    const notificationId = useTypedSelector((state) => state.pride.notificationId);
+    const notificationId = useTypedSelector((state) => state.system.notificationId);
 
     const handleAddButtonClick = () => {
         setEditActive(false);
@@ -70,8 +70,8 @@ const NotificationsPage = () => {
         <NotificationTableBlock
             onReject={setShowActive}
         onEdit={setEditActive}
-        extraid={notificationId}
         getId={getId}
+            notificationId={notificationId}
         />
     )}
 

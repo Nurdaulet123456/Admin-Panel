@@ -28,6 +28,7 @@ import {useFormik} from "formik";
 import * as Yup from "yup";
 import {array} from "yup";
 import {useDropzone} from "react-dropzone";
+import {MdClear} from "react-icons/md";
 
 interface IUpdateInput {
   name?: string;
@@ -256,8 +257,11 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
     });
   }
 
+  const [photo, setPhoto] = useState<any>(null);
+
   const onDrop = useCallback((acceptedFiles: any[])=> {
     console.log(acceptedFiles)
+    setPhoto(acceptedFiles[0]);
     formik.setFieldValue('photo', acceptedFiles[0]);
   }, [])
   const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
@@ -278,7 +282,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
                 borderRadius: '5px', /* Скругленные углы */
                 textAlign: 'center', /* Текст по центру */
                 marginBottom: '20px', /* Отступ снизу */
-                backgroundColor:"white",
+                backgroundColor: "white",
               }}>
                 <input {...getInputProps()} />
                 {
@@ -286,10 +290,20 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
                       <p>Drop the files here ...</p> :
                       <p>Drag and drop some files here, or click to select files</p>
                 }
+
               </div>
+              {photo && <div className="file-item">
+                <div className="file-info">
+                  <p>{photo?.name.substring(0, 14)}</p>
+                </div>
+                <div className="file-actions">
+                  {/*<MdClear onClick={() => handleRemoveFile(index)}/>*/}
+                </div>
+              </div>}
+
             </div>
 
-              <div className="main_table-modal_forms">
+            <div className="main_table-modal_forms">
               <div className="forms">
                 <div className="login_forms-label_pink">Кружок (Үйірме атауы)</div>
 

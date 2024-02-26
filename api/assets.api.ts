@@ -493,7 +493,7 @@ export const assetsApi = {
     });
   },
 
-  async getNotificationId(id): Promise<INotification> {
+  async getNotificationId(id?: number): Promise<INotification> {
     return await instance.get(`https://bilimge.kz/admins/api/notification/${id}`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,

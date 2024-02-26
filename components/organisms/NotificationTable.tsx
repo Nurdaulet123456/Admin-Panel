@@ -16,8 +16,8 @@ interface IProps {
 
 const NotificationTable: FC<IProps> = ({ onEdit, handleClickGetId }) => {
     const dispatch = useAppDispatch();
-    const notifications = useTypedSelector((state) => state.pride.notifications);
-
+    const notifications = useTypedSelector((state) => state.system.notifications);
+    console.log(notifications)
     useEffect(() => {
         if (notifications) {
             dispatch(getNotificationThunk());

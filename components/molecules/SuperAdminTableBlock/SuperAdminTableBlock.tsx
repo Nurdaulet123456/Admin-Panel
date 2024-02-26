@@ -7,7 +7,7 @@ import {
   useState,
 } from "react";
 import { Button } from "../../atoms/UI/Buttons/Button";
-import { Input } from "../../atoms/UI/Inputs/Input";
+import {Input, Select} from "../../atoms/UI/Inputs/Input";
 import { instance } from "@/api/axios.instance";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import {
@@ -71,7 +71,6 @@ const SuperAdminTableBlock: FC<IProps> = ({
       eng: Yup.string().required("Обязательно*"),
       city: Yup.string().required("Обязательно*"),
       url: Yup.string().required("Обязательно*"),
-      timezone: Yup.string().required("Обязательно*"),
     }),
     onSubmit: async (values) => {
       console.log(values);
@@ -248,18 +247,12 @@ const SuperAdminTableBlock: FC<IProps> = ({
                   {formik.touched.city && formik.errors.city ? (
                     <div style={{ color: "red" }}>{formik.errors.city}</div>
                   ) : null}
-                  <Input
-                    name={"city"}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values.city}
-                    style={{
-                      borderColor:
-                        formik.touched.city && formik.errors.city
-                          ? "red"
-                          : "#c1bbeb",
-                    }}
-                  />
+                  <Select {...formik.getFieldProps("week_day")}>
+                    <option value="">Выберите день недели</option>
+                    {cities.map((item) => (
+                        <option value={item.name}>{item.nameUpper}</option>
+                    ))}
+                  </Select>
                 </div>
 
                 <div>
@@ -282,22 +275,22 @@ const SuperAdminTableBlock: FC<IProps> = ({
                 </div>
 
                 <div>
-                  <div className="login_forms-label_pink">Тайм-зона</div>
-                  {formik.touched.timezone && formik.errors.timezone ? (
-                    <div style={{ color: "red" }}>{formik.errors.timezone}</div>
-                  ) : null}
-                  <Input
-                    name={"timezone"}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values.timezone}
-                    style={{
-                      borderColor:
-                        formik.touched.timezone && formik.errors.timezone
-                          ? "red"
-                          : "#c1bbeb",
-                    }}
-                  />
+                  {/*<div className="login_forms-label_pink">Тайм-зона</div>*/}
+                  {/*{formik.touched.timezone && formik.errors.timezone ? (*/}
+                  {/*  <div style={{ color: "red" }}>{formik.errors.timezone}</div>*/}
+                  {/*) : null}*/}
+                  {/*<Input*/}
+                  {/*  name={"timezone"}*/}
+                  {/*  onChange={formik.handleChange}*/}
+                  {/*  onBlur={formik.handleBlur}*/}
+                  {/*  value={formik.values.timezone}*/}
+                  {/*  style={{*/}
+                  {/*    borderColor:*/}
+                  {/*      formik.touched.timezone && formik.errors.timezone*/}
+                  {/*        ? "red"*/}
+                  {/*        : "#c1bbeb",*/}
+                  {/*  }}*/}
+                  {/*/>*/}
                 </div>
               </div>
             </div>
@@ -327,5 +320,90 @@ const SuperAdminTableBlock: FC<IProps> = ({
     </>
   );
 };
+
+const cities = [
+  {
+    name: "almaty",
+    nameUpper: "Алматы"
+  },
+  {
+    name: "astana",
+    nameUpper: "Астана"
+  },
+  {
+    name: "shymkent",
+    nameUpper: "Шымкент"
+  },
+  {
+    name: "abay",
+    nameUpper: "Абайская область"
+  },
+  {
+    name: "akmolinsk",
+    nameUpper: "Акмолинская область"
+  },
+  {
+    name: "aktobe",
+    nameUpper: "Актюбинская область"
+  },
+  {
+    name: "almaty_region",
+    nameUpper: "Алматинская область"
+  },
+  {
+    name: "atyrau",
+    nameUpper: "Атырауская область"
+  },
+  {
+    name: "east_kazakhstan",
+    nameUpper: "Восточно-Казахстанская область"
+  },
+  {
+    name: "zhambyl",
+    nameUpper: "Жамбылская область"
+  },
+  {
+    name: "west_kazakhstan",
+    nameUpper: "Западно-Казахстанская область"
+  },
+  {
+    name: "zhetysu",
+    nameUpper: "Жетысуская область"
+  },
+  {
+    name: "karaganda",
+    nameUpper: "Карагандинская область"
+  },
+  {
+    name: "kostanay",
+    nameUpper: "Костанайская область"
+  },
+  {
+    name: "kyzylorda",
+    nameUpper: "Кызылординская область"
+  },
+  {
+    name: "mangystau",
+    nameUpper: "Мангистауская область"
+  },
+  {
+    name: "pavlodar",
+    nameUpper: "Павлодарская область"
+  },
+  {
+    name: "north_kazakhstan",
+    nameUpper: "Северо-Казахстанская область"
+  },
+  {
+    name: "turkestan",
+    nameUpper: "Туркестанская область"
+  },
+  {
+    name: "ulytau",
+    nameUpper: "Улытауская область"
+  },
+
+
+]
 
 export default SuperAdminTableBlock;

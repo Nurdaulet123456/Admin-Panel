@@ -7,31 +7,16 @@ import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getExtraThunk } from "@/store/thunks/pride.thunk";
 import { ColorCheckIcons } from "../atoms/Icons";
-import { IExtraLessons } from "@/types/assets.type";
+import {IExtraLessons, INotification} from "@/types/assets.type";
 import { useModalLogic } from "@/hooks/useModalLogic";
 import ErrorModal from "@/components/modals/ErrorModal";
 import SuccessModal from "@/components/modals/SuccessModal";
 import {getNotificationThunk} from "@/store/thunks/schoolnfo.thunk";
 
-const typeColor = [
-    "#27AE60",
-    "#E2B93B",
-    "#F2994A",
-    "#CF3535",
-    "#E0E0E0",
-    "#64748B",
-    "#3F6212",
-    "#CA8A04",
-    "#C84D24",
-    "#9F1239",
-    "#86198F",
-    "#1E293B",
-];
-
 interface IProps {
     onReject?: Dispatch<SetStateAction<boolean>>;
     onEdit?: Dispatch<SetStateAction<boolean>>;
-    notificationId?: IExtraLessons;
+    notificationId?: INotification;
     getId?: number;
 }
 
@@ -63,14 +48,15 @@ const NotificationTableBlock: FC<IProps> = ({
 
     const onSave = async () => {
         try {
-            if (updateInput && chooseColor) {
+            if (updateInput) {
                 if (!getId) {
+                    console.log("Aa")
+
                     await instance
                         .post(
                             "https://www.bilimge.kz/admins/api/notification/",
                             {
-                                type_full_name: updateInput,
-                                type_color: chooseColor,
+                                text: updateInput,
                             },
                             {
                                 headers: {
@@ -100,8 +86,7 @@ const NotificationTableBlock: FC<IProps> = ({
                         .put(
                             `https://www.bilimge.kz/admins/api/notification/${getId}/`,
                             {
-                                type_full_name: updateInput,
-                                type_color: chooseColor,
+                                text: updateInput,
                             },
                             {
                                 headers: {
@@ -134,7 +119,6 @@ const NotificationTableBlock: FC<IProps> = ({
                 <div className="main_table-modal_forms">
                     <div className="forms">
                         <TextArea
-                            type="text"
                             placeholder="Напишите уведомление"
                             name="type"
                             value={updateInput}

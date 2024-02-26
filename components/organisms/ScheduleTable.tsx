@@ -15,6 +15,8 @@ import { IARing, ISchedule } from "@/types/assets.type";
 import {getTokenInLocalStorage} from "@/utils/assets.utils";
 import {useTypedSelector} from "@/hooks/useTypedSelector";
 import {instance} from "@/api/axios.instance";
+import axios from 'axios';
+
 
 interface IProps {
   selectModePaste?: boolean;
@@ -54,28 +56,27 @@ const ScheduleTable = ({
     const url = `https://bilimge.kz/admins/api/class/?class_name=${decodeURIComponent(
         router.asPath?.split("/")?.at(-1) as string,
     )}`
+
     const fetchSchedule = async () => {
       try {
-        const response = await instance.get(
-            url,
-            {
-              headers: {
-                Authorization: `Token ${getTokenInLocalStorage()}`,
-              },
-            }
-        );
+        const response = await axios.get(url, {
+          headers: {
+            Authorization: `Token ${getTokenInLocalStorage()}`,
+          },
+        });
 
-        if (response) {
-          console.log(response)
-          if(isOsnova)
-          setClassPlan(response[0].osnova_plan);
-          else setClassPlan(response[0].dopurok_plan);
-          console.log(classPlan)
+        if (response && response.data) {
+          if (isOsnova) {
+            setClassPlan(response.data[0]?.osnova_plan);
+          } else {
+            setClassPlan(response.data[0]?.dopurok_plan);
+          }
         }
       } catch (err) {
         console.error(err);
       }
     };
+
 
     fetchSchedule();
   }, [classPlan]);
@@ -95,7 +96,7 @@ const ScheduleTable = ({
   };
 
 
-  const sortArr = [...(iaring.filter(entry => entry.plan === classPlan) || [])].sort((a: IARing, b: IARing) => {
+  const sortArr = [...(iaring.filter((entry: any) => entry.plan === classPlan) || [])].sort((a: IARing, b: IARing) => {
     const timeA = new Date(`2000-01-01 ${a.start_time}`);
     const timeB = new Date(`2000-01-01 ${b.start_time}`);
 
