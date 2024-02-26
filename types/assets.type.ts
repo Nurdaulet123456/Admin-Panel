@@ -56,6 +56,7 @@ export interface ISchoolInfo {
   logo?: any;
   timezone?: string;
   user?: any;
+  region?: string;
 }
 
 // Users

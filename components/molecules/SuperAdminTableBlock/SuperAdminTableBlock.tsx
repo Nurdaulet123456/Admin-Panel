@@ -47,6 +47,7 @@ const SuperAdminTableBlock: FC<IProps> = ({
   onEdit,
 }) => {
   const dispatch = useAppDispatch();
+  console.log(schoolid)
   const {
     showSuccessModal,
     showErrorModal,
@@ -152,7 +153,7 @@ const SuperAdminTableBlock: FC<IProps> = ({
           kz: schoolid.school_kz_name || "",
           ru: schoolid.school_ru_name || "",
           eng: schoolid.school_eng_name || "",
-          city: schoolid.city || "",
+          city: schoolid.region || "",
           url: schoolid.url || "",
           timezone: schoolid.timezone || "",
         },
