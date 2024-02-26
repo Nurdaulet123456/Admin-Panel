@@ -9,6 +9,7 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import {getMapThunk, getMenuIdThunk, getMenuThunk} from "@/store/thunks/schoolnfo.thunk";
 import {useSelector} from "react-redux";
+import MapTableBlock from "@/components/molecules/MapTableBlock";
 
 const MenuPage = () => {
     const [showActive, setShowActive] = useState<boolean>(false);
@@ -18,7 +19,6 @@ const MenuPage = () => {
 
     const dispatch = useAppDispatch();
     const maps = useTypedSelector((state) => state.system.maps);
-    const map = useTypedSelector((state) => state.system.map);
 
     useEffect(() => {
         if (maps) {
@@ -44,50 +44,13 @@ const MenuPage = () => {
 
     return (
         <MainLayouts>
-            <div
-                style={{
-                    width: "100%",
-                    display: "flex",
-                    justifyContent: "flex-end",
-                    marginBottom: "1.6rem",
-                }}
-            >
-                <Button
-                    background={showActive || editActive ? "#CACACA" : "#27AE60"}
-                    radius="14px"
-                    style={{
-                        width: "auto",
-                    }}
-                    onClick={handleAddButtonClick}
-                >
-                    <div
-                        style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: ".8rem",
-                        }}
-                    >
-                        {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
-                        {showActive || editActive ? "Закрыть" : "Добавить"}
-                    </div>
-                </Button>
-            </div>
-
-            {(showActive || editActive) && (
                 <MapTableBlock
                     onReject={setShowActive}
                     getId={getId}
-                    menuid={menuid}
+                    mapId={maps}
                     onEdit={setEditActive}
                 />
-            )}
 
-            <MapTable
-                menu={menu}
-                setDel={setDel}
-                del={del}
-                handleClickGetId={handleClickGetId}
-            />
         </MainLayouts>
     );
 };

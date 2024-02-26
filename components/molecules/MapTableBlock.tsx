@@ -30,10 +30,10 @@ interface IProps {
     onReject?: Dispatch<SetStateAction<boolean>>;
     onEdit?: Dispatch<SetStateAction<boolean>>;
     getId?: any;
-    mapId?: IMap;
+    mapId?: IMap[];
 }
 
-const MenuTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
+const MapTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
     const [showActive, setShowActive] = useState<boolean>(false);
     const dispatch = useAppDispatch();
 
@@ -46,6 +46,7 @@ const MenuTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
         showError,
     } = useModalLogic();
 
+    const [map, setMap] = useState<File>();
     const [flat1, setFlat1] = useState<File>();
     const [flat2, setFlat2] = useState<File>();
     const [flat3, setFlat3] = useState<File>();
@@ -59,12 +60,19 @@ const MenuTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
         validationSchema: Yup.object({
         }),
         onSubmit: async (values) => {
-            if (!getId) {
+            console.log(map)
+            console.log(flat1)
+            if (mapId?.[0]) {
                 await instance
                     .post(
-                        "https://www.bilimge.kz/admins/api/schoolmap/w",
+                        "https://www.bilimge.kz/admins/api/schoolmap/",
                         {
+                            map: map,
                             flat1: flat1,
+                            flat2: flat2,
+                            flat3: flat3,
+                            flat4: flat4,
+                            flat5: flat5,
                         },
                         {
                             headers: {
@@ -91,9 +99,14 @@ const MenuTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
             } else {
                 await instance
                     .put(
-                        `https://www.bilimge.kz/admins/api/schoolmap/${getId}/`,
+                        `https://www.bilimge.kz/admins/api/schoolmap/1/`,
                         {
+                            map: map,
                             flat1: flat1,
+                            flat2: flat2,
+                            flat3: flat3,
+                            flat4: flat4,
+                            flat5: flat5,
                         },
                         {
                             headers: {
@@ -120,31 +133,14 @@ const MenuTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
         },
     });
 
-    useEffect(() => {
-        if (mapId && getId) {
-            formik.resetForm({
-                values: {
-                    flat: [
-                        mapId.flat1 || "",
-                        mapId.flat2 || "",
-                        mapId.flat3 || "",
-                        mapId.flat4 || "",
-                        mapId.flat5 || "",
-                    ]
-
-                },
-            });
-        }
-    }, [mapId, getId]);
 
     function onDelete() {
-        formik.resetForm({
-            values: {
-                flat: [
-                    ""
-                ]
-            },
-        });
+        setFlat1(undefined);
+        setFlat2(undefined);
+        setFlat3(undefined);
+        setFlat4(undefined);
+        setFlat5(undefined);
+
     }
 
     return (
@@ -158,47 +154,53 @@ const MenuTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
                         <div className="main_table-modal_forms">
                             <div className="forms">
                                 <div className="flex">
+                                    <div className="login_forms-label_pink">Карта</div>
+                                    <Input style={{width: "80%", marginBottom: "1%"}} type="file" name="photo" onChange={(event) => {
+                                        return setMap(event?.target?.files?.[0]);
+                                    }}
+                                           accept=".svg"
+                                    />
+                                </div>
+                                <div className="flex">
                                     <div className="login_forms-label_pink">1 этаж</div>
-                                    <Input type="file" name="photo" onChange={(event) => {
+                                    <Input style={{width: "80%", marginBottom: "1%"}} type="file" name="photo" onChange={(event) => {
                                         return setFlat1(event?.target?.files?.[0]);
                                     }}
-                                           accept=".png, .jpg, .jpeg, .svg"
-
+                                           accept=".svg"
                                     />
                                 </div>
                                 <div className="flex">
                                     <div className="login_forms-label_pink">2 этаж</div>
-                                    <Input type="file" name="photo" onChange={(event) => {
+                                    <Input style={{width: "80%", marginBottom: "1%"}} type="file" name="photo" onChange={(event) => {
                                         return setFlat2(event?.target?.files?.[0]);
                                     }}
-                                           accept=".png, .jpg, .jpeg, .svg"
+                                           accept=".svg"
 
                                     />
                                 </div>
                                 <div className="flex">
                                     <div className="login_forms-label_pink">3 этаж</div>
-                                    <Input type="file" name="photo" onChange={(event) => {
+                                    <Input style={{width: "80%", marginBottom: "1%"}} type="file" name="photo" onChange={(event) => {
                                         return setFlat3(event?.target?.files?.[0]);
                                     }}
-                                           accept=".png, .jpg, .jpeg, .svg"
+                                           accept=".svg"
 
                                     />
                                 </div>
                                 <div className="flex">
                                     <div className="login_forms-label_pink">4 этаж</div>
-                                    <Input type="file" name="photo" onChange={(event) => {
+                                    <Input style={{width: "80%", marginBottom: "1%"}} type="file" name="photo" onChange={(event) => {
                                         return setFlat4(event?.target?.files?.[0]);
-                                        return formik.setFieldValue('photo', event?.target?.files?.[0]);
                                     }}
-                                           accept=".png, .jpg, .jpeg, .svg"
+                                           accept=".svg"
                                     />
                                 </div>
                                 <div className="flex">
                                     <div className="login_forms-label_pink">5 этаж</div>
-                                    <Input type="file" name="photo" onChange={(event) => {
+                                    <Input style={{width: "80%", marginBottom: "1%"}} type="file" name="photo" onChange={(event) => {
                                         return setFlat5(event?.target?.files?.[0]);
                                     }}
-                                           accept=".png, .jpg, .jpeg, .svg"
+                                           accept=".svg"
                                     />
                                 </div>
                             </div>
@@ -231,36 +233,4 @@ const MenuTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
     );
 };
 
-const timeArr = [
-    {
-        id: 1,
-        type: "Понедельник",
-    },
-
-    {
-        id: 2,
-        type: "Вторник",
-    },
-
-    {
-        id: 3,
-        type: "Среда",
-    },
-
-    {
-        id: 4,
-        type: "Четверг",
-    },
-
-    {
-        id: 5,
-        type: "Пятница",
-    },
-
-    {
-        id: 6,
-        type: "Суббота",
-    },
-];
-
-export default MenuTableBlock;
+export default MapTableBlock;
