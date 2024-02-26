@@ -46,11 +46,15 @@ const MenuTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
         showError,
     } = useModalLogic();
 
+    const [flat1, setFlat1] = useState<File>();
+    const [flat2, setFlat2] = useState<File>();
+    const [flat3, setFlat3] = useState<File>();
+    const [flat4, setFlat4] = useState<File>();
+    const [flat5, setFlat5] = useState<File>();
+
+
     const formik = useFormik({
         initialValues: {
-            flat: [
-                    ""
-            ]
         },
         validationSchema: Yup.object({
         }),
@@ -60,7 +64,7 @@ const MenuTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
                     .post(
                         "https://www.bilimge.kz/admins/api/schoolmap/w",
                         {
-                            flat1: values.flat[0],
+                            flat1: flat1,
                         },
                         {
                             headers: {
@@ -89,7 +93,7 @@ const MenuTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
                     .put(
                         `https://www.bilimge.kz/admins/api/schoolmap/${getId}/`,
                         {
-                            flat1: values.flat[0],
+                            flat1: flat1,
                         },
                         {
                             headers: {
@@ -156,8 +160,7 @@ const MenuTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
                                 <div className="flex">
                                     <div className="login_forms-label_pink">1 этаж</div>
                                     <Input type="file" name="photo" onChange={(event) => {
-                                        console.log(event?.target?.files?.[0]);
-                                        return formik.setFieldValue('photo', event?.target?.files?.[0]);
+                                        return setFlat1(event?.target?.files?.[0]);
                                     }}
                                            accept=".png, .jpg, .jpeg, .svg"
 
@@ -166,8 +169,7 @@ const MenuTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
                                 <div className="flex">
                                     <div className="login_forms-label_pink">2 этаж</div>
                                     <Input type="file" name="photo" onChange={(event) => {
-                                        console.log(event?.target?.files?.[0]);
-                                        return formik.setFieldValue('photo', event?.target?.files?.[0]);
+                                        return setFlat2(event?.target?.files?.[0]);
                                     }}
                                            accept=".png, .jpg, .jpeg, .svg"
 
@@ -176,8 +178,7 @@ const MenuTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
                                 <div className="flex">
                                     <div className="login_forms-label_pink">3 этаж</div>
                                     <Input type="file" name="photo" onChange={(event) => {
-                                        console.log(event?.target?.files?.[0]);
-                                        return formik.setFieldValue('photo', event?.target?.files?.[0]);
+                                        return setFlat3(event?.target?.files?.[0]);
                                     }}
                                            accept=".png, .jpg, .jpeg, .svg"
 
@@ -186,21 +187,18 @@ const MenuTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
                                 <div className="flex">
                                     <div className="login_forms-label_pink">4 этаж</div>
                                     <Input type="file" name="photo" onChange={(event) => {
-                                        console.log(event?.target?.files?.[0]);
+                                        return setFlat4(event?.target?.files?.[0]);
                                         return formik.setFieldValue('photo', event?.target?.files?.[0]);
                                     }}
                                            accept=".png, .jpg, .jpeg, .svg"
-
                                     />
                                 </div>
                                 <div className="flex">
                                     <div className="login_forms-label_pink">5 этаж</div>
                                     <Input type="file" name="photo" onChange={(event) => {
-                                        console.log(event?.target?.files?.[0]);
-                                        return formik.setFieldValue('photo', event?.target?.files?.[0]);
+                                        return setFlat5(event?.target?.files?.[0]);
                                     }}
                                            accept=".png, .jpg, .jpeg, .svg"
-
                                     />
                                 </div>
                             </div>

@@ -83,9 +83,6 @@ const AdministratorTableBlock: FC<IProps> = ({
     validationSchema: Yup.object({
       username: Yup.string().required("Обязательно*"),
       // email: Yup.string().email().required("Обязательно*"),
-      password: Yup.string()
-        .min(4, "Должно быть как минимум 8 символов")
-        .required("Обязательно*"),
     }),
     onSubmit: async (values) => {
       if (!getId) {
