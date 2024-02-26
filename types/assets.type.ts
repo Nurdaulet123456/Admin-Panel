@@ -367,6 +367,10 @@ export interface ISchedule {
   subject?: ISubjectSch;
   classroom?: IClassRoomSch;
   typez?: ITypezSch;
+  subject2?: ISubjectSch;
+  classroom2?: IClassRoomSch;
+  teacher2?: ITeacherSch;
+
 }
 
 export interface IDopSchedule {
@@ -379,6 +383,10 @@ export interface IDopSchedule {
   subject?: ISubjectSch;
   classroom?: IClassRoomSch;
   typez?: ITypezSch;
+  subject2?: ISubjectSch;
+  classroom2?: IClassRoomSch;
+  teacher2?: ITeacherSch;
+
 }
 
 export interface INotification {

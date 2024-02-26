@@ -83,8 +83,8 @@ const SuperAdminTableBlock: FC<IProps> = ({
               school_ru_name: values.ru,
               school_eng_name: values.eng,
               url: values.url,
-              city: values.city,
-              timezone: values.timezone,
+              region: values.city,
+              timezone: "GMT+5",
             },
             {
               headers: {
@@ -117,8 +117,8 @@ const SuperAdminTableBlock: FC<IProps> = ({
               school_ru_name: values.ru,
               school_eng_name: values.eng,
               url: values.url,
-              city: values.city,
-              timezone: values.timezone,
+              region: values.city,
+              timezone: "GMT+5",
             },
             {
               headers: {
@@ -247,8 +247,8 @@ const SuperAdminTableBlock: FC<IProps> = ({
                   {formik.touched.city && formik.errors.city ? (
                     <div style={{ color: "red" }}>{formik.errors.city}</div>
                   ) : null}
-                  <Select {...formik.getFieldProps("week_day")}>
-                    <option value="">Выберите день недели</option>
+                  <Select {...formik.getFieldProps("city")}>
+                    <option value="">Выберите регион</option>
                     {cities.map((item) => (
                         <option value={item.name}>{item.nameUpper}</option>
                     ))}
@@ -335,15 +335,15 @@ const cities = [
     nameUpper: "Шымкент"
   },
   {
-    name: "abay",
+    name: "abay_oblast",
     nameUpper: "Абайская область"
   },
   {
-    name: "akmolinsk",
+    name: "akmolinsk_oblast",
     nameUpper: "Акмолинская область"
   },
   {
-    name: "aktobe",
+    name: "aktobe_oblast",
     nameUpper: "Актюбинская область"
   },
   {
@@ -351,55 +351,55 @@ const cities = [
     nameUpper: "Алматинская область"
   },
   {
-    name: "atyrau",
+    name: "atyrau_oblast",
     nameUpper: "Атырауская область"
   },
   {
-    name: "east_kazakhstan",
+    name: "east_kazakhstan_oblast",
     nameUpper: "Восточно-Казахстанская область"
   },
   {
-    name: "zhambyl",
+    name: "zhambyl_oblast",
     nameUpper: "Жамбылская область"
   },
   {
-    name: "west_kazakhstan",
+    name: "west_kazakhstan_oblast",
     nameUpper: "Западно-Казахстанская область"
   },
   {
-    name: "zhetysu",
+    name: "zhetysu_oblast",
     nameUpper: "Жетысуская область"
   },
   {
-    name: "karaganda",
+    name: "karaganda_oblast",
     nameUpper: "Карагандинская область"
   },
   {
-    name: "kostanay",
+    name: "kostanay_oblast",
     nameUpper: "Костанайская область"
   },
   {
-    name: "kyzylorda",
+    name: "kyzylorda_oblast",
     nameUpper: "Кызылординская область"
   },
   {
-    name: "mangystau",
+    name: "mangystau_oblast",
     nameUpper: "Мангистауская область"
   },
   {
-    name: "pavlodar",
+    name: "pavlodar_oblast",
     nameUpper: "Павлодарская область"
   },
   {
-    name: "north_kazakhstan",
+    name: "north_kazakhstan_oblast",
     nameUpper: "Северо-Казахстанская область"
   },
   {
-    name: "turkestan",
+    name: "turkestan_oblast",
     nameUpper: "Туркестанская область"
   },
   {
-    name: "ulytau",
+    name: "ulytau_oblast",
     nameUpper: "Улытауская область"
   },
 

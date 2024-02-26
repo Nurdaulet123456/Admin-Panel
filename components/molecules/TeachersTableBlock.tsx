@@ -342,6 +342,8 @@ const TeachersTableBlock: FC<IProps> = ({
     });
   }
 
+  console.log(teachersid)
+
 
 
 

@@ -272,9 +272,10 @@ const ClassTableBlock: FC<IProps> = ({
                     formik.handleChange(event);
                 }}>
                   <option value="">Выберите номер звонка</option>
-                  {os?.map((item, index) => (
-                          <option key={index} value={item.plan}>{item.plan}</option>
-                  ))}
+                  {Array.from(new Set(os?.map(item => item.plan)))
+                      .map((plan, index) => (
+                          <option key={index} value={plan}>{plan}</option>
+                      ))}
                 </Select>
               </div>
             </div>
@@ -294,9 +295,10 @@ const ClassTableBlock: FC<IProps> = ({
                     formik.handleChange(event);
                 }}>
                   <option value="">Выберите номер звонка</option>
-                  {dop?.map((item, index) => (
-                      <option key={index} value={item.plan}>{item.plan}</option>
-                  ))}
+                  {  Array.from(new Set(dop?.map(item => item.plan)))
+                      .map((plan, index) => (
+                          <option key={index} value={plan}>{plan}</option>
+                      ))}
                 </Select>
               </div>
             </div>

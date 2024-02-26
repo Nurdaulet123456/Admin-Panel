@@ -95,6 +95,25 @@ const ScheduleTable = ({
     setOpenModal(false);
   };
 
+  const getInitials = (fullName?: string) => {
+    if (!fullName) return ""; // Return empty if fullName is falsy
+
+    const parts = fullName.split(" ");
+    if (parts.length === 0) return ""; // Return empty if no parts
+
+    // Attempt to construct the desired format
+    let initials = parts[0]; // Always add the first part
+    if (parts.length > 1) {
+      initials += ` ${parts[1][0]}.`; // Add the first initial of the second part, if exists
+    }
+    if (parts.length > 2) {
+      initials += ` ${parts[2][0]}.`; // Add the first initial of the third part, if exists
+    }
+
+    return initials;
+  };
+
+  console.log(schedule)
 
   const sortArr = [...(iaring.filter((entry: any) => entry.plan === classPlan) || [])].sort((a: IARing, b: IARing) => {
     const timeA = new Date(`2000-01-01 ${a.start_time}`);
@@ -206,7 +225,7 @@ const ScheduleTable = ({
                                       router.asPath?.split("/")?.at(-1) as string,
                                   ),
                           );
-
+                      console.log(scheduleItem)
                       const isSelected = selectedCells.some(
                           (selectedCell: any) =>
                               selectedCell.day === day &&
@@ -236,11 +255,11 @@ const ScheduleTable = ({
                               }
                           >
                             {scheduleItem ? (
-                                <div style={{textAlign: "center"}}>
+                                <div style={{textAlign: "left"}}>
                                   <div
                                       style={{
                                         color: "#000000",
-                                        fontSize: "2rem",
+                                        fontSize: "1.7rem",
                                         fontWeight: "500",
                                         marginBottom: "1.8rem",
                                       }}
@@ -250,7 +269,7 @@ const ScheduleTable = ({
                                   <div
                                       style={{
                                         color: "#116AE5",
-                                        fontSize: "2rem",
+                                        fontSize: "1.7rem",
                                         fontWeight: "500",
                                         marginBottom: "1.8rem",
                                       }}
@@ -260,11 +279,40 @@ const ScheduleTable = ({
                                   <div
                                       style={{
                                         color: "#116AE5",
-                                        fontSize: "2rem",
+                                        fontSize: "1.7rem",
                                         fontWeight: "500",
                                       }}
                                   >
-                                    {scheduleItem?.teacher?.full_name}
+                                    {getInitials(scheduleItem?.teacher?.full_name)}
+                                  </div>
+                                  <div
+                                      style={{
+                                        color: "#000000",
+                                        fontSize: "1.7rem",
+                                        fontWeight: "500",
+                                        marginBottom: "1.8rem",
+                                      }}
+                                  >
+                                    {scheduleItem?.subject2?.full_name}
+                                  </div>
+                                  <div
+                                      style={{
+                                        color: "#116AE5",
+                                        fontSize: "1.7rem",
+                                        fontWeight: "500",
+                                        marginBottom: "1.8rem",
+                                      }}
+                                  >
+                                    {scheduleItem?.classroom2 && `${scheduleItem?.classroom2?.classroom_number} кабинет`}
+                                  </div>
+                                  <div
+                                      style={{
+                                        color: "#116AE5",
+                                        fontSize: "1.7rem",
+                                        fontWeight: "500",
+                                      }}
+                                  >
+                                    {getInitials(scheduleItem?.teacher2?.full_name)}
                                   </div>
 
                                   {selectMode && (
