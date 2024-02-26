@@ -7,7 +7,7 @@ import {
     getClassThunk,
     getKruzhokInfoIdThunk,
     getKruzhokInfoThunk,
-    getKruzhokTeachersInfoThunk,
+    getKruzhokTeachersInfoThunk, getMapIdThunk, getMapThunk,
     getMenuIdThunk,
     getMenuThunk, getNotificationIdThunk, getNotificationThunk,
     getSchoolAdminIdThunk,
@@ -24,7 +24,7 @@ import {
 import {
     IClass,
     IClassRoom,
-    IKruzhok,
+    IKruzhok, IMap,
     IMenu, INotification,
     ISchoolAdmin, ISchoolDirector,
     ISchoolInfo,
@@ -276,6 +276,26 @@ export const schoolInfoSlice = createSlice({
                     return {
                         ...state,
                         notificationId: action.payload,
+                    };
+                }
+            },
+        ).addCase(
+            getMapThunk.fulfilled,
+            (state, action: PayloadAction<IMap[]>) => {
+                if (action.payload) {
+                    return {
+                        ...state,
+                        maps: action.payload,
+                    };
+                }
+            },
+        ).addCase(
+            getMapIdThunk.fulfilled,
+            (state, action: PayloadAction<IMap>) => {
+                if (action.payload) {
+                    return {
+                        ...state,
+                        map: action.payload,
                     };
                 }
             },

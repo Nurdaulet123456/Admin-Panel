@@ -432,3 +432,14 @@ interface IClassRoomSch {
   classroom_name?: string;
   classroom_number?: number;
 }
+
+//map
+export interface IMap {
+  id?: number;
+  flat1?: string;
+  flat2?: string;
+  flat3?: string;
+  flat4?: string;
+  flat5?: string;
+  school?: number;
+}

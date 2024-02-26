@@ -44,7 +44,7 @@ const NotificationTable: FC<IProps> = ({ onEdit, handleClickGetId }) => {
 
     return (
         <div className="main_table">
-            <div className="main_table-title">Тип занятий</div>
+            <div className="main_table-title">Уведомления</div>
             <div className="main_table-block">
                 <Table>
                     <Thead>

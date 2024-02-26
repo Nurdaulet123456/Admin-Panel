@@ -111,5 +111,14 @@ export const getNotificationIdThunk = createAsyncThunk(
     async (id?: number) => await assetsApi.getNotificationId(id),
 );
 
+export const getMapThunk = createAsyncThunk(
+    "getMapThunk",
+    async () => await assetsApi.getMap(),
+);
+
+export const getMapIdThunk = createAsyncThunk(
+    "getMapIdThunk",
+    async (id?: number) => await assetsApi.getMapId(id),
+);
 
 

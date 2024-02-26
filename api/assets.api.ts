@@ -29,7 +29,7 @@ import {
   ISchoolOner,
   ILessons,
   INotification,
-  IExtraLessons, IADopRing, IDopSchedule,
+  IExtraLessons, IADopRing, IDopSchedule, IMap,
 } from "@/types/assets.type";
 
 export const assetsApi = {
@@ -495,6 +495,22 @@ export const assetsApi = {
 
   async getNotificationId(id?: number): Promise<INotification> {
     return await instance.get(`https://bilimge.kz/admins/api/notification/${id}`, {
+      headers: {
+        Authorization: `Token ${getTokenInLocalStorage()}`,
+      },
+    });
+  },
+
+  async getMap(): Promise<IMap[]> {
+    return await instance.get(`https://bilimge.kz/admins/api/schoolmap/`, {
+      headers: {
+        Authorization: `Token ${getTokenInLocalStorage()}`,
+      },
+    });
+  },
+
+  async getMapId(id?: number): Promise<IMap> {
+    return await instance.get(`https://bilimge.kz/admins/api/schoolmap/${id}`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },

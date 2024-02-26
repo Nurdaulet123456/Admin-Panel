@@ -70,7 +70,6 @@ const SuperAdminTableBlock: FC<IProps> = ({
       kz: Yup.string().required("Обязательно*"),
       ru: Yup.string().required("Обязательно*"),
       eng: Yup.string().required("Обязательно*"),
-      city: Yup.string().required("Обязательно*"),
       url: Yup.string().required("Обязательно*"),
     }),
     onSubmit: async (values) => {
