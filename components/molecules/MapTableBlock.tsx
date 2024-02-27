@@ -19,6 +19,7 @@ import ErrorModal from "../modals/ErrorModal";
 import SuccessModal from "../modals/SuccessModal";
 import { useFormik, useField, Formik, Form } from "formik";
 import * as Yup from "yup";
+import {MdClear} from "react-icons/md";
 
 interface IUpdateInput {
     name?: string;
@@ -36,7 +37,8 @@ interface IProps {
 const MapTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
     const [showActive, setShowActive] = useState<boolean>(false);
     const dispatch = useAppDispatch();
-
+    console.log(mapId)
+    console.log(getTokenInLocalStorage())
     const {
         showSuccessModal,
         showErrorModal,
@@ -46,13 +48,18 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
         showError,
     } = useModalLogic();
 
-    const [map, setMap] = useState<File>();
-    const [flat1, setFlat1] = useState<File>();
-    const [flat2, setFlat2] = useState<File>();
-    const [flat3, setFlat3] = useState<File>();
-    const [flat4, setFlat4] = useState<File>();
-    const [flat5, setFlat5] = useState<File>();
-
+    const [map, setMap] = useState<File | null>();
+    const [flat1, setFlat1] = useState<File | null>();
+    const [flat2, setFlat2] = useState<File | null>();
+    const [flat3, setFlat3] = useState<File | null>();
+    const [flat4, setFlat4] = useState<File | null>();
+    const [flat5, setFlat5] = useState<File | null>();
+    const [map1Id, setMapId] = useState<string | null>();
+    const [flat1Id, setFlat1Id] = useState<string | null>();
+    const [flat2Id, setFlat2Id] = useState<string | null>();
+    const [flat3Id, setFlat3Id] = useState<string | null>();
+    const [flat4Id, setFlat4Id] = useState<string | null>();
+    const [flat5Id, setFlat5Id] = useState<string | null>();
 
     const formik = useFormik({
         initialValues: {
@@ -62,18 +69,19 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
         onSubmit: async (values) => {
             console.log(map)
             console.log(flat1)
-            if (mapId?.[0]) {
+            const formData = new FormData();
+            map && formData.append("map", map);
+            flat1 && formData.append("flat1", flat1);
+            flat2 && formData.append("flat2", flat2);
+            flat3 && formData.append("flat3", flat3);
+            flat4 && formData.append("flat4", flat4);
+            flat5 && formData.append("flat5", flat5);
+
+            if (mapId?.length===0) {
                 await instance
                     .post(
                         "https://www.bilimge.kz/admins/api/schoolmap/",
-                        {
-                            map: map,
-                            flat1: flat1,
-                            flat2: flat2,
-                            flat3: flat3,
-                            flat4: flat4,
-                            flat5: flat5,
-                        },
+                        formData,
                         {
                             headers: {
                                 Authorization: `Token ${getTokenInLocalStorage()}`,
@@ -100,14 +108,7 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
                 await instance
                     .put(
                         `https://www.bilimge.kz/admins/api/schoolmap/1/`,
-                        {
-                            map: map,
-                            flat1: flat1,
-                            flat2: flat2,
-                            flat3: flat3,
-                            flat4: flat4,
-                            flat5: flat5,
-                        },
+                        formData,
                         {
                             headers: {
                                 Authorization: `Token ${getTokenInLocalStorage()}`,
@@ -132,15 +133,19 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
             }
         },
     });
+    console.log(mapId)
+    useEffect(() => {
+        if (mapId) {
 
+        }
+    }, [mapId]);
 
     function onDelete() {
-        setFlat1(undefined);
-        setFlat2(undefined);
-        setFlat3(undefined);
-        setFlat4(undefined);
-        setFlat5(undefined);
-
+        setFlat1(null);
+        setFlat2(null);
+        setFlat3(null);
+        setFlat4(null);
+        setFlat5(null);
     }
 
     return (
@@ -155,53 +160,138 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
                             <div className="forms">
                                 <div className="flex">
                                     <div className="login_forms-label_pink">Карта</div>
-                                    <Input style={{width: "80%", marginBottom: "1%"}} type="file" name="photo" onChange={(event) => {
-                                        return setMap(event?.target?.files?.[0]);
-                                    }}
-                                           accept=".svg"
-                                    />
+                                    {
+                                        map ? (
+                                            <div className="file-item">
+                                                <div className="file-info">
+                                                    <p>{map.name.substring(0, 14)}</p>
+                                                </div>
+                                                <div className="file-actions">
+                                                    <MdClear onClick={() => setMap(null)}/>
+                                                </div>
+                                            </div>):
+                                        (
+                                            <Input style={{width: "80%", marginBottom: "1%"}} type="file" name="photo"
+                                                   onChange={(event) => {
+                                                       return setMap(event?.target?.files?.[0]);
+                                                   }}
+                                                   accept=".svg"
+                                            />
+                                            )
+
+                                    }
+
                                 </div>
                                 <div className="flex">
                                     <div className="login_forms-label_pink">1 этаж</div>
-                                    <Input style={{width: "80%", marginBottom: "1%"}} type="file" name="photo" onChange={(event) => {
-                                        return setFlat1(event?.target?.files?.[0]);
-                                    }}
-                                           accept=".svg"
-                                    />
+                                    {
+                                        flat1 ? (
+                                                <div className="file-item">
+                                                    <div className="file-info">
+                                                        <p>{flat1.name.substring(0, 14)}</p>
+                                                    </div>
+                                                    <div className="file-actions">
+                                                        <MdClear onClick={() => setFlat1(null)}/>
+                                                    </div>
+                                                </div>):
+                                            (
+                                                <Input style={{width: "80%", marginBottom: "1%"}} type="file" name="photo"
+                                                       onChange={(event) => {
+                                                           return setFlat1(event?.target?.files?.[0]);
+                                                       }}
+                                                       accept=".svg"
+                                                />
+                                            )
+
+                                    }
                                 </div>
                                 <div className="flex">
                                     <div className="login_forms-label_pink">2 этаж</div>
-                                    <Input style={{width: "80%", marginBottom: "1%"}} type="file" name="photo" onChange={(event) => {
-                                        return setFlat2(event?.target?.files?.[0]);
-                                    }}
+                                    {
+                                    flat2 ? (
+                                    <div className="file-item">
+                                        <div className="file-info">
+                                            <p>{flat2.name.substring(0, 14)}</p>
+                                        </div>
+                                        <div className="file-actions">
+                                            <MdClear onClick={() => setFlat2(null)}/>
+                                        </div>
+                                    </div>):
+                                    (
+                                    <Input style={{width: "80%", marginBottom: "1%"}} type="file" name="photo"
+                                           onChange={(event) => {
+                                               return setFlat2(event?.target?.files?.[0]);
+                                           }}
                                            accept=".svg"
-
                                     />
+                                    )
+                                    }
                                 </div>
                                 <div className="flex">
                                     <div className="login_forms-label_pink">3 этаж</div>
-                                    <Input style={{width: "80%", marginBottom: "1%"}} type="file" name="photo" onChange={(event) => {
-                                        return setFlat3(event?.target?.files?.[0]);
-                                    }}
-                                           accept=".svg"
-
-                                    />
+                                    {
+                                        flat3 ? (
+                                                <div className="file-item">
+                                                    <div className="file-info">
+                                                        <p>{flat3.name.substring(0, 14)}</p>
+                                                    </div>
+                                                    <div className="file-actions">
+                                                        <MdClear onClick={() => setFlat3(null)}/>
+                                                    </div>
+                                                </div>):
+                                            (
+                                                <Input style={{width: "80%", marginBottom: "1%"}} type="file" name="photo"
+                                                       onChange={(event) => {
+                                                           return setFlat3(event?.target?.files?.[0]);
+                                                       }}
+                                                       accept=".svg"
+                                                />
+                                            )
+                                    }
                                 </div>
                                 <div className="flex">
                                     <div className="login_forms-label_pink">4 этаж</div>
-                                    <Input style={{width: "80%", marginBottom: "1%"}} type="file" name="photo" onChange={(event) => {
-                                        return setFlat4(event?.target?.files?.[0]);
-                                    }}
-                                           accept=".svg"
-                                    />
+                                    {
+                                        flat4 ? (
+                                                <div className="file-item">
+                                                    <div className="file-info">
+                                                        <p>{flat4.name.substring(0, 14)}</p>
+                                                    </div>
+                                                    <div className="file-actions">
+                                                        <MdClear onClick={() => setFlat4(null)}/>
+                                                    </div>
+                                                </div>):
+                                            (
+                                                <Input style={{width: "80%", marginBottom: "1%"}} type="file" name="photo"
+                                                       onChange={(event) => {
+                                                           return setFlat4(event?.target?.files?.[0]);
+                                                       }}
+                                                       accept=".svg"
+                                                />
+                                            )
+                                    }
                                 </div>
                                 <div className="flex">
                                     <div className="login_forms-label_pink">5 этаж</div>
-                                    <Input style={{width: "80%", marginBottom: "1%"}} type="file" name="photo" onChange={(event) => {
-                                        return setFlat5(event?.target?.files?.[0]);
-                                    }}
-                                           accept=".svg"
-                                    />
+                                    {
+                                        flat5 ? (
+                                                <div className="file-item">
+                                                    <div className="file-info">
+                                                        <p>{flat5.name.substring(0, 14)}</p>
+                                                    </div>
+                                                    <div className="file-actions">
+                                                        <MdClear onClick={() => setFlat5(null)}/>
+                                                    </div>
+                                                </div>):
+                                            (
+                                                <Input style={{width: "80%", marginBottom: "1%"}} type="file" name="photo"
+                                                       onChange={(event) => {
+                                                           return setFlat5(event?.target?.files?.[0]);
+                                                       }}
+                                                       accept=".svg"
+                                                />
+                                            )
+                                    }
                                 </div>
                             </div>
                             <div

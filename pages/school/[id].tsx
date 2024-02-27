@@ -98,7 +98,11 @@ const SchoolComponents = () => {
           marginBottom: "1.6rem",
         }}
       >
-        <Tabs link="school" tabs={tabs} />
+        <Tabs link="school" tabs={tabs} handleAddButtonClick={() => {
+          setEditActive(false);
+          setShowActive(false);
+          setId(undefined);
+        }}/>
       </div>
       {(router.query.id !== "3" && router.query.id !== "1") &&
           <div

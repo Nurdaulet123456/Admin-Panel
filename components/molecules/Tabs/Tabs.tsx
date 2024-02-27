@@ -8,9 +8,10 @@ import { FC } from "react";
 interface IProps {
   tabs?: ITabs[];
   link?: string;
+  handleAddButtonClick?: any;
 }
 
-const Tabs: FC<IProps> = ({ tabs, link }) => {
+const Tabs: FC<IProps> = ({ tabs, link, handleAddButtonClick }) => {
   const router = useRouter();
 
   return (
@@ -27,6 +28,7 @@ const Tabs: FC<IProps> = ({ tabs, link }) => {
             border={
               router?.asPath?.split("/")[2] === String(item.id) ? "white" : ""
             }
+            onClick={handleAddButtonClick}
           >
             {item.type}
           </IdBlock>

@@ -21,11 +21,6 @@ import SuccessModal from "@/components/modals/SuccessModal";
 import {useFormik} from "formik";
 import * as Yup from "yup";
 
-interface UpdateInputProps {
-  url?: string;
-  name?: string;
-}
-
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
   onEdit?: Dispatch<SetStateAction<boolean>>;

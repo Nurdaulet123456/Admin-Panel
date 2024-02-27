@@ -20,10 +20,9 @@ const PrideSchoolTable1: FC<IProps> = ({ handleClickGetIdSport }) => {
       dispatch(getSchoolSportThunk());
     }
   }, [dispatch]);
-
   const handleDeleteItems = async (id?: number) => {
     await instance
-      .delete(`https://bilimge.kz/admins/api/Sport_SuccessApi/${id}`, {
+      .delete(`https://bilimge.kz/admins/api/Sport_SuccessApi/${id}/`, {
         headers: {
           Authorization: `Token ${getTokenInLocalStorage()}`,
         },

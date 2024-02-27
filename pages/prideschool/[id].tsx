@@ -106,7 +106,11 @@ const PrideSchoolComponents = () => {
           marginBottom: "1.6rem",
         }}
       >
-        <Tabs link="prideschool" tabs={tabs} />
+        <Tabs link="prideschool" tabs={tabs} handleAddButtonClick={() => {
+          setShowActive(false)
+          setEditActive(false);
+          setId(undefined);
+        }} />
         <Button
             background={showActive || editActive ? "#CACACA" : "#27AE60"}
             radius="14px"

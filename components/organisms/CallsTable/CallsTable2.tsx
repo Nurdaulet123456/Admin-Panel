@@ -26,7 +26,7 @@ const CallsTable2: FC<IProps> = ({ handleClickGetIdDop }) => {
 
   const handleDeleteItems = async (id?: number) => {
     await instance
-      .delete(`https://bilimge.kz/admins/api/DopUrokRingApi/${id}`, {
+      .delete(`https://bilimge.kz/admins/api/DopUrokRingApi/${id}/`, {
         headers: {
           Authorization: `Token ${getTokenInLocalStorage()}`,
         },

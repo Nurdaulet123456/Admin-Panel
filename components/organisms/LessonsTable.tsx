@@ -23,7 +23,7 @@ const LessonsTable: FC<IProps> = ({ handleClickGetId }) => {
 
   const handleDeleteItems = async (id?: number) => {
     await instance
-      .delete(`https://www.bilimge.kz/admins/api/subject/${id}`, {
+      .delete(`https://www.bilimge.kz/admins/api/subject/${id}/`, {
         headers: {
           Authorization: `Token ${getTokenInLocalStorage()}`,
         },

@@ -23,7 +23,7 @@ const SchoolTable2: FC<IProps> = ({ handleClickGetId2 }) => {
 
   const handleDeleteItems = async (id?: number) => {
     await instance
-      .delete(`https://bilimge.kz/admins/api/slider/${id}`, {
+      .delete(`https://bilimge.kz/admins/api/slider/${id}/`, {
         headers: {
           Authorization: `Token ${getTokenInLocalStorage()}`,
         },

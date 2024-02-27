@@ -28,7 +28,7 @@ const NotificationTable: FC<IProps> = ({ onEdit, handleClickGetId }) => {
 
     const handleDeleteItems = async (id?: number) => {
         await instance
-            .delete(`https://www.bilimge.kz/admins/api/notification/${id}`, {
+            .delete(`https://www.bilimge.kz/admins/api/notification/${id}/`, {
                 headers: {
                     Authorization: `Token ${getTokenInLocalStorage()}`,
                 },

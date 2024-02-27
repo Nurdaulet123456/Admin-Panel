@@ -18,6 +18,7 @@ import ErrorModal from "@/components/modals/ErrorModal";
 import SuccessModal from "@/components/modals/SuccessModal";
 import {useFormik} from "formik";
 import * as Yup from "yup";
+import {MdClear} from "react-icons/md";
 
 interface UpdateInputProps {
   fullname: string;
@@ -40,6 +41,8 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
   getId,
 }) => {
   const dispatch = useAppDispatch();
+  const [photo, setPhoto] = useState<File | null>()
+  const [photoId, setPhotoId] = useState<"" | null>()
 
 
   const {
@@ -55,7 +58,6 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
       fullname: "",
       student_success: "",
       endyear: "",
-      photo: null,
     },
     validationSchema: Yup.object({
       fullname: Yup.string().required("Обязательно*"),
@@ -65,7 +67,6 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
           .required('Годовой диапазон обязателен для заполнения'),
     }),
     onSubmit: async (values) => {
-      console.log(values);
       if (!getId) {
         await instance
             .post("https://bilimge.kz/admins/api/School_RedCertificateApi/", values, {
@@ -93,11 +94,11 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
       } else {
         await instance
             .put(`https://bilimge.kz/admins/api/School_RedCertificateApi/${getId}/`,
-                values.photo ? {
+                photo ? {
                       fullname: values.fullname,
                       endyear: values.endyear,
                       student_success: values.student_success,
-                      photo: values.photo
+                      photo: photo
                     } :
                     {
                       fullname: values.fullname,
@@ -138,7 +139,6 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
           fullname: atestid.fullname || "",
           student_success: atestid.student_success || "",
           endyear: atestid.endyear || "",
-          photo: null,
         },
       });
     }
@@ -151,9 +151,10 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
         fullname: "",
         student_success: "",
         endyear: "",
-        photo: null,
       },
     });
+    setPhoto(null);
+    setPhotoId(null);
   }
 
 
@@ -168,14 +169,23 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
           <div className="main_table-modal_flex" style={{gap: "1.6rem"}}>
             <div className="main_table-modal_upload">
               <div className="login_forms-label_pink">Фото *</div>
-              <Input type="file" name="photo" onChange={(event) => {
-                console.log(event?.target?.files?.[0]);
-                return formik.setFieldValue('photo', event?.target?.files?.[0]);
-              }}
-                     accept=".png, .jpg, .jpeg, .svg"
-                     key={formik.values.photo}
-
-              />
+              {
+                photo ? (
+                    <div className="file-item">
+                      <div className="file-info">
+                        <p>{photo.name.substring(0, 14)}</p>
+                      </div>
+                      <div className="file-actions">
+                        <MdClear onClick={() => setPhoto(null)}/>
+                      </div>
+                    </div>
+                ) : (
+                    <Input type="file" name="file" onChange={(event) => {
+                      return setPhoto(event?.target?.files?.[0]);
+                    }}
+                    />
+                )
+              }
             </div>
 
             <div className="main_table-modal_forms">

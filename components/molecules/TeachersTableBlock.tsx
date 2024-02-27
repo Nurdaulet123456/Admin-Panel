@@ -23,6 +23,8 @@ import {array} from "yup";
 import ErrorModal from "@/components/modals/ErrorModal";
 import SuccessModal from "@/components/modals/SuccessModal";
 import {useModalLogic} from "@/hooks/useModalLogic";
+import {MdClear} from "react-icons/md";
+import * as perf_hooks from "perf_hooks";
 
 interface IHistoryProps {
   start_date?: number;
@@ -62,6 +64,8 @@ const TeachersTableBlock: FC<IProps> = ({
   const [id, setId] = useState<number>();
   const [updateInput, setUpdateInput] = useState<UpdateInputProps>({});
   const dispatch = useAppDispatch();
+  const [photo, setPhoto] = useState<File | null>()
+  const [photoId, setPhotoId] = useState<string | null>()
 
   const {
     showSuccessModal,
@@ -74,7 +78,6 @@ const TeachersTableBlock: FC<IProps> = ({
 
 
   const reset = (isDelete: boolean, isJob: boolean, index: number) => {
-    const file = formik.values.file;
     const name = formik.values.name;
     const sanaty = formik.values.sanaty;
     const pan = formik.values.pan;
@@ -104,7 +107,6 @@ const TeachersTableBlock: FC<IProps> = ({
 
     formik.resetForm({
       values: {
-        file: file,
         name: name,
         sanaty: sanaty,
         pan: pan,
@@ -117,7 +119,6 @@ const TeachersTableBlock: FC<IProps> = ({
 
   const formik= useFormik({
     initialValues: {
-      file: null,
       name: "",
       sanaty: "",
       pan: "",
@@ -179,7 +180,7 @@ const TeachersTableBlock: FC<IProps> = ({
                   if (res) {
                     const formData = new FormData();
 
-                    formData.append("photo3x4", values.file ? values.file : "");
+                    formData.append("photo3x4", photo ? photo : "");
                     formData.append("id", String((res as any).id));
 
                     try {
@@ -229,10 +230,10 @@ const TeachersTableBlock: FC<IProps> = ({
                 )
                 .then(async (res) => {
                   if (res) {
-                    if(values.file) {
+                    if(photo) {
                       const formData = new FormData();
 
-                      formData.append("photo3x4", values.file);
+                      formData.append("photo3x4", photo);
                       formData.append("id", String((res as any).id));
 
                       try {
@@ -281,7 +282,6 @@ const TeachersTableBlock: FC<IProps> = ({
             job_characteristic: "",
           }];
 
-
       let spec: {end_date: string; speciality_university: string; mamandygy: string; degree: string;}[] =
           teachersid.speciality_history?.map(item => ({
             end_date: item.end_date?.toString() ?? "",
@@ -295,10 +295,8 @@ const TeachersTableBlock: FC<IProps> = ({
             degree: "",
           }];
 
-
       formik.resetForm({
         values: {
-          file: null,
           name: teachersid.full_name || "",
           sanaty: teachersid.pedagog || "",
           pan: teachersid.subject || "",
@@ -315,13 +313,13 @@ const TeachersTableBlock: FC<IProps> = ({
           }]
         },
       });
+      setPhotoId(teachersid.photo3x4);
     }
   }, [teachersid, getId]);
 
   function onDelete() {
     formik.resetForm({
       values: {
-        file: null,
         name: "",
         sanaty: "",
         pan: "",
@@ -340,10 +338,9 @@ const TeachersTableBlock: FC<IProps> = ({
         }]
       },
     });
+    setPhoto(null);
+    setPhotoId(null);
   }
-
-  console.log(teachersid)
-
 
 
 
@@ -357,12 +354,34 @@ const TeachersTableBlock: FC<IProps> = ({
         <div className="main_table-modal_upload">
           <div>
             <div className="login_forms-label_pink">Фото *</div>
-            <Input type="file" name="file" onChange={(event) => {
-              return formik.setFieldValue('file', event?.target?.files?.[0]);
-            }} />
+            {
+              photo ? (
+                  <div className="file-item">
+                    <div className="file-info">
+                      <p>{photo.name.substring(0, 14)}</p>
+                    </div>
+                    <div className="file-actions">
+                      <MdClear onClick={() => setPhoto(null)}/>
+                    </div>
+                  </div>
+              ) : (
+                  photoId ? <div className="file-item">
+                        <div className="file-info">
+                          <p>{photoId.slice((photoId.lastIndexOf("/")+1))}</p>
+                        </div>
+                        <div className="file-actions">
+                          <MdClear onClick={() => setPhotoId(null)}/>
+                        </div>
+                      </div> :
+                      <Input type="file" name="file" onChange={(event) => {
+                        return setPhoto(event?.target?.files?.[0]);
+                      }}/>
+              )
+            }
+
           </div>
 
-          <div style={{ marginTop: "2.4rem" }} className="sanaty">
+          <div style={{marginTop: "2.4rem"}} className="sanaty">
             <div className="login_forms-label_pink">Біліктілік санаты</div>
             <Select {...formik.getFieldProps("sanaty")}>
               <option value="">Выберите разряд</option>
@@ -554,19 +573,6 @@ const TeachersTableBlock: FC<IProps> = ({
               >
                 Деңгей *
               </div>
-              {/*{formik.touched.specification && formik.errors.specification && formik.errors.specification[index] && formik.errors.specification[index].degree ? (*/}
-              {/*    <div style={{ color: "red" }}>{formik.errors.specification[index].degree}</div>*/}
-              {/*) : null}*/}
-              {/*<Input*/}
-              {/*    name={`specification[${index}].degree`}*/}
-              {/*    onChange={formik.handleChange}*/}
-              {/*    onBlur={formik.handleBlur}*/}
-              {/*    value={formik.values.specification[index]?.degree} // Use jobHistory instead of name for the value*/}
-              {/*    style={{*/}
-              {/*      borderColor:*/}
-              {/*          formik.touched.specification && formik.touched.specification[index] && formik.errors.specification && formik.errors.specification[index] ? "red" : "#c1bbeb", // Update the conditional check for touched and errors*/}
-              {/*    }}*/}
-              {/*/>*/}
               <Select {...formik.getFieldProps(`specification[${index}].degree`)}>
                 <option value="">Выберите уровень образования</option>
                 <option value={"bakalavr"}>Бакалавр</option>

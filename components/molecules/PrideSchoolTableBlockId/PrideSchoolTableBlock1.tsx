@@ -28,6 +28,7 @@ import * as Yup from "yup";
 import {getMenuThunk} from "@/store/thunks/schoolnfo.thunk";
 import school from "@/pages/school";
 import {log} from "console";
+import {MdClear} from "react-icons/md";
 
 interface UpdateInputProps {
   fullname: string;
@@ -55,6 +56,8 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
   const [text, setText] = useState<string>("");
   const [id, setId] = useState<number>();
   const clasname = useTypedSelector((state) => state.pride.classname);
+  const [photo, setPhoto] = useState<File | null>()
+  const [photoId, setPhotoId] = useState<string | null>()
 
   const {
     showSuccessModal,
@@ -84,7 +87,6 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
       fullname: "",
       student_success: "",
       class_id: "",
-      photo: null,
     },
     validationSchema: Yup.object({
       fullname: Yup.string().required("Обязательно*"),
@@ -92,10 +94,15 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
       class_id: Yup.number().required("Обязательно*"),
     }),
     onSubmit: async (values) => {
-      console.log(values);
       if (!getId) {
                 await instance
-                  .post("https://bilimge.kz/admins/api/Sport_SuccessApi/", values, {
+                  .post("https://bilimge.kz/admins/api/Sport_SuccessApi/", {
+                    fullname: values.fullname,
+                    classl: String(values.class_id),
+                    student_success: values.student_success,
+                    photo: photo
+
+                  }, {
                     headers: {
                       Authorization: `Token ${getTokenInLocalStorage()}`,
                       "Content-Type": "multipart/form-data",
@@ -120,16 +127,15 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
               } else {
                 await instance
                   .put(`https://bilimge.kz/admins/api/Sport_SuccessApi/${getId}/`,
-                      values.photo ? {
+                      photo ? {
                         fullname: values.fullname,
-                        class_id: values.class_id,
+                            classl: String(values.class_id),
                         student_success: values.student_success,
-                            photo: values.photo
-
+                            photo: photo
                       } :
                           {
                             fullname: values.fullname,
-                            class_id: values.class_id,
+                            classl: values.class_id,
                             student_success: values.student_success,
                           }, {
                     headers: {
@@ -165,10 +171,10 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
         values: {
           fullname: sportid.fullname || "",
           student_success: sportid.student_success || "",
-          class_id: sportid.class_id || "",
-          photo: null,
+          class_id: sportid.classl || "",
         },
       });
+      setPhotoId(sportid.photo)
     }
   }, [sportid, getId]);
 
@@ -179,9 +185,9 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
         fullname: "",
         student_success: "",
         class_id: "",
-        photo: null,
       },
     });
+    setPhoto(null);
   }
 
   return (
@@ -194,13 +200,30 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
           <div className="main_table-modal_flex" style={{gap: "1.6rem"}}>
             <div className="main_table-modal_upload">
               <div className="login_forms-label_pink">Фото *</div>
-              <Input type="file" name="photo" onChange={(event) => {
-                return formik.setFieldValue('photo', event?.target?.files?.[0]);
-              }}
-                     accept=".png, .jpg, .jpeg, .svg"
-                     key={formik.values.photo}
-
-              />
+              {
+                photo ? (
+                    <div className="file-item">
+                      <div className="file-info">
+                        <p>{photo.name.substring(0, 14)}</p>
+                      </div>
+                      <div className="file-actions">
+                        <MdClear onClick={() => setPhoto(null)}/>
+                      </div>
+                    </div>
+                ) : (
+                    photoId ? <div className="file-item">
+                          <div className="file-info">
+                            <p>{photoId.slice((photoId.lastIndexOf("/") + 1))}</p>
+                          </div>
+                          <div className="file-actions">
+                            <MdClear onClick={() => setPhotoId(null)}/>
+                          </div>
+                        </div> :
+                        <Input type="file" name="file" onChange={(event) => {
+                          return setPhoto(event?.target?.files?.[0]);
+                        }}/>
+                )
+              }
             </div>
 
             <div className="main_table-modal_forms">

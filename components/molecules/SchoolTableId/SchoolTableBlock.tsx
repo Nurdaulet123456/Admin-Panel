@@ -20,6 +20,7 @@ import {useFormik} from "formik";
 import * as Yup from "yup";
 import {getSchoolSportThunk} from "@/store/thunks/pride.thunk";
 import {get} from "immutable";
+import {MdClear} from "react-icons/md";
 
 interface IProps {
     onReject?: Dispatch<SetStateAction<boolean>>;
@@ -35,6 +36,9 @@ const SchoolTableBlock: FC<IProps> = ({
                                            getId,
                                        }) => {
     const dispatch = useAppDispatch();
+    const [photo, setPhoto] = useState<File | null>()
+    const [photoId, setPhotoId] = useState<string | null>()
+
     const {
         showSuccessModal,
         showErrorModal,
@@ -49,21 +53,18 @@ const SchoolTableBlock: FC<IProps> = ({
             name: "",
             email: "",
             tel: "",
-            photo: null,
         },
         validationSchema: Yup.object({
             name: Yup.string().required("Обязательно*"),
-            email: Yup.string().email().required("Обязательно*"),
-            tel: Yup.number().required("Обязательно*"),
         }),
         onSubmit: async (values) => {
             const formData = new FormData();
             formData.append("director_name", values.name);
             formData.append("phone_number", values.tel);
             formData.append("email", values.email);
-            values.photo && formData.append("director_photo", values.photo);
-
-            if (!directorId) {
+            photo && formData.append("director_photo", photo);
+            console.log(directorId)
+            if (directorId && directorId.length === 0) {
                 await instance
                     .post("https://bilimge.kz/admins/api/school_director/", formData, {
                         headers: {
@@ -121,11 +122,11 @@ const SchoolTableBlock: FC<IProps> = ({
                 values: {
                     name: directorId?.[0]?.director_name || "",
                     email: directorId?.[0]?.email || "",
-                    tel: String(directorId?.[0]?.phone_number) || "",
-                    photo: null,
+                    tel: directorId?.[0]?.phone_number || "",
                 },
             });
         }
+        setPhotoId(directorId?.[0]?.director_photo)
     }, [directorId, getId]);
 
 
@@ -135,9 +136,10 @@ const SchoolTableBlock: FC<IProps> = ({
                 name: "",
                 email: "",
                 tel: "",
-                photo: null,
             },
         });
+        setPhoto(null);
+        setPhotoId(null);
     }
 
     return (
@@ -151,13 +153,30 @@ const SchoolTableBlock: FC<IProps> = ({
                     <div className="main_table-modal_flex" style={{gap: "1.6rem"}}>
                         <div className="main_table-modal_upload">
                             <div className="login_forms-label_pink">Фото *</div>
-                            <Input type="file" name="photo" onChange={(event) => {
-                                return formik.setFieldValue('photo', event?.target?.files?.[0]);
-                            }}
-                                   accept=".png, .jpg, .jpeg, .svg"
-                                   key={formik.values.photo}
-
-                            />
+                            {
+                                photo ? (
+                                    <div className="file-item">
+                                        <div className="file-info">
+                                            <p>{photo.name.substring(0, 14)}</p>
+                                        </div>
+                                        <div className="file-actions">
+                                            <MdClear onClick={() => setPhoto(null)}/>
+                                        </div>
+                                    </div>
+                                ) : ( photoId ? <div className="file-item">
+                                            <div className="file-info">
+                                                <p>{photoId.slice((photoId.lastIndexOf("/") + 1))}</p>
+                                            </div>
+                                            <div className="file-actions">
+                                                <MdClear onClick={() => setPhotoId(null)}/>
+                                            </div>
+                                        </div> :
+                                    <Input type="file" name="file" onChange={(event) => {
+                                        return setPhoto(event?.target?.files?.[0]);
+                                    }}
+                                    />
+                                )
+                            }
                         </div>
 
                         <div className="main_table-modal_forms">

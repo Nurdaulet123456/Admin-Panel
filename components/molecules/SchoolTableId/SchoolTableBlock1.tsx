@@ -19,13 +19,7 @@ import SuccessModal from "@/components/modals/SuccessModal";
 import {useFormik} from "formik";
 import * as Yup from "yup";
 import {getSchoolSportThunk} from "@/store/thunks/pride.thunk";
-
-interface UpdateInputProps {
-  name?: string;
-  prof?: string;
-  tel?: string;
-  file: any;
-}
+import {MdClear} from "react-icons/md";
 
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
@@ -50,6 +44,8 @@ const SchoolTableBlock1: FC<IProps> = ({
     showSuccess,
     showError,
   } = useModalLogic();
+  const [photo, setPhoto] = useState<File | null>()
+  const [photoId, setPhotoId] = useState<string | null>()
 
 
   const formik = useFormik({
@@ -57,7 +53,6 @@ const SchoolTableBlock1: FC<IProps> = ({
       name: "",
       prof: "",
       tel: "",
-      photo: null,
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Обязательно*"),
@@ -69,7 +64,7 @@ const SchoolTableBlock1: FC<IProps> = ({
       formData.append("administrator_name", values.name);
       formData.append("phone_number", values.tel);
       formData.append("position", values.prof);
-      values.photo && formData.append("administator_photo", values.photo);
+      photo && formData.append("administator_photo", photo);
 
       if (!getId) {
         await instance
@@ -130,9 +125,9 @@ const SchoolTableBlock1: FC<IProps> = ({
           name: adminid.administrator_name || "",
           prof: adminid.position || "",
           tel: adminid.phone_number || "",
-          photo: null,
         },
       });
+      setPhotoId(adminid.administator_photo);
     }
   }, [adminid, getId]);
 
@@ -143,9 +138,10 @@ const SchoolTableBlock1: FC<IProps> = ({
         name: "",
         prof: "",
         tel: "",
-        photo: null,
       },
     });
+    setPhoto(null);
+    setPhotoId(null);
   }
 
   return (
@@ -159,13 +155,31 @@ const SchoolTableBlock1: FC<IProps> = ({
           <div className="main_table-modal_flex" style={{gap: "1.6rem"}}>
             <div className="main_table-modal_upload">
               <div className="login_forms-label_pink">Фото *</div>
-              <Input type="file" name="photo" onChange={(event) => {
-                return formik.setFieldValue('photo', event?.target?.files?.[0]);
-              }}
-                     accept=".png, .jpg, .jpeg, .svg"
-                     key={formik.values.photo}
-
-              />
+              {
+                photo ? (
+                    <div className="file-item">
+                      <div className="file-info">
+                        <p>{photo.name.substring(0, 14)}</p>
+                      </div>
+                      <div className="file-actions">
+                        <MdClear onClick={() => setPhoto(null)}/>
+                      </div>
+                    </div>
+                ) : (
+                    photoId ? <div className="file-item">
+                          <div className="file-info">
+                            <p>{photoId.slice((photoId.lastIndexOf("/") + 1))}</p>
+                          </div>
+                          <div className="file-actions">
+                            <MdClear onClick={() => setPhotoId(null)}/>
+                          </div>
+                        </div> :
+                    <Input type="file" name="file" onChange={(event) => {
+                      return setPhoto(event?.target?.files?.[0]);
+                    }}
+                    />
+                )
+              }
             </div>
 
             <div className="main_table-modal_forms">

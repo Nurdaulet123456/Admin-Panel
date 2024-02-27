@@ -19,7 +19,7 @@ const MenuTable: FC<IProps> = ({ menu, setDel, del, handleClickGetId }) => {
 
   const handleDeleteItems = async (id?: number) => {
     await instance
-      .delete(`https://www.bilimge.kz/admins/api/menu/${id}`, {
+      .delete(`https://www.bilimge.kz/admins/api/menu/${id}/`, {
         headers: {
           Authorization: `Token ${getTokenInLocalStorage()}`,
         },

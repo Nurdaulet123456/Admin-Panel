@@ -41,11 +41,6 @@ const SchoolTableBlock2: FC<IProps> = ({
 }) => {
   const dispatch = useAppDispatch();
 
-  const [updateInput, setUpdateInput] = useState<UpdateInputProps>({
-    name: "",
-    file: null,
-  });
-
   const {
     showSuccessModal,
     showErrorModal,
@@ -54,77 +49,6 @@ const SchoolTableBlock2: FC<IProps> = ({
     showSuccess,
     showError,
   } = useModalLogic();
-
-
-  useEffect(() => {
-    if (photosid) {
-      setUpdateInput({
-        name: photosid.slider_name || "",
-        file: null,
-      });
-    }
-  }, [photosid]);
-
-  const onSave = async () => {
-    try {
-      if (!updateInput.name || !updateInput.file) {
-        showError();
-        return;
-      }
-
-      if (updateInput.name && updateInput.file) {
-        const formData = new FormData();
-        formData.append("slider_name", updateInput.name);
-        formData.append("slider_photo", updateInput.file);
-
-        if (!getId) {
-          await instance
-            .post("/api/slider/", formData, {
-              headers: {
-                Authorization: `Token ${getTokenInLocalStorage()}`,
-                "Content-Type": "multipart/form-data",
-              },
-            })
-            .then((res) => {
-              if (res) {
-                dispatch(getSchoolPhotosThunk());
-                showSuccess();
-                setUpdateInput({
-                  name: "",
-                  file: null,
-                });
-              }
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        } else {
-          await instance
-            .put(`/api/slider/${getId}/`, formData, {
-              headers: {
-                Authorization: `Token ${getTokenInLocalStorage()}`,
-                "Content-Type": "multipart/form-data",
-              },
-            })
-            .then((res) => {
-              if (res) {
-                dispatch(getSchoolPhotosThunk());
-                showSuccess();
-                setUpdateInput({
-                  name: "",
-                  file: null,
-                });
-              }
-            })
-            .catch((err) => {
-              console.log(err);
-            });
-        }
-      }
-    } catch (error) {
-      showError();
-    }
-  };
 
   const formik = useFormik({
     initialValues: {

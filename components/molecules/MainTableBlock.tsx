@@ -55,6 +55,8 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
   const [showActive, setShowActive] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
   const [id, setId] = useState<number>();
+  const [photoId, setPhotoId] = useState<string | null>()
+
   useEffect(() => {
     if (teachers) {
       dispatch(getKruzhokTeachersInfoThunk());
@@ -97,15 +99,15 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
     },
     validationSchema: Yup.object({
       name: Yup.string().required('Введите имя'),
-      teacher: Yup.string().required('Введите учителя'),
-      goal: Yup.string().required('Введите цель'),
-      times: Yup.array().of(
-          Yup.string().nullable()
-              .matches(
-                  /^([01][0-9]|2[0-3]):[0-5][0-9]-([01][0-9]|2[0-3]):[0-5][0-9]$/,
-                  'Неправильно'
-              )
-      ).min(1),
+      // teacher: Yup.string().required('Введите учителя'),
+      // goal: Yup.string().required('Введите цель'),
+      // times: Yup.array().of(
+      //     Yup.string().nullable()
+      //         .matches(
+      //             /^([01][0-9]|2[0-3]):[0-5][0-9]-([01][0-9]|2[0-3]):[0-5][0-9]$/,
+      //             'Неправильно'
+      //         )
+      // ).min(1),
     }),
     onSubmit: async (values) => {
       if (!getId) {
@@ -220,11 +222,9 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
     return temp;
   }
 
-      console.log(kruzhokid)
 
   useEffect(() => {
     if (kruzhokid && getId) {
-      console.log(kruzhokid)
       formik.resetForm({
         values: {
           photo: null,
@@ -234,6 +234,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
           times: setTime(kruzhokid.lessons),
         },
       });
+      setPhotoId(kruzhokid.photo);
     }
   }, [kruzhokid, getId]);
 
@@ -292,14 +293,26 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
                 }
 
               </div>
-              {photo && <div className="file-item">
+              {photo ? <div className="file-item">
                 <div className="file-info">
                   <p>{photo?.name.substring(0, 14)}</p>
                 </div>
                 <div className="file-actions">
-                  {/*<MdClear onClick={() => handleRemoveFile(index)}/>*/}
+                  <MdClear onClick={() => {
+                    setPhoto(null)
+                    formik.setFieldValue("photo", null);
+                  }}/>
                 </div>
-              </div>}
+              </div> : photoId &&
+                  <div className="file-item">
+                    <div className="file-info">
+                      <p>{photoId}</p>
+                    </div>
+                    <div className="file-actions">
+                      <MdClear onClick={() => setPhotoId(null)}/>
+                    </div>
+                  </div>
+              }
 
             </div>
 

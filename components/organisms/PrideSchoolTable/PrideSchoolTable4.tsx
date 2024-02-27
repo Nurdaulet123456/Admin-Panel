@@ -14,7 +14,7 @@ interface IProps {
 const PrideSchoolTable4: FC<IProps> = ({ handleClickGetIdAltyn }) => {
   const dispatch = useAppDispatch();
   const altyn = useTypedSelector((state) => state.pride.altyn);
-
+  console.log(altyn)
   useEffect(() => {
     if (altyn) {
       dispatch(getSchoolAltynThunk());
@@ -23,7 +23,7 @@ const PrideSchoolTable4: FC<IProps> = ({ handleClickGetIdAltyn }) => {
 
   const handleDeleteItems = async (id?: number) => {
     await instance
-      .delete(`/api/School_AltynBelgiApi/${id}`, {
+      .delete(`https://bilimge.kz/admins/api/School_AltynBelgiApi/${id}/`, {
         headers: {
           Authorization: `Token ${getTokenInLocalStorage()}`,
         },
