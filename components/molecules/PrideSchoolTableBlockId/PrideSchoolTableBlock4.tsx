@@ -44,7 +44,7 @@ const PrideSchoolTableBlock4: FC<IProps> = ({
     showError,
   } = useModalLogic();
   const [photo, setPhoto] = useState<File | null>()
-  const [photoId, setPhotoId] = useState<"" | null>()
+  const [photoId, setPhotoId] = useState<string | null>()
 
   const formik = useFormik({
     initialValues: {
@@ -139,6 +139,7 @@ const PrideSchoolTableBlock4: FC<IProps> = ({
           endyear: altynid.endyear || "",
         },
       });
+      setPhotoId(altynid.photo);
     }
   }, [altynid, getId]);
 
@@ -178,7 +179,14 @@ const PrideSchoolTableBlock4: FC<IProps> = ({
                         <MdClear onClick={() => setPhoto(null)}/>
                       </div>
                     </div>
-                ) : (
+                ) : (photoId ? <div className="file-item">
+                          <div className="file-info">
+                            <p>{photoId.slice((photoId.lastIndexOf("/") + 1))}</p>
+                          </div>
+                          <div className="file-actions">
+                            <MdClear onClick={() => setPhotoId(null)}/>
+                          </div>
+                        </div> :
                     <Input type="file" name="file" onChange={(event) => {
                       return setPhoto(event?.target?.files?.[0]);
                     }}

@@ -42,7 +42,7 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
 }) => {
   const dispatch = useAppDispatch();
   const [photo, setPhoto] = useState<File | null>()
-  const [photoId, setPhotoId] = useState<"" | null>()
+  const [photoId, setPhotoId] = useState<string | null>()
 
 
   const {
@@ -69,7 +69,12 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
     onSubmit: async (values) => {
       if (!getId) {
         await instance
-            .post("https://bilimge.kz/admins/api/School_RedCertificateApi/", values, {
+            .post("https://bilimge.kz/admins/api/School_RedCertificateApi/", {
+              fullname: values.fullname,
+              endyear: values.endyear,
+              student_success: values.student_success,
+              photo: photo
+            }, {
               headers: {
                 Authorization: `Token ${getTokenInLocalStorage()}`,
                 "Content-Type": "multipart/form-data",
@@ -131,7 +136,7 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
     }
   });
 
-
+  console.log(atestid)
   useEffect(() => {
     if (atestid && getId) {
       formik.resetForm({
@@ -141,6 +146,7 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
           endyear: atestid.endyear || "",
         },
       });
+      setPhotoId(atestid.photo);
     }
   }, [atestid, getId]);
 
@@ -179,7 +185,14 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
                         <MdClear onClick={() => setPhoto(null)}/>
                       </div>
                     </div>
-                ) : (
+                ) : (photoId ? <div className="file-item">
+                          <div className="file-info">
+                            <p>{photoId.slice((photoId.lastIndexOf("/") + 1))}</p>
+                          </div>
+                          <div className="file-actions">
+                            <MdClear onClick={() => setPhotoId(null)}/>
+                          </div>
+                        </div> :
                     <Input type="file" name="file" onChange={(event) => {
                       return setPhoto(event?.target?.files?.[0]);
                     }}

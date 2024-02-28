@@ -94,6 +94,7 @@ export interface ISchoolDirector {
 
 export interface ISchoolPassport {
   id?: number;
+  school_name?:string;
   school_address?: string;
   established?: number;
   amount_of_children?: number;
@@ -127,6 +128,7 @@ export interface ISchoolPassport {
   pedagog_sanat_zhok?: number;
   school_history?: string;
   school?: number;
+  photo?:string;
 }
 
 // School Photos
@@ -436,6 +438,7 @@ interface IClassRoomSch {
 //map
 export interface IMap {
   id?: number;
+  map?: string;
   flat1?: string;
   flat2?: string;
   flat3?: string;

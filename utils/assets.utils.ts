@@ -92,3 +92,23 @@ export function formatName(fullName: string): string {
   const formattedName: string = `${lastName}.${firstName[0]}.${middleName?.[0] || ""}`;
   return formattedName;
 }
+
+function getFilenameFromUrl(url: string): string {
+  const lastSlashIndex = url.lastIndexOf("/") + 1;
+  const lastUnderscoreIndex = url.lastIndexOf("_");
+  const extensionIndex = url.lastIndexOf(".");
+  const namePart = url.substring(lastSlashIndex, lastUnderscoreIndex);
+  const extension = url.substring(extensionIndex);
+
+  return `${namePart}${extension}`;
+}
+
+export async function urlToFile(url?: string): Promise<File | null> {
+  if (!url) return null;
+  const mimeType = url.endsWith('.jpg') ? 'image/jpeg' : 'image/png';
+  const response = await fetch(url || "");
+  const blob = await response.blob();
+  const filename = getFilenameFromUrl(url || "");
+  return new File([blob], filename, { type: mimeType });
+
+}

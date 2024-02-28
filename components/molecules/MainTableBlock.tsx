@@ -306,7 +306,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
               </div> : photoId &&
                   <div className="file-item">
                     <div className="file-info">
-                      <p>{photoId}</p>
+                      <p>{photoId.slice((photoId.lastIndexOf("/") + 1))}</p>
                     </div>
                     <div className="file-actions">
                       <MdClear onClick={() => setPhotoId(null)}/>

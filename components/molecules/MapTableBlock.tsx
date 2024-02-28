@@ -5,12 +5,12 @@ import { instance } from "@/api/axios.instance";
 import {
     getTokenInLocalStorage,
     getWeekDayNumber,
-    getWeekDayString,
+    getWeekDayString, urlToFile,
 } from "@/utils/assets.utils";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import {
-    getClassRoomThunk,
-    getMenuThunk,
+    getClassRoomThunk, getMapThunk,
+    getMenuThunk, getSchoolPassportThunk,
 } from "@/store/thunks/schoolnfo.thunk";
 import {IMap, IMenu} from "@/types/assets.type";
 import SanatyModalModal from "../modals/SanatyModal";
@@ -20,6 +20,7 @@ import SuccessModal from "../modals/SuccessModal";
 import { useFormik, useField, Formik, Form } from "formik";
 import * as Yup from "yup";
 import {MdClear} from "react-icons/md";
+import DeleteModal from "@/components/modals/DeleteModal";
 
 interface IUpdateInput {
     name?: string;
@@ -42,10 +43,13 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
     const {
         showSuccessModal,
         showErrorModal,
+        showDeleteModal,
+        onDeleteModalClose,
         onSuccessModalClose,
         onErrorModalClose,
         showSuccess,
         showError,
+        showDelete,
     } = useModalLogic();
 
     const [map, setMap] = useState<File | null>();
@@ -90,7 +94,7 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
                     )
                     .then((res) => {
                         if (res) {
-                            dispatch(getMenuThunk());
+                            dispatch(getMapThunk());
                             showSuccess();
                             onDelete();
                             if (showSuccessModal && onReject) {
@@ -107,7 +111,7 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
             } else {
                 await instance
                     .put(
-                        `https://www.bilimge.kz/admins/api/schoolmap/1/`,
+                        `https://www.bilimge.kz/admins/api/schoolmap/${mapId?.[0]?.id}/`,
                         formData,
                         {
                             headers: {
@@ -117,7 +121,7 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
                     )
                     .then((res) => {
                         if (res) {
-                            dispatch(getMenuThunk());
+                            dispatch(getMapThunk());
                             showSuccess();
                             if (showSuccessModal && onReject) {
                                 onReject(false);
@@ -133,14 +137,59 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
             }
         },
     });
-    console.log(mapId)
-    useEffect(() => {
-        if (mapId) {
 
-        }
+    const handleDelete = async () => {
+        await instance
+            .delete(`https://www.bilimge.kz/admins/api/schoolmap/${mapId?.[0]?.id}/`, {
+                headers: {
+                    Authorization: `Token ${getTokenInLocalStorage()}`,
+                },
+            })
+            .then((res) => {
+                console.log("Good")
+            })
+            .catch((e) => console.log(e));
+        dispatch(getMapThunk());
+        onDeleteModalClose();
+    };
+
+
+    console.log(mapId?.[0]?.id)
+    useEffect(() => {
+        const fetchFiles = async () => {
+            if (mapId && mapId.length > 0) {
+                try {
+                    const map = await urlToFile(mapId[0].map, "svg");
+                    setMap(map);
+                    const flat1 = await urlToFile(mapId[0].flat1, "svg");
+                    setFlat1(flat1);
+                    const flat2 = await urlToFile(mapId[0].flat2, "svg");
+                    setFlat2(flat2);
+                    const flat3 = await urlToFile(mapId[0].flat3, "svg");
+                    setFlat3(flat3);
+                    const flat4 = await urlToFile(mapId[0].flat4, "svg");
+                    setFlat4(flat4);
+                    const flat5 = await urlToFile(mapId[0].flat5, "svg");
+                    setFlat5(flat5);
+                } catch (error) {
+                    console.error("Error fetching files", error);
+                }
+            }else {
+                setMap(null);
+                setFlat1(null);
+                setFlat2(null);
+                setFlat3(null);
+                setFlat4(null);
+                setFlat5(null);
+            }
+        };
+
+        fetchFiles();
     }, [mapId]);
 
+
     function onDelete() {
+        setMap(null);
         setFlat1(null);
         setFlat2(null);
         setFlat3(null);
@@ -152,6 +201,7 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
         <>
             {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
             {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
+            {showDeleteModal && <DeleteModal onClose = {onDeleteModalClose} handleDelete={handleDelete}/>}
             <form onSubmit={formik.handleSubmit}>
                 <div className="main_table-modal">
                     <div className="main_table-modal_title">Карта школы</div>
@@ -170,7 +220,7 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
                                                     <MdClear onClick={() => setMap(null)}/>
                                                 </div>
                                             </div>):
-                                        (
+                                            (
                                             <Input style={{width: "80%", marginBottom: "1%"}} type="file" name="photo"
                                                    onChange={(event) => {
                                                        return setMap(event?.target?.files?.[0]);
@@ -303,7 +353,7 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
                                     color="#645C5C"
                                     style={{width: "auto"}}
                                     type="button"
-                                    onClick={onDelete}
+                                    onClick={showDelete}
                                 >
                                     Удалить
                                 </Button>

@@ -10,7 +10,7 @@ import { Button } from "../atoms/UI/Buttons/Button";
 import {Input, Select, TextArea} from "../atoms/UI/Inputs/Input";
 import { instance } from "@/api/axios.instance";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
-import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import {getTokenInLocalStorage, urlToFile} from "@/utils/assets.utils";
 import { getNewsThunk } from "@/store/thunks/pride.thunk";
 import { INews } from "@/types/assets.type";
 import SanatyModalModal from "../modals/SanatyModal";
@@ -88,14 +88,12 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
 
     }),
     onSubmit: async (values) => {
-
       const formData = new FormData();
 
       formData.append("type", values.type.toLowerCase());
       formData.append("text", values.text);
-      formData.append("date", values.date);
-      console.log(files)
-      if(files) {
+      values.type !== "facebook" && formData.append("date", values.date);
+      if(files && values.type !== "facebook") {
         for (let i = 1; i <= 10; i++) {
           if(files[i-1]) {
             console.log(i)
@@ -119,6 +117,7 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
               if (res) {
                 dispatch(getNewsThunk());
                 showSuccess();
+                onDelete();
               }
             })
             .catch((err) => showError());
@@ -158,25 +157,25 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
     }
   }, [newsid, getId]);
 
-  function getFilenameFromUrl(url: string): string {
-    const lastSlashIndex = url.lastIndexOf("/") + 1;
-    const lastUnderscoreIndex = url.lastIndexOf("_");
-    const extensionIndex = url.lastIndexOf(".");
-    const namePart = url.substring(lastSlashIndex, lastUnderscoreIndex);
-    const extension = url.substring(extensionIndex);
-
-    return `${namePart}${extension}`;
-  }
-
-  async function urlToFile(url: string, mimeType: string): Promise<File> {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    const filename = getFilenameFromUrl(url);
-    return new File([blob], filename, { type: mimeType });
-  }
+  // function getFilenameFromUrl(url: string): string {
+  //   const lastSlashIndex = url.lastIndexOf("/") + 1;
+  //   const lastUnderscoreIndex = url.lastIndexOf("_");
+  //   const extensionIndex = url.lastIndexOf(".");
+  //   const namePart = url.substring(lastSlashIndex, lastUnderscoreIndex);
+  //   const extension = url.substring(extensionIndex);
+  //
+  //   return `${namePart}${extension}`;
+  // }
+  //
+  // async function urlToFile(url: string, mimeType: string): Promise<File> {
+  //   const response = await fetch(url);
+  //   const blob = await response.blob();
+  //   const filename = getFilenameFromUrl(url);
+  //   return new File([blob], filename, { type: mimeType });
+  // }
 
   async function updateFilesWithImages(newsid: any) {
-    const filePromises: Promise<File>[] = [
+    const filePromises: Promise<File | null>[] = [
       newsid.img1,
       newsid.img2,
       newsid.img3,
@@ -190,11 +189,10 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
     ]
         .filter(Boolean)
         .map((url: string) => {
-          const mimeType = url.endsWith('.jpg') ? 'image/jpeg' : 'image/png';
-          return urlToFile(url, mimeType); // Важно: используйте return для возвращения Promise<File>
+          return urlToFile(url); // Важно: используйте return для возвращения Promise<File>
         });
 
-    const files: File[] = await Promise.all(filePromises);
+    const files: File[] = (await Promise.all(filePromises)).filter((file): file is File => file !== null);
     setFiles(files);
   }
 
@@ -225,60 +223,73 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
                   <option value="facebook">Facebook</option>
                 </Select>
               </div>
-              <div className="login_forms-label_pink">Фото *</div>
-              <div {...getRootProps()} style={{
-                border: '2px dashed #ccc', /* Штрихованный бордер */
-                padding: '20px', /* Паддинг внутри div */
-                borderRadius: '5px', /* Скругленные углы */
-                textAlign: 'center', /* Текст по центру */
-                marginBottom: '20px', /* Отступ снизу */
-                backgroundColor:"white",
-              }}>
-                <input {...getInputProps()}/>
-                {
-                  isDragActive ?
-                      <p>Drop the files here ...</p> :
-                      <p>Drag and drop some files here, or click to select files</p>
-                }
-              </div>
-
-              {files.length > 0 && (
-                  <div className="file-list">
-                    <div className="file-list__container">
-                      {files.map((file, index) => (
-                          <div className="file-item" key={index}>
-                            <div className="file-info">
-                              <p>{file.name.substring(0,14)}</p>
-                            </div>
-                            <div className="file-actions">
-                              <MdClear onClick={() => handleRemoveFile(index)} />
-                            </div>
-                          </div>
-                      ))}
+              {
+                formik.values.type !=="facebook" &&
+                  <>
+                    <div className="login_forms-label_pink">Фото *</div>
+                    <div {...getRootProps()} style={{
+                      border: '2px dashed #ccc', /* Штрихованный бордер */
+                      padding: '20px', /* Паддинг внутри div */
+                      borderRadius: '5px', /* Скругленные углы */
+                      textAlign: 'center', /* Текст по центру */
+                      marginBottom: '20px', /* Отступ снизу */
+                      backgroundColor:"white",
+                    }}>
+                      <input {...getInputProps()}/>
+                      {
+                        isDragActive ?
+                            <p>Drop the files here ...</p> :
+                            <p>Drag and drop some files here, or click to select files</p>
+                      }
                     </div>
-                  </div>
-              )}
+
+                    {files.length > 0 && (
+                        <div className="file-list">
+                          <div className="file-list__container">
+                            {files.map((file, index) => (
+                                <div className="file-item" key={index}>
+                                  <div className="file-info">
+                                    <p>{file.name.substring(0,14)}</p>
+                                  </div>
+                                  <div className="file-actions">
+                                    <MdClear onClick={() => handleRemoveFile(index)} />
+                                  </div>
+                                </div>
+                            ))}
+                          </div>
+                        </div>
+                    )}
+                  </>
+              }
+
             </div>
 
             <div className="main_table-modal_forms">
-              <div className="forms">
-                <div className="login_forms-label_pink">Уақыты</div>
 
-                {formik.touched.date && formik.errors.date ? (
-                    <div style={{color: "red"}}>{formik.errors.date}</div>
-                ) : null}
-                <Input
-                    name={"date"}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values.date}
-                    style={{
-                      borderColor:
-                          formik.touched.date && formik.errors.date
-                              ? "red"
-                              : "#c1bbeb",
-                    }}
-                />
+              <div className="forms">
+                {
+                    formik.values.type !== "facebook" &&
+                    <>
+                      <div className="login_forms-label_pink">Уақыты</div>
+
+                      {formik.touched.date && formik.errors.date ? (
+                          <div style={{color: "red"}}>{formik.errors.date}</div>
+                      ) : null}
+                      <Input
+                          name={"date"}
+                          onChange={formik.handleChange}
+                          onBlur={formik.handleBlur}
+                          value={formik.values.date}
+                          style={{
+                            borderColor:
+                                formik.touched.date && formik.errors.date
+                                    ? "red"
+                                    : "#c1bbeb",
+                          }}
+                      />
+                    </>
+                }
+
 
                 <div className="forms">
                   <div className="login_forms-label_pink">Текст</div>

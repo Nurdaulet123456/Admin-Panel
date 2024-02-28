@@ -1,11 +1,17 @@
-import {ChangeEvent, Dispatch, FC, SetStateAction, useEffect, useState} from "react";
+import {ChangeEvent, Dispatch, FC, SetStateAction, useEffect, useState,} from "react";
 import { Button } from "../../atoms/UI/Buttons/Button";
 import { Input, TextArea } from "../../atoms/UI/Inputs/Input";
 import { instance } from "@/api/axios.instance";
-import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import {getTokenInLocalStorage, urlToFile} from "@/utils/assets.utils";
 import {useFormik} from "formik";
 import * as Yup from "yup";
 import {ISchoolPassport, ISchoolPhotos} from "@/types/assets.type";
+import {useModalLogic} from "@/hooks/useModalLogic";
+import ErrorModal from "@/components/modals/ErrorModal";
+import DeleteModal from "@/components/modals/DeleteModal";
+import {getMenuThunk, getSchoolPassportThunk} from "@/store/thunks/schoolnfo.thunk";
+import {useAppDispatch} from "@/hooks/useAppDispatch";
+import {MdClear} from "react-icons/md";
 
 interface IProps {
     schoolPassport?: ISchoolPassport[];
@@ -15,10 +21,22 @@ const SchoolTableBlock3: FC<IProps> = ({
                                           schoolPassport
                                       }) => {
 
+    const dispatch = useAppDispatch();
+    const [photo, setPhoto] = useState<File | null>();
+
+    const {
+        showSuccessModal,
+        showErrorModal,
+        onSuccessModalClose,
+        onErrorModalClose,
+        showSuccess,
+        showError,
+        showDeleteModal, showDelete, onDeleteModalClose,
+    } = useModalLogic();
+
   const formik = useFormik({
     initialValues: {
         school_name: "",
-      photo: null,
       year: '',
       school_address:"",
       childNumber: "",
@@ -53,75 +71,75 @@ const SchoolTableBlock3: FC<IProps> = ({
       history: "",
     },
     validationSchema: Yup.object({
-      // year: Yup.number().required("Обязательно*"),
-      // school_address: Yup.string().required("Обязательно*"),
-      // childNumber: Yup.number().required("Обязательно*"),
-      // classComplect: Yup.number().required("Обязательно*"),
-      // boyNumber: Yup.number().required("Обязательно*"),
-      // girlNumber: Yup.number().required("Обязательно*"),
-      // familyNumber: Yup.number().required("Обязательно*"),
-      // parentsNumber: Yup.number().required("Обязательно*"),
-      // language: Yup.string().required("Обязательно*"),
-      // status: Yup.string().required("Обязательно*"),
-      // capacity: Yup.number().required("Обязательно*"),
-      // actualNumber: Yup.number().required("Обязательно*"),
-      // preparatoryClassNumber: Yup.number().required("Обязательно*"),
-      // preparatoryChildNumber: Yup.number().required("Обязательно*"),
-      // elementarySchoolClass: Yup.number().required("Обязательно*"),
-      // elementarySchoolChild: Yup.number().required("Обязательно*"),
-      // middleSchoolClass: Yup.number().required("Обязательно*"),
-      // middleSchoolChild: Yup.number().required("Обязательно*"),
-      // highSchoolClass: Yup.number().required("Обязательно*"),
-      // highSchoolChild: Yup.number().required("Обязательно*"),
-      // teachersNumber: Yup.number().required("Обязательно*"),
-      // pedagogSheber: Yup.number().required("Обязательно*"),
-      // pedagogZertteushi: Yup.number().required("Обязательно*"),
-      // pedagogSarapshy: Yup.number().required("Обязательно*"),
-      // pedagogModerator: Yup.number().required("Обязательно*"),
-      // pedagog: Yup.number().required("Обязательно*"),
-      // pedagogTagylymdamashy: Yup.number().required("Обязательно*"),
-      // pedagogHigh: Yup.number().required("Обязательно*"),
-      // sanat1: Yup.number().required("Обязательно*"),
-      // sanat2: Yup.number().required("Обязательно*"),
-      // sanatZhok: Yup.number().required("Обязательно*"),
-      // history: Yup.string().required("Обязательно*"),
+      year: Yup.number(),
+      school_address: Yup.string(),
+      childNumber: Yup.number(),
+      classComplect: Yup.number(),
+      boyNumber: Yup.number(),
+      girlNumber: Yup.number(),
+      familyNumber: Yup.number(),
+      parentsNumber: Yup.number(),
+      language: Yup.string(),
+      status: Yup.string(),
+      capacity: Yup.number(),
+      actualNumber: Yup.number(),
+      preparatoryClassNumber: Yup.number(),
+      preparatoryChildNumber: Yup.number(),
+      elementarySchoolClass: Yup.number(),
+      elementarySchoolChild: Yup.number(),
+      middleSchoolClass: Yup.number(),
+      middleSchoolChild: Yup.number(),
+      highSchoolClass: Yup.number(),
+      highSchoolChild: Yup.number(),
+      teachersNumber: Yup.number(),
+      pedagogSheber: Yup.number(),
+      pedagogZertteushi: Yup.number(),
+      pedagogSarapshy: Yup.number(),
+      pedagogModerator: Yup.number(),
+      pedagog: Yup.number(),
+      pedagogTagylymdamashy: Yup.number(),
+      pedagogHigh: Yup.number(),
+      sanat1: Yup.number(),
+      sanat2: Yup.number(),
+      sanatZhok: Yup.number(),
+      history: Yup.string(),
     }),
     onSubmit: async (values) => {
         const data = {
-
-            school_address: values.school_address,
-            established: values.year,
-            amount_of_children: values.childNumber,
-            ul_sany: values.boyNumber,
-            kiz_sany: values.girlNumber,
-            school_lang: values.language,
-            status: values.status,
-            vmestimost: values.capacity,
-            dayarlyk_class_number: values.preparatoryClassNumber,
-            dayarlyk_student_number: values.preparatoryChildNumber,
-            number_of_students: values.actualNumber,
-            number_of_classes: values.classComplect,
-            number_of_1_4_students: values.elementarySchoolClass,
-            number_of_1_4_classes: values.elementarySchoolChild,
-            number_of_5_9_students: values.middleSchoolClass,
-            number_of_5_9_classes: values.middleSchoolChild,
-            number_of_10_11_students: values.highSchoolClass,
-            number_of_10_11_classes: values.highSchoolChild,
-            amount_of_family: values.familyNumber,
-            amount_of_parents: values.parentsNumber,
-            all_pedagog_number: values.teachersNumber,
-            pedagog_sheber: values.pedagogSheber,
-            pedagog_zertteushy: values.pedagogZertteushi,
-            pedagog_sarapshy: values.pedagogSarapshy,
-            pedagog_moderator: values.pedagogModerator,
-            pedagog: values.pedagog,
-            pedagog_stazher: values.pedagogTagylymdamashy,
-            pedagog_zhogary: values.pedagogHigh,
-            pedagog_1sanat: values.sanat1,
-            pedagog_2sanat: values.sanat2,
-            pedagog_sanat_zhok: values.sanatZhok,
-            school_history: values.history,
-        };
+                school_address: values.school_address,
+                established: parseInt(values.year, 10) || undefined,
+                amount_of_children: parseInt(values.childNumber, 10) || undefined,
+                ul_sany: parseInt(values.boyNumber, 10) || undefined,
+                kiz_sany: parseInt(values.girlNumber, 10) || undefined,
+                school_lang: values.language,
+                status: values.status,
+                vmestimost: parseInt(values.capacity, 10) || undefined,
+                dayarlyk_class_number: parseInt(values.preparatoryClassNumber, 10) || undefined,
+                dayarlyk_student_number: parseInt(values.preparatoryChildNumber, 10) || undefined,
+                number_of_students: parseInt(values.actualNumber, 10) || undefined,
+                number_of_classes: parseInt(values.classComplect, 10) || undefined,
+                number_of_1_4_students: parseInt(values.elementarySchoolChild, 10) || undefined, // Внимание: возможно, классы и ученики перепутаны
+                number_of_1_4_classes: parseInt(values.elementarySchoolClass, 10) || undefined, // Внимание: возможно, классы и ученики перепутаны
+                number_of_5_9_students: parseInt(values.middleSchoolChild, 10) || undefined, // Внимание: возможно, классы и ученики перепутаны
+                number_of_5_9_classes: parseInt(values.middleSchoolClass, 10) || undefined, // Внимание: возможно, классы и ученики перепутаны
+                number_of_10_11_students: parseInt(values.highSchoolChild, 10) || undefined, // Внимание: возможно, классы и ученики перепутаны
+                number_of_10_11_classes: parseInt(values.highSchoolClass, 10) || undefined, // Внимание: возможно, классы и ученики перепутаны
+                amount_of_family: parseInt(values.familyNumber, 10) || undefined,
+                amount_of_parents: parseInt(values.parentsNumber, 10) || undefined,
+                all_pedagog_number: parseInt(values.teachersNumber, 10) || undefined,
+                pedagog_sheber: parseInt(values.pedagogSheber, 10) || undefined,
+                pedagog_zertteushy: parseInt(values.pedagogZertteushi, 10) || undefined,
+                pedagog_sarapshy: parseInt(values.pedagogSarapshy, 10) || undefined,
+                pedagog_moderator: parseInt(values.pedagogModerator, 10) || undefined,
+                pedagog: parseInt(values.pedagog, 10) || undefined,
+                pedagog_stazher: parseInt(values.pedagogTagylymdamashy, 10) || undefined,
+                pedagog_zhogary: parseInt(values.pedagogHigh, 10) || undefined,
+                pedagog_1sanat: parseInt(values.sanat1, 10) || undefined,
+                pedagog_2sanat: parseInt(values.sanat2, 10) || undefined,
+                pedagog_sanat_zhok: parseInt(values.sanatZhok, 10) || undefined,
+                school_history: values.history,
+            }
+        ;
         if(schoolPassport?.length === 0) {
             await instance
                 .post(
@@ -137,7 +155,7 @@ const SchoolTableBlock3: FC<IProps> = ({
                     if (res) {
                         const formData = new FormData();
 
-                        formData.append("photo", values.photo || "");
+                        formData.append("photo", photo ? photo : "");
                         formData.append("id", String((res as any).id));
 
                         try {
@@ -162,7 +180,7 @@ const SchoolTableBlock3: FC<IProps> = ({
         }else {
             await instance
                 .put(
-                    "https://bilimge.kz/admins/api/schoolpasport/1/",
+                    `https://bilimge.kz/admins/api/schoolpasport/${schoolPassport?.[0]?.id}/`,
                     data,
                     {
                         headers: {
@@ -172,12 +190,12 @@ const SchoolTableBlock3: FC<IProps> = ({
                 )
                 .then(async (res) => {
                     if (res) {
-                        if(values.photo) {
-                            console.log(values.photo)
+                        if(photo) {
+                            console.log(photo)
 
                             const formData = new FormData();
 
-                            formData.append("photo", values.photo ? values.photo : "");
+                            formData.append("photo", photo ? photo : "");
                             formData.append("id", String((res as any).id));
 
                             try {
@@ -203,65 +221,103 @@ const SchoolTableBlock3: FC<IProps> = ({
         }
     }
   });
-    console.log(schoolPassport)
+
     useEffect(() => {
-        if (schoolPassport) {
-            formik.resetForm({
-                values: {
-                    school_name: "",
-                    photo: null,
-                    year: String(schoolPassport?.[0]?.established) || "",
-                    school_address: schoolPassport?.[0]?.school_address || "",
-                    childNumber: String(schoolPassport?.[0]?.amount_of_children) || "",
-                    classComplect: String(schoolPassport?.[0]?.number_of_classes) || "",
-                    boyNumber: String(schoolPassport?.[0]?.ul_sany) || "",
-                    girlNumber: String(schoolPassport?.[0]?.kiz_sany) || "",
-                    familyNumber: String(schoolPassport?.[0]?.amount_of_family) || "",
-                    parentsNumber: String(schoolPassport?.[0]?.amount_of_parents) || "",
-                    language: String(schoolPassport?.[0]?.school_lang) || "",
-                    status: String(schoolPassport?.[0]?.status) || "",
-                    capacity: String(schoolPassport?.[0]?.vmestimost) || "",
-                    actualNumber: String(schoolPassport?.[0]?.number_of_students) || "",
-                    preparatoryClassNumber: String(schoolPassport?.[0]?.dayarlyk_class_number) || "",
-                    preparatoryChildNumber: String(schoolPassport?.[0]?.dayarlyk_student_number) || "",
-                    elementarySchoolClass: String(schoolPassport?.[0]?.number_of_1_4_classes) || "",
-                    elementarySchoolChild: String(schoolPassport?.[0]?.number_of_1_4_students) || "",
-                    middleSchoolClass: String(schoolPassport?.[0]?.number_of_5_9_classes) || "",
-                    middleSchoolChild: String(schoolPassport?.[0]?.number_of_5_9_students) || "",
-                    highSchoolClass: String(schoolPassport?.[0]?.number_of_10_11_classes) || "",
-                    highSchoolChild: String(schoolPassport?.[0]?.number_of_10_11_students) || "",
-                    teachersNumber: String(schoolPassport?.[0]?.all_pedagog_number) || "",
-                    pedagogSheber: String(schoolPassport?.[0]?.pedagog_sheber) || "",
-                    pedagogZertteushi: String(schoolPassport?.[0]?.pedagog_zertteushy) || "",
-                    pedagogSarapshy: String(schoolPassport?.[0]?.pedagog_sarapshy) || "",
-                    pedagogModerator: String(schoolPassport?.[0]?.pedagog_moderator) || "",
-                    pedagog: String(schoolPassport?.[0]?.pedagog) || "",
-                    pedagogTagylymdamashy: String(schoolPassport?.[0]?.pedagog_stazher) || "",
-                    pedagogHigh: String(schoolPassport?.[0]?.pedagog_zhogary) || "",
-                    sanat1: String(schoolPassport?.[0]?.pedagog_1sanat) || "",
-                    sanat2: String(schoolPassport?.[0]?.pedagog_2sanat) || "",
-                    sanatZhok: String(schoolPassport?.[0]?.pedagog_sanat_zhok) || "",
-                    history: schoolPassport?.[0]?.school_history || "",
-                },
-            });
+        async function fetchData() {
+            if (schoolPassport && schoolPassport.length > 0) {
+                formik.resetForm({
+                    values: {
+                        school_name: schoolPassport?.[0]?.school_name || "",
+                        year:  `${schoolPassport?.[0]?.established || ""}`,
+                        school_address: schoolPassport?.[0]?.school_address || "",
+                        childNumber: `${schoolPassport?.[0]?.amount_of_children || ""}`,
+                        classComplect: `${schoolPassport?.[0]?.number_of_classes || ""}`,
+                        boyNumber: `${schoolPassport?.[0]?.ul_sany || ""}`,
+                        girlNumber: `${schoolPassport?.[0]?.kiz_sany || ""}`,
+                        familyNumber: `${schoolPassport?.[0]?.amount_of_family || ""}`,
+                        parentsNumber: `${schoolPassport?.[0]?.amount_of_parents || ""}`,
+                        language: `${schoolPassport?.[0]?.school_lang || ""}`,
+                        status: `${schoolPassport?.[0]?.status || ""}`,
+                        capacity: `${schoolPassport?.[0]?.vmestimost || ""}`,
+                        actualNumber: `${schoolPassport?.[0]?.number_of_students || ""}`,
+                        preparatoryClassNumber: `${schoolPassport?.[0]?.dayarlyk_class_number || ""}`,
+                        preparatoryChildNumber: `${schoolPassport?.[0]?.dayarlyk_student_number || ""}`,
+                        elementarySchoolClass: `${schoolPassport?.[0]?.number_of_1_4_classes || ""}`,
+                        elementarySchoolChild: `${schoolPassport?.[0]?.number_of_1_4_students || ""}`,
+                        middleSchoolClass: `${schoolPassport?.[0]?.number_of_5_9_classes || ""}`,
+                        middleSchoolChild: `${schoolPassport?.[0]?.number_of_5_9_students || ""}`,
+                        highSchoolClass: `${schoolPassport?.[0]?.number_of_10_11_classes || ""}`,
+                        highSchoolChild: `${schoolPassport?.[0]?.number_of_10_11_students || ""}`,
+                        teachersNumber: `${schoolPassport?.[0]?.all_pedagog_number || ""}`,
+                        pedagogSheber: `${schoolPassport?.[0]?.pedagog_sheber || ""}`,
+                        pedagogZertteushi: `${schoolPassport?.[0]?.pedagog_zertteushy || ""}`,
+                        pedagogSarapshy: `${schoolPassport?.[0]?.pedagog_sarapshy || ""}`,
+                        pedagogModerator: `${schoolPassport?.[0]?.pedagog_moderator || ""}`,
+                        pedagog: `${schoolPassport?.[0]?.pedagog || ""}`,
+                        pedagogTagylymdamashy: `${schoolPassport?.[0]?.pedagog_stazher || ""}`,
+                        pedagogHigh: `${schoolPassport?.[0]?.pedagog_zhogary || ""}`,
+                        sanat1: `${schoolPassport?.[0]?.pedagog_1sanat || ""}`,
+                        sanat2: `${schoolPassport?.[0]?.pedagog_2sanat || ""}`,
+                        sanatZhok: `${schoolPassport?.[0]?.pedagog_sanat_zhok || ""}`,
+                        history: `${schoolPassport?.[0]?.school_history || ""}`
+                    },
+                });
+                const passport = await urlToFile(schoolPassport?.[0]?.photo);
+                setPhoto(passport);
+            }
         }
+        fetchData();
     }, [schoolPassport]);
+
+    const handleDelete = async () => {
+        await instance
+            .delete(`https://www.bilimge.kz/admins/api/schoolpasport/${schoolPassport?.[0]?.id}/`, {
+                headers: {
+                    Authorization: `Token ${getTokenInLocalStorage()}`,
+                },
+            })
+            .then((res) => {
+                console.log("Good")
+            })
+            .catch((e) => console.log(e));
+        dispatch(getSchoolPassportThunk());
+        onDeleteModalClose();
+    };
 
 
   return (
+      <>
+      {showDeleteModal && <DeleteModal onClose={onDeleteModalClose} handleDelete={handleDelete} />}
       <div className="main_table-modal">
         <form onSubmit={formik.handleSubmit}>
           <div className="main_table-modal_flex" style={{gap: "1.6rem"}}>
             <div className="main_table-modal_upload">
               <div className="login_forms-label_pink">Фото *</div>
-              <Input type="file" name="photo" onChange={(event) => {
-                return formik.setFieldValue('photo', event?.target?.files?.[0]);
-              }}
-                     accept=".png, .jpg, .jpeg, .svg"
-                     key={formik.values.photo}
+                {
+                    photo ? (
+                        <div className="file-item">
+                            <div className="file-info">
+                                <p>{photo?.name}</p>
+                            </div>
+                            <div className="file-actions">
+                                <MdClear onClick={() => {
+                                    setPhoto(null);
+                                }}/>
+                            </div>
+                        </div>
+                    ) : (
+                        <Input
+                            type="file"
+                            name="photo"
+                            onChange={(event) => {
+                                return setPhoto(event?.target?.files?.[0]);
+                            }}
+                            accept=".png, .jpg, .jpeg, .svg"
+                        />
+                    )
+                }
 
-              />
-              <div style={{marginTop: "2.7rem"}}>
+                <div style={{marginTop: "2.7rem"}}>
                 <div className="login_forms-label_pink">Құрылған жылы *</div>
                 {formik.touched.year && formik.errors.year ? (
                     <div style={{color: "red"}}>{formik.errors.year}</div>
@@ -284,13 +340,21 @@ const SchoolTableBlock3: FC<IProps> = ({
             <div className="main_table-modal_forms">
               <div className="forms">
                 <div className="login_forms-label_pink">Мектеп аты *</div>
-                <Input
-                    name={"school_name"}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={"Mektep aty"}
-                    disabled
-                />
+                  {formik.touched.school_name && formik.errors.school_name ? (
+                      <div style={{color: "red"}}>{formik.errors.school_name}</div>
+                  ) : null}
+                  <Input
+                      name={"school_name"}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.school_name}
+                      style={{
+                          borderColor:
+                              formik.touched.school_name && formik.errors.school_name
+                                  ? "red"
+                                  : "#c1bbeb",
+                      }}
+                  />
               </div>
 
               <div className="forms">
@@ -975,12 +1039,22 @@ const SchoolTableBlock3: FC<IProps> = ({
                 className="flex"
                 style={{justifyContent: "flex-end", gap: "1.6rem"}}
           >
+                <Button
+                    background="#CACACA"
+                    color="#645C5C"
+                    style={{width: "auto"}}
+                    onClick={showDelete}
+                    type="button"
+                >
+                    Удалить
+                </Button>
             <Button background="#27AE60" style={{width: "auto"}} type="submit">
               Сохранить
             </Button>
           </div>
         </form>
       </div>
+      </>
 );
 };
 

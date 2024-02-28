@@ -9,7 +9,7 @@ import {
 import { Button } from "../../atoms/UI/Buttons/Button";
 import { Input } from "../../atoms/UI/Inputs/Input";
 import { instance } from "@/api/axios.instance";
-import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import {getTokenInLocalStorage, urlToFile} from "@/utils/assets.utils";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import {getSchoolAdminThunk, getSchoolPhotosThunk, getSchoolSocialThunk} from "@/store/thunks/schoolnfo.thunk";
 import { ISchoolPhotos } from "@/types/assets.type";
@@ -19,6 +19,7 @@ import SuccessModal from "@/components/modals/SuccessModal";
 import {useFormik} from "formik";
 import * as Yup from "yup";
 import {useDropzone} from 'react-dropzone'
+import {MdClear} from "react-icons/md";
 
 
 interface UpdateInputProps {
@@ -39,7 +40,7 @@ const SchoolTableBlock2: FC<IProps> = ({
   photosid,
   getId,
 }) => {
-  const dispatch = useAppDispatch();
+    const dispatch = useAppDispatch();
 
   const {
     showSuccessModal,
@@ -49,11 +50,11 @@ const SchoolTableBlock2: FC<IProps> = ({
     showSuccess,
     showError,
   } = useModalLogic();
+  const [photo, setPhoto] = useState<File | null>();
 
   const formik = useFormik({
     initialValues: {
       name: "",
-      photo: null,
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Обязательно*"),
@@ -62,8 +63,8 @@ const SchoolTableBlock2: FC<IProps> = ({
       console.log(values);
       const formData = new FormData();
       formData.append("slider_name", values.name);
-      values.photo &&
-      formData.append("slider_photo", values.photo);
+      photo &&
+      formData.append("slider_photo", photo);
 
       if (!getId) {
         await instance
@@ -116,32 +117,37 @@ const SchoolTableBlock2: FC<IProps> = ({
     }
   });
 
-
-
   useEffect(() => {
-    if (photosid && getId) {
-      formik.resetForm({
-        values: {
-          name: photosid.slider_name || "",
-          photo: null,
-        },
-      });
+    async function fetchPhoto() {
+      if (photosid && getId) {
+        formik.resetForm({
+          values: {
+            name: photosid.slider_name || "",
+          },
+        });
+      }
+
+      const phot = await urlToFile(photosid?.slider_photo);
+      setPhoto(phot);
     }
+
+    fetchPhoto();
   }, [photosid, getId]);
+
 
 
   function onDelete() {
     formik.resetForm({
       values: {
         name: "",
-        photo: null,
       },
     });
+    setPhoto(null);
   }
 
 
   const onDrop = useCallback((acceptedFiles: any[])=> {
-    formik.setFieldValue('photo', acceptedFiles[0]);
+    setPhoto(acceptedFiles[0]);
   }, [])
   const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
 
@@ -191,6 +197,17 @@ const SchoolTableBlock2: FC<IProps> = ({
                         <p>Drag and drop some files here, or click to select files</p>
                   }
                 </div>
+                {photo && <div className="file-item">
+                  <div className="file-info">
+                    <p>{photo?.name}</p>
+                  </div>
+                  <div className="file-actions">
+                    <MdClear onClick={() => {
+                      setPhoto(null)
+                    }}/>
+                  </div>
+                </div>
+                }
               </div>
             </div>
           </div>

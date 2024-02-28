@@ -204,7 +204,7 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
                 photo ? (
                     <div className="file-item">
                       <div className="file-info">
-                        <p>{photo.name.substring(0, 14)}</p>
+                        <p>{photo.name}</p>
                       </div>
                       <div className="file-actions">
                         <MdClear onClick={() => setPhoto(null)}/>
