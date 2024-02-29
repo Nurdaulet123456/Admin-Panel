@@ -203,7 +203,7 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
             </div>
 
             <div className="forms">
-              <div className="login_forms-label_pink">Смена начало</div>
+              <div className="login_forms-label_pink">Начало дополнительного урока</div>
               {formik.touched.start && formik.errors.start ? (
                   <div style={{color: "red"}}>{formik.errors.start}</div>
               ) : null}
@@ -222,7 +222,7 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
             </div>
 
             <div className="forms">
-              <div className="login_forms-label_pink">Смена конец</div>
+              <div className="login_forms-label_pink">Конец дополнительного урока</div>
               {formik.touched.end && formik.errors.end ? (
                   <div style={{color: "red"}}>{formik.errors.end}</div>
               ) : null}

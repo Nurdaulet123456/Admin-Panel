@@ -15,7 +15,7 @@ import {
   getScheduleThunk,
 } from "@/store/thunks/available.thunk";
 import SanatyModalModal from "../modals/SanatyModal";
-import { getKruzhokTeachersInfoThunk } from "@/store/thunks/schoolnfo.thunk";
+import {getKruzhokTeachersInfoThunk, getMapThunk} from "@/store/thunks/schoolnfo.thunk";
 import { useRouter } from "next/router";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage, getWeekDayNumber } from "@/utils/assets.utils";
@@ -24,6 +24,8 @@ import * as Yup from "yup";
 import {getNewsThunk} from "@/store/thunks/pride.thunk";
 import {XIcon} from "@/components/atoms/Icons";
 import {is} from "immutable";
+import {useModalLogic} from "@/hooks/useModalLogic";
+import DeleteModal from "@/components/modals/DeleteModal";
 
 interface IProps {
   onReject?: () => void;
@@ -43,6 +45,12 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
   const iasubject = useTypedSelector((state) => state.ia.iasubject);
   const teachers = useTypedSelector((state) => state.system.teachers);
   const [scheduleId, setScheduleId] = useState<any>();
+  const {
+    showDeleteModal,
+    onDeleteModalClose,
+    showDelete,
+  } = useModalLogic();
+
   useEffect(() => {
     if (
       iaschool &&
@@ -91,8 +99,7 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
 
     fetchSchedule();
   }, [selectedCell]);
-
-
+  console.log(selectedCell)
   const formik = useFormik({
     initialValues: {
       subject: '',
@@ -107,9 +114,7 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
 
     }),
     onSubmit: async (values) => {
-      console.log(values);
       const urlPost = isOsnova ? "https://bilimge.kz/admins/api/schedule/" : "https://bilimge.kz/admins/api/DopUrokApi/";
-      console.log(urlPost)
       if(!scheduleId?.[0]) {
         await instance
             .post(
@@ -204,9 +209,28 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
     });
   }
 
+  const handleDelete = async () => {
+    const urlPost = isOsnova ? "https://bilimge.kz/admins/api/schedule/" : "https://bilimge.kz/admins/api/DopUrokApi/";
+    await instance
+        .delete(`${urlPost}${scheduleId[0].id}/`, {
+          headers: {
+            Authorization: `Token ${getTokenInLocalStorage()}`,
+          },
+        })
+        .then((res) => {
+          console.log("Good")
+        })
+        .catch((e) => console.log(e));
+    dispatch(getMapThunk());
+    onDeleteModalClose();
+    onReject && onReject();
+    dispatch(getScheduleThunk());
+    dispatch(getDopScheduleThunk());
+  };
 
   return (
     <>
+      {showDeleteModal && <DeleteModal onClose = {onDeleteModalClose} handleDelete={handleDelete}/>}
       <Modal>
         <ModalInner>
           <ModalContent>
@@ -329,7 +353,7 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
                     color="#645C5C"
                     style={{width: "auto"}}
                     type="button"
-                    onClick={onDelete}
+                    onClick={showDelete}
                 >
                   Удалить
                 </Button>

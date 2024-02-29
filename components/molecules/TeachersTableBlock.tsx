@@ -10,7 +10,7 @@ import { Button } from "../atoms/UI/Buttons/Button";
 import {Input, Select, TextArea} from "../atoms/UI/Inputs/Input";
 import SanatyModalModal from "../modals/SanatyModal";
 import { instance } from "@/api/axios.instance";
-import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import {getTokenInLocalStorage, urlToFile} from "@/utils/assets.utils";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getTeachersThunk } from "@/store/thunks/pride.thunk";
 import { ITeachers } from "@/types/assets.type";
@@ -230,9 +230,8 @@ const TeachersTableBlock: FC<IProps> = ({
                 )
                 .then(async (res) => {
                   if (res) {
-                    if(photo) {
                       const formData = new FormData();
-
+                      if(photo)
                       formData.append("photo3x4", photo);
                       formData.append("id", String((res as any).id));
 
@@ -262,7 +261,6 @@ const TeachersTableBlock: FC<IProps> = ({
                         }
                       }
                     dispatch(getTeachersThunk());
-                  }
                 }}).catch((err) => console.log(err));
 
       }
@@ -313,9 +311,15 @@ const TeachersTableBlock: FC<IProps> = ({
           }]
         },
       });
-      setPhotoId(teachersid.photo3x4);
+      fetchAndSetPhoto(teachersid.photo3x4);
     }
   }, [teachersid, getId]);
+
+  async function fetchAndSetPhoto(photoUrl?: string) {
+    const phot = await urlToFile(photoUrl);
+    setPhoto(phot);
+  }
+
 
   function onDelete() {
     formik.resetForm({
@@ -365,14 +369,6 @@ const TeachersTableBlock: FC<IProps> = ({
                     </div>
                   </div>
               ) : (
-                  photoId ? <div className="file-item">
-                        <div className="file-info">
-                          <p>{photoId.slice((photoId.lastIndexOf("/")+1))}</p>
-                        </div>
-                        <div className="file-actions">
-                          <MdClear onClick={() => setPhotoId(null)}/>
-                        </div>
-                      </div> :
                       <Input type="file" name="file" onChange={(event) => {
                         return setPhoto(event?.target?.files?.[0]);
                       }}/>

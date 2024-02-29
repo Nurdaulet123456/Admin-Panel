@@ -153,23 +153,21 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
         onDeleteModalClose();
     };
 
-
-    console.log(mapId?.[0]?.id)
     useEffect(() => {
         const fetchFiles = async () => {
             if (mapId && mapId.length > 0) {
                 try {
-                    const map = await urlToFile(mapId[0].map, "svg");
+                    const map = await urlToFile(mapId[0].map);
                     setMap(map);
-                    const flat1 = await urlToFile(mapId[0].flat1, "svg");
+                    const flat1 = await urlToFile(mapId[0].flat1);
                     setFlat1(flat1);
-                    const flat2 = await urlToFile(mapId[0].flat2, "svg");
+                    const flat2 = await urlToFile(mapId[0].flat2);
                     setFlat2(flat2);
-                    const flat3 = await urlToFile(mapId[0].flat3, "svg");
+                    const flat3 = await urlToFile(mapId[0].flat3);
                     setFlat3(flat3);
-                    const flat4 = await urlToFile(mapId[0].flat4, "svg");
+                    const flat4 = await urlToFile(mapId[0].flat4);
                     setFlat4(flat4);
-                    const flat5 = await urlToFile(mapId[0].flat5, "svg");
+                    const flat5 = await urlToFile(mapId[0].flat5);
                     setFlat5(flat5);
                 } catch (error) {
                     console.error("Error fetching files", error);

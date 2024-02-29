@@ -11,7 +11,7 @@ interface IProps {
 const Delete: FC<IProps> = ({ onClose, handleDelete }) => {
     return (
         <>
-            <Modal>
+            <Modal style={{zIndex: "5000"}}>
                 <ModalInner>
                     <ModalContent>
                         <div className="modal_header">

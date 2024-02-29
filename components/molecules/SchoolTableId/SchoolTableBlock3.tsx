@@ -106,6 +106,7 @@ const SchoolTableBlock3: FC<IProps> = ({
     }),
     onSubmit: async (values) => {
         const data = {
+                school_name: values.school_name,
                 school_address: values.school_address,
                 established: parseInt(values.year, 10) || undefined,
                 amount_of_children: parseInt(values.childNumber, 10) || undefined,

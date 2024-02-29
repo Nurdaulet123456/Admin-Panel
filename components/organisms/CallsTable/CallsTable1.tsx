@@ -51,8 +51,8 @@ const CallsTable: FC<IProps> = ({ handleClickGetIdOS }) => {
               <Th>План звонков</Th>
               <Th>Номер урока</Th>
               <Th>Смена</Th>
-              <Th>Смена начало</Th>
-              <Th>Смена конец</Th>
+              <Th>Начало урока</Th>
+              <Th>Конец урока</Th>
               <Th>Действие</Th>
             </tr>
           </Thead>

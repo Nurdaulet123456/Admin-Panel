@@ -14,7 +14,7 @@ import {
   getClassNameThunk,
   getSchoolSportThunk,
 } from "@/store/thunks/pride.thunk";
-import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import {getTokenInLocalStorage, urlToFile} from "@/utils/assets.utils";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import ClassNamesModal from "@/components/modals/ClassNames";
 import { ISchoolSport } from "@/types/assets.type";
@@ -94,6 +94,7 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
       class_id: Yup.number().required("Обязательно*"),
     }),
     onSubmit: async (values) => {
+      console.log(photo)
       if (!getId) {
                 await instance
                   .post("https://bilimge.kz/admins/api/Sport_SuccessApi/", {
@@ -101,7 +102,6 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
                     classl: String(values.class_id),
                     student_success: values.student_success,
                     photo: photo
-
                   }, {
                     headers: {
                       Authorization: `Token ${getTokenInLocalStorage()}`,
@@ -127,17 +127,12 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
               } else {
                 await instance
                   .put(`https://bilimge.kz/admins/api/Sport_SuccessApi/${getId}/`,
-                      photo ? {
+                      {
                         fullname: values.fullname,
-                            classl: String(values.class_id),
+                        classl: String(values.class_id),
                         student_success: values.student_success,
-                            photo: photo
-                      } :
-                          {
-                            fullname: values.fullname,
-                            classl: values.class_id,
-                            student_success: values.student_success,
-                          }, {
+                        photo: photo
+                      } , {
                     headers: {
                       Authorization: `Token ${getTokenInLocalStorage()}`,
                       "Content-Type": "multipart/form-data",
@@ -174,9 +169,13 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
           class_id: sportid.classl || "",
         },
       });
-      setPhotoId(sportid.photo)
+      fetchAndSetPhoto(sportid.photo)
     }
   }, [sportid, getId]);
+  async function fetchAndSetPhoto(photoUrl?: string) {
+    const phot = await urlToFile(photoUrl);
+    setPhoto(phot);
+  }
 
 
   function onDelete() {
@@ -211,14 +210,6 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
                       </div>
                     </div>
                 ) : (
-                    photoId ? <div className="file-item">
-                          <div className="file-info">
-                            <p>{photoId.slice((photoId.lastIndexOf("/") + 1))}</p>
-                          </div>
-                          <div className="file-actions">
-                            <MdClear onClick={() => setPhotoId(null)}/>
-                          </div>
-                        </div> :
                         <Input type="file" name="file" onChange={(event) => {
                           return setPhoto(event?.target?.files?.[0]);
                         }}/>

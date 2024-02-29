@@ -110,5 +110,5 @@ export async function urlToFile(url?: string): Promise<File | null> {
   const blob = await response.blob();
   const filename = getFilenameFromUrl(url || "");
   return new File([blob], filename, { type: mimeType });
-
 }
+
