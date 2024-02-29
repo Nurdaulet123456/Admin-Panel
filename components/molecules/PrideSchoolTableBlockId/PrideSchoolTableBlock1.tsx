@@ -29,6 +29,7 @@ import {getMenuThunk} from "@/store/thunks/schoolnfo.thunk";
 import school from "@/pages/school";
 import {log} from "console";
 import {MdClear} from "react-icons/md";
+import {headers} from "next/headers";
 
 interface UpdateInputProps {
   fullname: string;
@@ -57,7 +58,6 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
   const [id, setId] = useState<number>();
   const clasname = useTypedSelector((state) => state.pride.classname);
   const [photo, setPhoto] = useState<File | null>()
-  const [photoId, setPhotoId] = useState<string | null>()
 
   const {
     showSuccessModal,
@@ -94,7 +94,12 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
       class_id: Yup.number().required("Обязательно*"),
     }),
     onSubmit: async (values) => {
-      console.log(photo)
+      let headers = photo ? {
+        Authorization: `Token ${getTokenInLocalStorage()}`,
+        "Content-Type": "multipart/form-data",
+      } : {
+        Authorization: `Token ${getTokenInLocalStorage()}`,
+      };
       if (!getId) {
                 await instance
                   .post("https://bilimge.kz/admins/api/Sport_SuccessApi/", {
@@ -131,22 +136,17 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
                         fullname: values.fullname,
                         classl: String(values.class_id),
                         student_success: values.student_success,
-                        photo: photo
+                        photo: photo || null
                       } , {
-                    headers: {
-                      Authorization: `Token ${getTokenInLocalStorage()}`,
-                      "Content-Type": "multipart/form-data",
-                    },
+                    headers: headers,
                   })
                   .then((res) => {
                     if (res) {
-                      if (res) {
                         dispatch(getSchoolSportThunk());
                         showSuccess();
                         if (showSuccessModal && onReject) {
                           onReject(false);
                         }
-                      }
                     }
                   })
                   .catch((e) => {
@@ -158,7 +158,6 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
               }
             }
   });
-
 
   useEffect(() => {
     if (sportid && getId) {

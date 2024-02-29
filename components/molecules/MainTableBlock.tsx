@@ -13,7 +13,7 @@ import { instance } from "@/api/axios.instance";
 import {
   getTokenInLocalStorage,
   getWeekDayNumber,
-  getWeekRussianDayString,
+  getWeekRussianDayString, urlToFile,
 } from "@/utils/assets.utils";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import {
@@ -130,7 +130,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
                   if (res) {
                     const formData = new FormData();
 
-                    formData.append("photo", values.photo ? values.photo : "");
+                    formData.append("photo", photo ? photo : "");
                     formData.append("id", String((res as any).id));
 
                     try {
@@ -172,10 +172,9 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
                 })
                 .then(async (res) => {
                   if (res) {
-                    if(values.photo) {
                       const formData = new FormData();
-
-                      formData.append("photo", values.photo ? values.photo : "");
+                      if(photo)
+                      formData.append("photo", photo ? photo : "");
                       formData.append("id", String((res as any).id));
                       try {
                         const uploadPhotoResponse = await instance.put(
@@ -197,7 +196,6 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
                       }
                     }
                     dispatch(getKruzhokInfoThunk());
-                  }
                 })
                 .catch((e) => {
                   console.log(e);
@@ -234,10 +232,13 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
           times: setTime(kruzhokid.lessons),
         },
       });
-      setPhotoId(kruzhokid.photo);
+      fetchAndSetPhoto(kruzhokid.photo);
     }
   }, [kruzhokid, getId]);
-
+  async function fetchAndSetPhoto(photoUrl?: string) {
+    const phot = await urlToFile(photoUrl);
+    setPhoto(phot);
+  }
 
   function onDelete() {
     formik.resetForm({
@@ -261,9 +262,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
   const [photo, setPhoto] = useState<any>(null);
 
   const onDrop = useCallback((acceptedFiles: any[])=> {
-    console.log(acceptedFiles)
     setPhoto(acceptedFiles[0]);
-    formik.setFieldValue('photo', acceptedFiles[0]);
   }, [])
   const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
 
@@ -293,7 +292,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
                 }
 
               </div>
-              {photo ? <div className="file-item">
+              {photo && <div className="file-item">
                 <div className="file-info">
                   <p>{photo?.name.substring(0, 14)}</p>
                 </div>
@@ -303,17 +302,8 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
                     formik.setFieldValue("photo", null);
                   }}/>
                 </div>
-              </div> : photoId &&
-                  <div className="file-item">
-                    <div className="file-info">
-                      <p>{photoId.slice((photoId.lastIndexOf("/") + 1))}</p>
-                    </div>
-                    <div className="file-actions">
-                      <MdClear onClick={() => setPhotoId(null)}/>
-                    </div>
-                  </div>
+              </div>
               }
-
             </div>
 
             <div className="main_table-modal_forms">

@@ -191,11 +191,9 @@ const SchoolTableBlock3: FC<IProps> = ({
                 )
                 .then(async (res) => {
                     if (res) {
-                        if(photo) {
-                            console.log(photo)
 
                             const formData = new FormData();
-
+                            if(photo)
                             formData.append("photo", photo ? photo : "");
                             formData.append("id", String((res as any).id));
 
@@ -213,7 +211,6 @@ const SchoolTableBlock3: FC<IProps> = ({
                             } catch (err) {
                                 console.log(err);
                             }
-                        }
                     }
                 })
                 .catch((err) => {
@@ -281,8 +278,8 @@ const SchoolTableBlock3: FC<IProps> = ({
                 console.log("Good")
             })
             .catch((e) => console.log(e));
-        dispatch(getSchoolPassportThunk());
         onDeleteModalClose();
+        dispatch(getSchoolPassportThunk());
     };
 
 

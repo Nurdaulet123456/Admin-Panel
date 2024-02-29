@@ -158,7 +158,6 @@ const TeachersTableBlock: FC<IProps> = ({
     //   )
     // }),
     onSubmit: async (values) => {
-      console.log(values);
       if (!getId) {
               await instance
                 .post(
@@ -179,7 +178,7 @@ const TeachersTableBlock: FC<IProps> = ({
                 .then(async (res) => {
                   if (res) {
                     const formData = new FormData();
-
+                    if(photo)
                     formData.append("photo3x4", photo ? photo : "");
                     formData.append("id", String((res as any).id));
 

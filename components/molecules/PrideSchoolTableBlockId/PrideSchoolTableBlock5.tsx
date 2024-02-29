@@ -11,7 +11,7 @@ import { Input } from "../../atoms/UI/Inputs/Input";
 import { instance } from "@/api/axios.instance";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import {getSchoolAtestThunk, getSchoolSportThunk} from "@/store/thunks/pride.thunk";
-import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import {getTokenInLocalStorage, urlToFile} from "@/utils/assets.utils";
 import { ISchoolAtest } from "@/types/assets.type";
 import { useModalLogic } from "@/hooks/useModalLogic";
 import ErrorModal from "@/components/modals/ErrorModal";
@@ -67,6 +67,12 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
           .required('Годовой диапазон обязателен для заполнения'),
     }),
     onSubmit: async (values) => {
+      let headers = photo ? {
+        Authorization: `Token ${getTokenInLocalStorage()}`,
+        "Content-Type": "multipart/form-data",
+      } : {
+        Authorization: `Token ${getTokenInLocalStorage()}`,
+      };
       if (!getId) {
         await instance
             .post("https://bilimge.kz/admins/api/School_RedCertificateApi/", {
@@ -99,21 +105,13 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
       } else {
         await instance
             .put(`https://bilimge.kz/admins/api/School_RedCertificateApi/${getId}/`,
-                photo ? {
+                {
                       fullname: values.fullname,
                       endyear: values.endyear,
                       student_success: values.student_success,
                       photo: photo
-                    } :
-                    {
-                      fullname: values.fullname,
-                      endyear: values.endyear,
-                      student_success: values.student_success,
-                    }, {
-                  headers: {
-                    Authorization: `Token ${getTokenInLocalStorage()}`,
-                    "Content-Type": "multipart/form-data",
-                  },
+                    } , {
+                  headers: headers,
                 })
             .then((res) => {
               if (res) {
@@ -146,7 +144,8 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
           endyear: atestid.endyear || "",
         },
       });
-      setPhotoId(atestid.photo);
+      fetchAndSetPhoto(atestid.photo);
+
     }
   }, [atestid, getId]);
 
@@ -160,7 +159,10 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
       },
     });
     setPhoto(null);
-    setPhotoId(null);
+  }
+  async function fetchAndSetPhoto(photoUrl?: string) {
+    const phot = await urlToFile(photoUrl);
+    setPhoto(phot);
   }
 
 
@@ -185,14 +187,7 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
                         <MdClear onClick={() => setPhoto(null)}/>
                       </div>
                     </div>
-                ) : (photoId ? <div className="file-item">
-                          <div className="file-info">
-                            <p>{photoId.slice((photoId.lastIndexOf("/") + 1))}</p>
-                          </div>
-                          <div className="file-actions">
-                            <MdClear onClick={() => setPhotoId(null)}/>
-                          </div>
-                        </div> :
+                ) : (
                     <Input type="file" name="file" onChange={(event) => {
                       return setPhoto(event?.target?.files?.[0]);
                     }}

@@ -11,7 +11,7 @@ import { Input } from "../../atoms/UI/Inputs/Input";
 import { instance } from "@/api/axios.instance";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import {getSchoolAdminThunk, getSchoolDirectorThunk} from "@/store/thunks/schoolnfo.thunk";
-import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import {getTokenInLocalStorage, urlToFile} from "@/utils/assets.utils";
 import {ISchoolAdmin, ISchoolDirector} from "@/types/assets.type";
 import { useModalLogic } from "@/hooks/useModalLogic";
 import ErrorModal from "@/components/modals/ErrorModal";
@@ -58,15 +58,26 @@ const SchoolTableBlock: FC<IProps> = ({
             name: Yup.string().required("Обязательно*"),
         }),
         onSubmit: async (values) => {
-            const formData = new FormData();
-            formData.append("director_name", values.name);
-            formData.append("phone_number", values.tel);
-            formData.append("email", values.email);
-            photo && formData.append("director_photo", photo);
+            // const formData = new FormData();
+            // formData.append("director_name", values.name);
+            // formData.append("phone_number", values.tel);
+            // formData.append("email", values.email);
+            // photo && formData.append("director_photo", photo);
+            let headers = photo ? {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+                "Content-Type": "multipart/form-data",
+            } : {
+                Authorization: `Token ${getTokenInLocalStorage()}`,
+            };
             console.log(directorId)
             if (directorId && directorId.length === 0) {
                 await instance
-                    .post("https://bilimge.kz/admins/api/school_director/", formData, {
+                    .post("https://bilimge.kz/admins/api/school_director/", {
+                        director_name: values.name,
+                        phone_number: values.tel,
+                        email: values.email,
+                        director_photo: photo
+                    }, {
                         headers: {
                             Authorization: `Token ${getTokenInLocalStorage()}`,
                             "Content-Type": "multipart/form-data",
@@ -90,11 +101,13 @@ const SchoolTableBlock: FC<IProps> = ({
                     });
             } else {
                 await instance
-                    .put(`https://bilimge.kz/admins/api/school_director/1/`, formData, {
-                        headers: {
-                            Authorization: `Token ${getTokenInLocalStorage()}`,
-                            "Content-Type": "multipart/form-data",
-                        },
+                    .put(`https://bilimge.kz/admins/api/school_director/1/`, {
+                        director_name: values.name,
+                        phone_number: values.tel,
+                        email: values.email,
+                        director_photo: photo
+                    }, {
+                        headers: headers,
                     })
                     .then((res) => {
                         if (res) {
@@ -126,8 +139,13 @@ const SchoolTableBlock: FC<IProps> = ({
                 },
             });
         }
-        setPhotoId(directorId?.[0]?.director_photo)
+        fetchAndSetPhoto(directorId?.[0]?.director_photo);
     }, [directorId, getId]);
+
+    async function fetchAndSetPhoto(photoUrl?: string) {
+        const phot = await urlToFile(photoUrl);
+        setPhoto(phot);
+    }
 
 
     function onDelete() {
@@ -139,7 +157,6 @@ const SchoolTableBlock: FC<IProps> = ({
             },
         });
         setPhoto(null);
-        setPhotoId(null);
     }
 
     return (
@@ -163,14 +180,7 @@ const SchoolTableBlock: FC<IProps> = ({
                                             <MdClear onClick={() => setPhoto(null)}/>
                                         </div>
                                     </div>
-                                ) : ( photoId ? <div className="file-item">
-                                            <div className="file-info">
-                                                <p>{photoId.slice((photoId.lastIndexOf("/") + 1))}</p>
-                                            </div>
-                                            <div className="file-actions">
-                                                <MdClear onClick={() => setPhotoId(null)}/>
-                                            </div>
-                                        </div> :
+                                ) : (
                                     <Input type="file" name="file" onChange={(event) => {
                                         return setPhoto(event?.target?.files?.[0]);
                                     }}

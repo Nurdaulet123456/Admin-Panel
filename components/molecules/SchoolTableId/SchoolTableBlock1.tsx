@@ -11,7 +11,7 @@ import { Input } from "../../atoms/UI/Inputs/Input";
 import { instance } from "@/api/axios.instance";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getSchoolAdminThunk } from "@/store/thunks/schoolnfo.thunk";
-import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import {getTokenInLocalStorage, urlToFile} from "@/utils/assets.utils";
 import { ISchoolAdmin } from "@/types/assets.type";
 import { useModalLogic } from "@/hooks/useModalLogic";
 import ErrorModal from "@/components/modals/ErrorModal";
@@ -60,15 +60,20 @@ const SchoolTableBlock1: FC<IProps> = ({
       tel: Yup.number().required("Обязательно*"),
     }),
     onSubmit: async (values) => {
-      const formData = new FormData();
-      formData.append("administrator_name", values.name);
-      formData.append("phone_number", values.tel);
-      formData.append("position", values.prof);
-      photo && formData.append("administator_photo", photo);
-
+      let headers = photo ? {
+        Authorization: `Token ${getTokenInLocalStorage()}`,
+        "Content-Type": "multipart/form-data",
+      } : {
+        Authorization: `Token ${getTokenInLocalStorage()}`,
+      };
       if (!getId) {
         await instance
-            .post("https://bilimge.kz/admins/api/school_administration/", formData, {
+            .post("https://bilimge.kz/admins/api/school_administration/", {
+              administrator_name: values.name,
+              phone_number: values.tel,
+              position: values.prof,
+              administator_photo: photo
+            }, {
               headers: {
                 Authorization: `Token ${getTokenInLocalStorage()}`,
                 "Content-Type": "multipart/form-data",
@@ -92,11 +97,13 @@ const SchoolTableBlock1: FC<IProps> = ({
             });
       } else {
         await instance
-            .put(`https://bilimge.kz/admins/api/school_administration/${getId}/`, formData, {
-              headers: {
-                Authorization: `Token ${getTokenInLocalStorage()}`,
-                "Content-Type": "multipart/form-data",
-              },
+            .put(`https://bilimge.kz/admins/api/school_administration/${getId}/`, {
+              administrator_name: values.name,
+              phone_number: values.tel,
+              position: values.prof,
+              administator_photo: photo
+            }, {
+              headers: headers,
             })
             .then((res) => {
               if (res) {
@@ -127,9 +134,15 @@ const SchoolTableBlock1: FC<IProps> = ({
           tel: adminid.phone_number || "",
         },
       });
-      setPhotoId(adminid.administator_photo);
+      fetchAndSetPhoto(adminid.administator_photo);
     }
   }, [adminid, getId]);
+
+  async function fetchAndSetPhoto(photoUrl?: string) {
+    const phot = await urlToFile(photoUrl);
+    setPhoto(phot);
+  }
+
 
 
   function onDelete() {
@@ -166,14 +179,6 @@ const SchoolTableBlock1: FC<IProps> = ({
                       </div>
                     </div>
                 ) : (
-                    photoId ? <div className="file-item">
-                          <div className="file-info">
-                            <p>{photoId.slice((photoId.lastIndexOf("/") + 1))}</p>
-                          </div>
-                          <div className="file-actions">
-                            <MdClear onClick={() => setPhotoId(null)}/>
-                          </div>
-                        </div> :
                     <Input type="file" name="file" onChange={(event) => {
                       return setPhoto(event?.target?.files?.[0]);
                     }}

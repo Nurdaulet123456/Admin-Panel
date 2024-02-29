@@ -14,7 +14,7 @@ import {
   getClassNameThunk,
   getSchoolOnerThunk, getSchoolSportThunk,
 } from "@/store/thunks/pride.thunk";
-import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import {getTokenInLocalStorage, urlToFile} from "@/utils/assets.utils";
 import { ISchoolOner } from "@/types/assets.type";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import ClassNamesModal from "@/components/modals/ClassNames";
@@ -90,6 +90,12 @@ const PrideSchoolTableBlock2: FC<IProps> = ({
       class_id: Yup.number().required("Обязательно*"),
     }),
     onSubmit: async (values) => {
+      let headers = photo ? {
+        Authorization: `Token ${getTokenInLocalStorage()}`,
+        "Content-Type": "multipart/form-data",
+      } : {
+        Authorization: `Token ${getTokenInLocalStorage()}`,
+      };
       if (!getId) {
         await instance
             .post("https://bilimge.kz/admins/api/Oner_SuccessApi/",  {
@@ -122,21 +128,13 @@ const PrideSchoolTableBlock2: FC<IProps> = ({
       } else {
         await instance
             .put(`https://bilimge.kz/admins/api/Oner_SuccessApi/${getId}/`,
-                photo ? {
+                {
                       fullname: values.fullname,
                       classl: values.class_id,
                       student_success: values.student_success,
                       photo: photo
-                    } :
-                    {
-                      fullname: values.fullname,
-                      classl: values.class_id,
-                      student_success: values.student_success,
                     }, {
-                  headers: {
-                    Authorization: `Token ${getTokenInLocalStorage()}`,
-                    "Content-Type": "multipart/form-data",
-                  },
+                  headers:headers,
                 })
             .then((res) => {
               if (res) {
@@ -169,9 +167,14 @@ const PrideSchoolTableBlock2: FC<IProps> = ({
           class_id: onerid.classl || "",
         },
       });
-      setPhotoId(onerid.photo);
+      fetchAndSetPhoto(onerid.photo);
+
     }
   }, [onerid, getId]);
+  async function fetchAndSetPhoto(photoUrl?: string) {
+    const phot = await urlToFile(photoUrl);
+    setPhoto(phot);
+  }
 
   function onDelete() {
     formik.resetForm({
@@ -208,14 +211,6 @@ const PrideSchoolTableBlock2: FC<IProps> = ({
                       </div>
                     </div>
                 ) : (
-                    photoId ? <div className="file-item">
-                          <div className="file-info">
-                            <p>{photoId.slice((photoId.lastIndexOf("/") + 1))}</p>
-                          </div>
-                          <div className="file-actions">
-                            <MdClear onClick={() => setPhotoId(null)}/>
-                          </div>
-                        </div> :
                     <Input type="file" name="file" onChange={(event) => {
                       return setPhoto(event?.target?.files?.[0]);
                     }} />
