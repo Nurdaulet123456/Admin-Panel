@@ -14,7 +14,6 @@ interface IProps {
 const TeachersTable: FC<IProps> = ({ handleClickGetId }) => {
   const disptach = useAppDispatch();
   const teachers = useTypedSelector((state) => state.pride.teachers);
-
   useEffect(() => {
     if (teachers) {
       disptach(getTeachersThunk());
@@ -53,30 +52,29 @@ const TeachersTable: FC<IProps> = ({ handleClickGetId }) => {
           </Thead>
 
           {teachers &&
-            teachers.map((item, index) => (
-              <Tr key={item.id}>
-                <Td>{index + 1}</Td>
-                <Td>{item.full_name}</Td>
-                <Td>
-                  <div className="img-block">
-                    <img src={item.photo3x4} alt={""} />
-                  </div>
-                </Td>
-                <Td>
-                  <div
-                    onClick={() =>
-                      handleClickGetId && handleClickGetId(item.id)
-                    }
-                  >
-                    <PenIcons />
-                  </div>
+              teachers.slice().sort((a, b) => a.full_name.localeCompare(b.full_name))
+                  .map((item, index) => (
+                      <Tr key={item.id}>
+                        <Td>{index + 1}</Td>
+                        <Td>{item.full_name}</Td>
+                        <Td>
+                          <div className="img-block">
+                            <img src={item.photo3x4} alt="" />
+                          </div>
+                        </Td>
+                        <Td>
+                          <div onClick={() => handleClickGetId && handleClickGetId(item.id)}>
+                            <PenIcons />
+                          </div>
 
-                  <div onClick={() => handleDeleteItems(item.id)}>
-                    <DeleteIcons />
-                  </div>
-                </Td>
-              </Tr>
-            ))}
+                          <div onClick={() => handleDeleteItems(item.id)}>
+                            <DeleteIcons />
+                          </div>
+                        </Td>
+                      </Tr>
+                  ))
+          }
+
         </Table>
       </div>
     </div>
