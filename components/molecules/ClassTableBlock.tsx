@@ -217,9 +217,14 @@ const ClassTableBlock: FC<IProps> = ({
                 </div>
                 <Select {...formik.getFieldProps("classRuk")}>
                   <option value="">Выберите классного руководителя</option>
-                  {teachers?.map((item, index) => (
-                      <option key={index} value={item.id}>{item.full_name}</option>
-                  ))}
+                    {teachers && teachers.slice().sort((a, b) => {
+                        const nameA = a.full_name || '';
+                        const nameB = b.full_name || '';
+
+                        return nameA.localeCompare(nameB);
+                    }).map((item, index) => (
+                        <option key={index} value={item.id}>{item.full_name}</option>
+                    ))}
                 </Select>
               </div>
             </div>
