@@ -66,7 +66,7 @@ export const assetsApi = {
   },
 
   async getKruzhokTeacher(): Promise<any[]> {
-    return await instance.get("https://bilimge.kz/admins/api/kruzhok/available_teachers/", {
+    return await instance.get("https://bilimge.kz/admins/api/available_teachers/", {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },
