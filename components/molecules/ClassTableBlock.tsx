@@ -99,8 +99,8 @@ const ClassTableBlock: FC<IProps> = ({
                   language: values.language,
                   classroom: values.cabinet,
                   class_teacher: values.classRuk,
-                  osnova_plan: Number(values.calls1),
-                  dopurok_plan: Number(values.calls2),
+                  osnova_plan: values.calls1 || null,
+                  dopurok_plan: values.calls2 || null,
                     osnova_smena: smena1,
                     dopurak_smena: smena2,
 
