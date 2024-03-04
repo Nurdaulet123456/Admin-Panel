@@ -71,7 +71,7 @@ const CabinetTableBlock: FC<IProps> = ({
             "https://www.bilimge.kz/admins/api/classroom/",
             {
               classroom_name: values.name,
-              classroom_number: Number(values.gr),
+              classroom_number: values.gr,
               flat: Number(values.floor),
               korpus: Number(values.corpuse),
             },
@@ -103,7 +103,7 @@ const CabinetTableBlock: FC<IProps> = ({
             `https://www.bilimge.kz/admins/api/classroom/${getId}/`,
             {
               classroom_name: values.name,
-              classroom_number: Number(values.gr),
+              classroom_number: values.gr,
               flat: Number(values.floor),
               korpus: Number(values.corpuse),
             },
