@@ -131,8 +131,8 @@ const ClassTableBlock: FC<IProps> = ({
                   class_teacher: values.classRuk,
                   osnova_plan: values.calls1 ? values.calls1 : null,
                   dopurok_plan: values.calls2 ? values.calls2 : null ,
-                  osnova_smena: smena1,
-                  dopurak_smena: smena2,
+                  osnova_smena: smena1 && smena1 > 0 ? smena1 : null,
+                  dopurak_smena: smena2 && smena2 > 0 ? smena2 : null,
                 },
                 {
                   headers: {
@@ -271,9 +271,9 @@ const ClassTableBlock: FC<IProps> = ({
                 <div className="login_forms-label_pink">План звонка</div>
                 <Select {...formik.getFieldProps("calls1")}  onChange={(event) => {
                     // Обновление через контекст
-                    const selectedItem = os?.find(item => item.id === Number(event.target.value));
+                    const selectedItem = os?.find(item => item.plan === Number(event.target.value));
                     if (selectedItem) {
-                        setSmena1(selectedItem.plan);
+                        setSmena1(selectedItem.smena);
                     }
                     formik.handleChange(event);
                 }}>
@@ -297,7 +297,11 @@ const ClassTableBlock: FC<IProps> = ({
               <div className="sanaty">
                 <div className="login_forms-label_pink">План звонка</div>
                 <Select {...formik.getFieldProps("calls2")} onChange={(event) => {
-                    setSmena2(Number(event.target.value));
+                    const selectedItem = dop?.find(item => item.plan === Number(event.target.value));
+                    console.log(selectedItem)
+                    if (selectedItem) {
+                        setSmena2(selectedItem.smena);
+                    }
                     formik.handleChange(event);
                 }}>
                   <option value="">Выберите номер звонка</option>
