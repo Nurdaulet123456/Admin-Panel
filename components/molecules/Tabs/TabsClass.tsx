@@ -20,7 +20,25 @@ const TabsClass = () => {
     <>
       <TabsClassStyled>
         {classess &&
-          classess?.map((item) => (
+          classess?.slice().sort((a, b) => {
+            // Извлекаем числовую и текстовую части для каждого элемента
+            const matchA = a.class_name?.match(/^(\d+)([А-Яа-яA-Za-z]*)$/);
+            const matchB = b.class_name?.match(/^(\d+)([А-Яа-яA-Za-z]*)$/);
+
+            const numberA = parseInt(matchA?.[1] || "", 10);
+            const numberB = parseInt(matchB?.[1] || "", 10);
+
+            const textA = matchA?.[2] || "";
+            const textB = matchB?.[2] || "";
+
+            // Сначала сравниваем числовые части
+            if (numberA !== numberB) {
+              return numberA - numberB;
+            }
+
+            // Если числовые части равны, сравниваем текстовые части
+            return textA.localeCompare(textB, 'ru');
+          }).map((item) => (
             <Link href={`/schedule/1/${item.class_name}`} key={item.id}>
               <TabClassStyled>{item.class_name}</TabClassStyled>
             </Link>

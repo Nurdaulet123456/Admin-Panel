@@ -90,6 +90,7 @@ const ClassTableBlock: FC<IProps> = ({
     }),
     onSubmit: async (values) => {
       console.log(values);
+        console.log(values.calls1? true: false)
       if (!getId) {
         await instance
             .post(
@@ -99,10 +100,10 @@ const ClassTableBlock: FC<IProps> = ({
                   language: values.language,
                   classroom: values.cabinet,
                   class_teacher: values.classRuk,
-                  osnova_plan: values.calls1 ? Number(values.calls1) : null,
-                  dopurok_plan: values.calls2 ? Number(values.calls2) : null ,
-                    osnova_smena: smena1,
-                    dopurak_smena: smena2,
+                  osnova_plan: values.calls1 ? values.calls1 : null,
+                  dopurok_plan: values.calls2 ? values.calls2 : null ,
+                    osnova_smena: smena1 && smena1 > 0 ? smena1 : null,
+                    dopurak_smena: smena2 && smena2 > 0 ? smena2 : null,
 
                 },
                 {
@@ -128,8 +129,8 @@ const ClassTableBlock: FC<IProps> = ({
                   language: values.language,
                   classroom: values.cabinet,
                   class_teacher: values.classRuk,
-                  osnova_plan: values.calls1 ? Number(values.calls1) : null,
-                  dopurok_plan: values.calls2 ? Number(values.calls2) : null ,
+                  osnova_plan: values.calls1 ? values.calls1 : null,
+                  dopurok_plan: values.calls2 ? values.calls2 : null ,
                   osnova_smena: smena1,
                   dopurak_smena: smena2,
                 },
@@ -180,7 +181,7 @@ const ClassTableBlock: FC<IProps> = ({
             },
         });
         setSmena1(0);
-        setSmena2(0)
+        setSmena2(0);
     }
 
   return (
