@@ -10,6 +10,7 @@ import {
   getClassRoomIdThunk,
   getClassRoomThunk,
 } from "@/store/thunks/schoolnfo.thunk";
+import {scrollToTop} from "@/utils/assets.utils";
 
 const CabinetPage = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
@@ -35,7 +36,7 @@ const CabinetPage = () => {
 
   const handleClickGetId = (id?: number) => {
     setEditActive(true);
-
+    scrollToTop();
     setId(id);
 
     if (id) {

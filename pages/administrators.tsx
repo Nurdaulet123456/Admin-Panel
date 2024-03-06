@@ -8,6 +8,7 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import { getUsersThunk } from "@/store/thunks/schoolnfo.thunk";
 import { getUserIdThunk } from "@/store/thunks/available.thunk";
+import {scrollToTop} from "@/utils/assets.utils";
 
 const MainPage = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
@@ -34,7 +35,7 @@ const MainPage = () => {
     setEditActive(true);
     setShowActive(!showActive);
     setId(id);
-
+    scrollToTop();
     if (id) {
       dispatch(getUserIdThunk(id));
     }

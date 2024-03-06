@@ -296,7 +296,7 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
                     <Select {...formik.getFieldProps("classroom")}>
                       <option value="">Выберите кабинет</option>
                       {iaclassrooms?.map((item, index) => (
-                          <option key={index} value={item.id}>{item.classroom_name}</option>
+                          <option key={index} value={item.id}>{item.classroom_name}/{item.classroom_number}</option>
                       ))}
                     </Select>
                   </div>

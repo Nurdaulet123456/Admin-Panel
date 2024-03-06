@@ -7,6 +7,7 @@ import { useTypedSelector } from "@/hooks/useTypedSelector";
 import MainLayouts from "@/layouts/MainLayouts";
 import { getNewsIdThunk } from "@/store/thunks/pride.thunk";
 import { useState } from "react";
+import {scrollToTop} from "@/utils/assets.utils";
 
 const NewsPage = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
@@ -25,6 +26,7 @@ const NewsPage = () => {
 
   const handleClickGetId = (id?: number) => {
     setEditActive(true);
+    scrollToTop();
 
     setId(id);
 

@@ -10,7 +10,7 @@ import SuperAdminTable from "@/components/organisms/SuperAdmin/SuperAdminTable";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import SuperAdminLayouts from "@/layouts/SuperAdminLayouts";
-import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import {getTokenInLocalStorage, scrollToTop} from "@/utils/assets.utils";
 import { LogoutIcons } from "@/components/atoms/Icons";
 
 const MainPage = () => {
@@ -37,7 +37,7 @@ const MainPage = () => {
     setEditActive(true);
     setShowActive(!showActive);
     setGetId(id);
-
+    scrollToTop();
     if (id) {
       dispatch(getSchoolIdThunk(id));
     }

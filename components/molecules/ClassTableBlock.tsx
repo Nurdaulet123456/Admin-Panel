@@ -298,7 +298,6 @@ const ClassTableBlock: FC<IProps> = ({
                 <div className="login_forms-label_pink">План звонка</div>
                 <Select {...formik.getFieldProps("calls2")} onChange={(event) => {
                     const selectedItem = dop?.find(item => item.plan === Number(event.target.value));
-                    console.log(selectedItem)
                     if (selectedItem) {
                         setSmena2(selectedItem.smena);
                     }

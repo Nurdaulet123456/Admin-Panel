@@ -402,8 +402,6 @@ const cities = [
     name: "ulytau_oblast",
     nameUpper: "Улытауская область"
   },
-
-
 ]
 
 export default SuperAdminTableBlock;

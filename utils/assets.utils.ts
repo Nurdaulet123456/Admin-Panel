@@ -112,3 +112,10 @@ export async function urlToFile(url?: string): Promise<File | null> {
   return new File([blob], filename, { type: mimeType });
 }
 
+export const scrollToTop = () => {
+  // Прокрутка страницы на самый верх
+  window.scrollTo({
+    top: 0, // Верх страницы
+    behavior: 'smooth' // Плавная прокрутка
+  });
+};

@@ -12,6 +12,7 @@ import {
   getKruzhokInfoIdThunk,
   getKruzhokInfoThunk,
 } from "@/store/thunks/schoolnfo.thunk";
+import {scrollToTop} from "@/utils/assets.utils";
 
 const MainPage = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
@@ -25,7 +26,7 @@ const MainPage = () => {
 
   const handleClickGetId = (id?: number) => {
     setEditActive(true);
-
+    scrollToTop();
     setId(id);
 
     if (id) {

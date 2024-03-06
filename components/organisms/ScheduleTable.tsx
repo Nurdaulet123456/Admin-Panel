@@ -275,7 +275,7 @@ const ScheduleTable = ({
                                         marginBottom: "1.8rem",
                                       }}
                                   >
-                                    {scheduleItem?.classroom?.classroom_number + " -"}  {scheduleItem?.classroom?.classroom_name} кабинет
+                                    {scheduleItem?.classroom?.classroom_number + "/"}  {scheduleItem?.classroom?.classroom_name} кабинет
                                   </div>
                                   <div
                                       style={{

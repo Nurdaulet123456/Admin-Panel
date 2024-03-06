@@ -9,6 +9,7 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import { getMenuIdThunk, getMenuThunk } from "@/store/thunks/schoolnfo.thunk";
 import {useSelector} from "react-redux";
+import {scrollToTop} from "@/utils/assets.utils";
 
 const MenuPage = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
@@ -34,7 +35,7 @@ const MenuPage = () => {
 
   const handleClickGetId = (id?: number) => {
     setEditActive(true);
-
+    scrollToTop();
     setId(id);
 
     if (id) {

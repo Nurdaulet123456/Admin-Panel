@@ -37,7 +37,7 @@ const TabsClass = () => {
             }
 
             // Если числовые части равны, сравниваем текстовые части
-            return textA.localeCompare(textB, 'ru');
+            return textA.localeCompare(textB);
           }).map((item) => (
             <Link href={`/schedule/1/${item.class_name}`} key={item.id}>
               <TabClassStyled>{item.class_name}</TabClassStyled>
