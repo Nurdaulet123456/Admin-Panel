@@ -21,7 +21,6 @@ const TabsClass = () => {
       <TabsClassStyled>
         {classess &&
           classess?.slice().sort((a, b) => {
-            // Извлекаем числовую и текстовую части для каждого элемента
             const matchA = a.class_name?.match(/^(\d+)([А-Яа-яA-Za-z]*)$/);
             const matchB = b.class_name?.match(/^(\d+)([А-Яа-яA-Za-z]*)$/);
 
@@ -31,12 +30,9 @@ const TabsClass = () => {
             const textA = matchA?.[2] || "";
             const textB = matchB?.[2] || "";
 
-            // Сначала сравниваем числовые части
             if (numberA !== numberB) {
               return numberA - numberB;
             }
-
-            // Если числовые части равны, сравниваем текстовые части
             return textA.localeCompare(textB);
           }).map((item) => (
             <Link href={`/schedule/1/${item.class_name}`} key={item.id}>

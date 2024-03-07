@@ -242,7 +242,7 @@ const ClassTableBlock: FC<IProps> = ({
                 <Select {...formik.getFieldProps("cabinet")}>
                   <option value="">Выберите кабинет</option>
                   {classroom?.map((item, index) => (
-                      <option key={index} value={item.id}>{item.classroom_name}</option>
+                      <option key={index} value={item.id}>{item.classroom_name}/{item.classroom_number}</option>
                   ))}
                 </Select>
               </div>

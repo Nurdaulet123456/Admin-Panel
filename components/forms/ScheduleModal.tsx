@@ -266,7 +266,12 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
                   <div className="sanaty">
                     <Select {...formik.getFieldProps("subject")}>
                       <option value="">Выберите предмет</option>
-                      {iasubject?.map((item, index) => (
+                      {iasubject && iasubject.slice().sort((a, b) => {
+                        const nameA = a.full_name || '';
+                        const nameB = b.full_name || '';
+
+                        return nameA.localeCompare(nameB);
+                      }).map((item, index) => (
                           <option key={index} value={item.id}>{item.full_name}</option>
                       ))}
                     </Select>
@@ -307,7 +312,12 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
                   <div className="sanaty">
                     <Select {...formik.getFieldProps("subject2")}>
                       <option value="">Выберите предмет</option>
-                      {iasubject?.map((item, index) => (
+                      {iasubject && iasubject.slice().sort((a, b) => {
+                        const nameA = a.full_name || '';
+                        const nameB = b.full_name || '';
+
+                        return nameA.localeCompare(nameB);
+                      }).map((item, index) => (
                           <option key={index} value={item.id}>{item.full_name}</option>
                       ))}
                     </Select>

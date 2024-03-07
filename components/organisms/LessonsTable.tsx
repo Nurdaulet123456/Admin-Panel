@@ -52,7 +52,12 @@ const LessonsTable: FC<IProps> = ({ handleClickGetId }) => {
           </Thead>
 
           {lessons &&
-            lessons.map((item, index) => (
+            lessons.slice().sort((a, b) => {
+              const nameA = a.full_name || '';
+              const nameB = b.full_name || '';
+
+              return nameA.localeCompare(nameB);
+            }).map((item, index) => (
               <Tr key={item.id}>
                 <Td>{index + 1}</Td>
                 <Td>{item.full_name}</Td>
