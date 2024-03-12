@@ -74,10 +74,9 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
     }
   }, [dispatch]);
 
-
   useEffect(() => {
-    const url = isOsnova ? `https://bilimge.kz/admins/api/schedule/?week_day=${selectedCell.day_index}&ring=${selectedCell.timeId}` :
-        `https://bilimge.kz/admins/api/DopUrokApi/?week_day=${selectedCell.day_index}&ring=${selectedCell.timeId}`
+    const url = isOsnova ? `https://bilimge.kz/admins/api/schedule/?week_day=${selectedCell.day_index}&ring=${selectedCell.timeId}&classl=${iaclass?.[0]?.id}` :
+        `https://bilimge.kz/admins/api/DopUrokApi/?week_day=${selectedCell.day_index}&ring=${selectedCell.timeId}&classl=${iaclass?.[0]?.id}`
     const fetchSchedule = async () => {
       try {
         const response = await instance.get(
@@ -97,9 +96,9 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
       }
     };
 
+    if (iaclass)
     fetchSchedule();
-  }, [selectedCell]);
-  console.log(selectedCell)
+  }, [selectedCell,iaclass]);
   const formik = useFormik({
     initialValues: {
       subject: '',

@@ -52,7 +52,6 @@ const ScheduleTable = ({
   const router = useRouter();
   const schedule = isOsnova ? useTypedSelector((state) => state.ia.sch) : useTypedSelector((state) => state.ia.dopSch);
   const [classPlan, setClassPlan] = useState<any>({});
-  console.log(schedule, isOsnova)
   useEffect(() => {
     const url = `https://bilimge.kz/admins/api/class/?class_name=${decodeURIComponent(
         router.asPath?.split("/")?.at(-1) as string,
@@ -113,8 +112,6 @@ const ScheduleTable = ({
 
     return initials;
   };
-
-  console.log(schedule)
 
   const sortArr = [...(iaring.filter((entry: any) => entry.plan === classPlan) || [])].sort((a: IARing, b: IARing) => {
     const timeA = new Date(`2000-01-01 ${a.start_time}`);
@@ -318,7 +315,7 @@ const ScheduleTable = ({
 
                                   {selectMode && (
                                       <Checkbox
-                                          // defaultChecked={isSelected}
+                                          defaultChecked={isSelected}
                                           checked={selectedCheckboxId === scheduleItem.id}
                                           onClick={() =>
                                               handleCheckboxClick(
@@ -361,7 +358,7 @@ const ScheduleTable = ({
 
                                   {selectModePaste && (
                                       <Checkbox
-                                          checked={isSelectedPaste}
+                                          // checked={isSelectedPaste}
                                           onClick={() =>
                                               handleCheckboxClickPaste(
                                                   day,

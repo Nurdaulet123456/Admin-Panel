@@ -23,6 +23,9 @@ import {
 import { Button } from "@/components/atoms/UI/Buttons/Button";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage, getWeekDayNumber } from "@/utils/assets.utils";
+import {getMapThunk} from "@/store/thunks/schoolnfo.thunk";
+import {useModalLogic} from "@/hooks/useModalLogic";
+import DeleteModal from "@/components/modals/DeleteModal";
 
 const ScheduleComponents = () => {
   const router = useRouter();
@@ -88,6 +91,7 @@ const Tables: FC<TablesProps> = ({ isOsnova }) => {
             subjectId?: any;
             classroomId?: any;
             typezId?: any;
+            id?:any;
         }[]
     >([]);
     const [copiedData, setCopiedData] = useState<any[]>([]);
@@ -131,8 +135,9 @@ const Tables: FC<TablesProps> = ({ isOsnova }) => {
             subjectId,
             classroomId,
             typezId,
+            itemId
         };
-
+        console.log(cell)
         setSelectedCheckboxId(itemId);
         if (selectMode) {
             setSelectedCells([]);
@@ -191,10 +196,36 @@ const Tables: FC<TablesProps> = ({ isOsnova }) => {
             );
             setSelectedCellsPaste(updatedSelection);
         } else {
-            setSelectedCellsPaste([cell]);
+            setSelectedCellsPaste([...selectedCellsPaste, cell]);
         }
-        console.log(selectedCellsPaste)
     };
+
+    const {
+        showDeleteModal,
+        onDeleteModalClose,
+        showDelete,
+    } = useModalLogic();
+
+
+
+    const handleDelete = async () => {
+        const urlPost = isOsnova ? "https://bilimge.kz/admins/api/schedule/" : "https://bilimge.kz/admins/api/DopUrokApi/";
+        await instance
+            .delete(`${urlPost}${selectedCheckboxId}/`, {
+                headers: {
+                    Authorization: `Token ${getTokenInLocalStorage()}`,
+                },
+            })
+            .then((res) => {
+                console.log("Good")
+            })
+            .catch((e) => console.log(e));
+        dispatch(getMapThunk());
+        onDeleteModalClose();
+        dispatch(getScheduleThunk());
+        dispatch(getDopScheduleThunk());
+    };
+
 
     const handleCopyClick = () => {
         setCopiedData([...selectedCells]);
@@ -206,33 +237,35 @@ const Tables: FC<TablesProps> = ({ isOsnova }) => {
 
     const handlePasteClick = async () => {
         const urlPost = isOsnova ? "https://bilimge.kz/admins/api/schedule/" : "https://bilimge.kz/admins/api/DopUrokApi/";
-        await instance
-            .post(
-                urlPost,
-                {
-                    week_day: getWeekDayNumber(selectedCellsPaste[0]?.day),
-                    teacher: copiedData[0]?.teacherId,
-                    ring: selectedCellsPaste[0]?.timeId,
-                    classl: copiedData[0]?.classlId,
-                    subject: copiedData[0]?.subjectId,
-                    classroom: copiedData[0]?.classroomId,
-                    typez: copiedData[0]?.typezId,
-                },
-                {
-                    headers: {
-                        Authorization: `Token ${getTokenInLocalStorage()}`,
+        for(const cell of selectedCellsPaste) {
+            await instance
+                .post(
+                    urlPost,
+                    {
+                        week_day: getWeekDayNumber(cell.day),
+                        teacher: copiedData[0]?.teacherId,
+                        ring: cell?.timeId,
+                        classl: copiedData[0]?.classlId,
+                        subject: copiedData[0]?.subjectId,
+                        classroom: copiedData[0]?.classroomId,
+                        typez: copiedData[0]?.typezId,
                     },
-                },
-            )
-            .then((res) => {
-                if (res) {
-                    dispatch(getScheduleThunk());
-                    dispatch(getDopScheduleThunk());
-                    setSelectMode(false);
-                    setSelectModePaste(false);
-                }
-            })
-            .catch((err) => console.log(err));
+                    {
+                        headers: {
+                            Authorization: `Token ${getTokenInLocalStorage()}`,
+                        },
+                    },
+                )
+                .then((res) => {
+                    if (res) {
+                        dispatch(getScheduleThunk());
+                        dispatch(getDopScheduleThunk());
+                        setSelectMode(false);
+                        setSelectModePaste(false);
+                    }
+                })
+                .catch((err) => console.log(err));
+        }
     };
 
     useEffect(() => {
@@ -251,12 +284,10 @@ const Tables: FC<TablesProps> = ({ isOsnova }) => {
             dispatch(getIADopRingThunk());
         }
     }, [dispatch]);
-
-    console.log(iaring)
     console.log(getTokenInLocalStorage())
-
     return(
         <>
+            {showDeleteModal && <DeleteModal onClose = {onDeleteModalClose} handleDelete={handleDelete}/>}
             <div
                 style={{
                     width: "100%",
@@ -294,6 +325,18 @@ const Tables: FC<TablesProps> = ({ isOsnova }) => {
                 >
                     {selectMode ? "Отменить" : "Выбрать"}
                 </Button>
+                {
+                    selectMode &&  <Button
+                        background="#CACACA"
+                        color="#645C5C"
+                        radius="14px"
+                        onClick={showDelete}
+                        disabled={!selectMode || selectedCells.length === 0}
+                    >
+                        Удалить
+                    </Button>
+                }
+
                 <Button
                     background="#CACACA"
                     color="#645C5C"
