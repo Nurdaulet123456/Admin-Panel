@@ -73,7 +73,6 @@ const ClassTable: FC<IProps> = ({ classinfo, handleClickGetId }) => {
           {classinfo?.slice().sort((a, b) => {
             const matchA = a.class_name?.match(/^(\d+)([А-Яа-яA-Za-z]*)$/);
             const matchB = b.class_name?.match(/^(\d+)([А-Яа-яA-Za-z]*)$/);
-
             const numberA = parseInt(matchA?.[1] || "", 10);
             const numberB = parseInt(matchB?.[1] || "", 10);
 
@@ -84,9 +83,7 @@ const ClassTable: FC<IProps> = ({ classinfo, handleClickGetId }) => {
               return numberA - numberB;
             }
 
-            console.log("А".localeCompare("Ә", "kk"))
-
-            return textA.localeCompare(textB, "kk");
+            return textA.localeCompare(textB);
           }).map((item, index) => (
             <Tr key={item.id}>
               <Td>{index + 1}</Td>

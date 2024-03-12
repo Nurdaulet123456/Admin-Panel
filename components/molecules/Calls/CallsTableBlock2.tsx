@@ -268,6 +268,6 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
 );
 };
 
-const timeArr = [1, 2, 3, 4, 5, 6,7,8,9,10];
+const timeArr = [0,1, 2, 3, 4, 5, 6,7,8,9,10];
 
 export default CallsTableBlock2;
