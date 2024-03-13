@@ -223,7 +223,6 @@ const ScheduleTable = ({
                                       router.asPath?.split("/")?.at(-1) as string,
                                   ),
                           );
-                      console.log(scheduleItem)
                       const isSelected = selectedCells.some(
                           (selectedCell: any) =>
                               selectedCell.day === day &&
@@ -315,8 +314,8 @@ const ScheduleTable = ({
 
                                   {selectMode && (
                                       <Checkbox
-                                          defaultChecked={isSelected}
-                                          checked={selectedCheckboxId === scheduleItem.id}
+                                          // defaultChecked={isSelected}
+                                          // checked={selectedCheckboxId === scheduleItem.id}
                                           onClick={() =>
                                               handleCheckboxClick(
                                                   day,

@@ -111,8 +111,9 @@ const Tables: FC<TablesProps> = ({ isOsnova }) => {
         setCopiedData([]);
         setSelectedCells([]);
         setSelectedCellsPaste([]);
+        setSelectedCheckboxId([]);
     };
-    const [selectedCheckboxId, setSelectedCheckboxId] = useState(null);
+    const [selectedCheckboxId, setSelectedCheckboxId] = useState<number[]>([]);
     const handleCheckboxClick = (
         day: any,
         start_time: any,
@@ -138,7 +139,7 @@ const Tables: FC<TablesProps> = ({ isOsnova }) => {
             itemId
         };
         console.log(cell)
-        setSelectedCheckboxId(itemId);
+
         if (selectMode) {
             setSelectedCells([]);
         }
@@ -150,17 +151,31 @@ const Tables: FC<TablesProps> = ({ isOsnova }) => {
                 selectedCell.end_time === cell.end_time,
         );
 
+        const isSelectedCheckbox = selectedCheckboxId?.some((checkbox) =>
+                checkbox === itemId
+        )
+
+        if(isSelectedCheckbox) {
+            const updatedCheckboxes = selectedCheckboxId?.filter((checkbox) =>
+                checkbox !== itemId
+            );
+            setSelectedCheckboxId(updatedCheckboxes);
+        }else {
+            setSelectedCheckboxId([...selectedCheckboxId, itemId]);
+        }
+
         if (isSelected) {
             const updatedSelection = selectedCells.filter(
                 (selectedCell) =>
-                    selectedCell.day !== cell.day &&
-                    selectedCell.start_time !== cell.start_time &&
-                    selectedCell.end_time !== cell.end_time,
+                    selectedCell.day !== cell.day ||
+                    (selectedCell.start_time !== cell.start_time && selectedCell.end_time !== cell.end_time),
             );
             setSelectedCells(updatedSelection);
         } else {
-            setSelectedCells([cell]);
+            setSelectedCells([...selectedCells,cell]);
         }
+        console.log(selectedCells)
+        console.log(selectedCheckboxId)
     };
 
     const handleCheckboxClickPaste = (
@@ -210,20 +225,28 @@ const Tables: FC<TablesProps> = ({ isOsnova }) => {
 
     const handleDelete = async () => {
         const urlPost = isOsnova ? "https://bilimge.kz/admins/api/schedule/" : "https://bilimge.kz/admins/api/DopUrokApi/";
-        await instance
-            .delete(`${urlPost}${selectedCheckboxId}/`, {
-                headers: {
-                    Authorization: `Token ${getTokenInLocalStorage()}`,
-                },
-            })
-            .then((res) => {
-                console.log("Good")
-            })
-            .catch((e) => console.log(e));
+        for(const checkboxId of selectedCheckboxId) {
+            await instance
+                .delete(`${urlPost}${checkboxId}/`, {
+                    headers: {
+                        Authorization: `Token ${getTokenInLocalStorage()}`,
+                    },
+                })
+                .then((res) => {
+                    console.log("Good")
+                })
+                .catch((e) => console.log(e));
+        }
         dispatch(getMapThunk());
         onDeleteModalClose();
         dispatch(getScheduleThunk());
         dispatch(getDopScheduleThunk());
+        setSelectModePaste(false);
+        setCopiedData([]);
+        setSelectedCells([]);
+        setSelectedCellsPaste([]);
+        setSelectedCheckboxId([]);
+
     };
 
 
@@ -336,16 +359,18 @@ const Tables: FC<TablesProps> = ({ isOsnova }) => {
                         Удалить
                     </Button>
                 }
+                {
+                    selectedCells.length == 1 && <Button
+                        background="#CACACA"
+                        color="#645C5C"
+                        radius="14px"
+                        onClick={handleCopyClick}
+                        disabled={!selectMode}
+                    >
+                        Копировать
+                    </Button>
+                }
 
-                <Button
-                    background="#CACACA"
-                    color="#645C5C"
-                    radius="14px"
-                    onClick={handleCopyClick}
-                    disabled={!selectMode || selectedCells.length === 0}
-                >
-                    Копировать
-                </Button>
                 <Button
                     background="#288220"
                     color="white"
