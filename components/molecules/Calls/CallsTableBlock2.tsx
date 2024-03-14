@@ -173,7 +173,7 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
                 <div className="login_forms-label_pink">План звонков</div>
                 <Select {...formik.getFieldProps("plan")}>
                   <option value="">Выберите план звонка</option>
-                  {timeArr.map((item) => (
+                  {timeArr2.map((item) => (
                       <option key={item} value={item}>{item}</option>
                   ))}
                 </Select>
@@ -194,7 +194,7 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
                   <div className="login_forms-label_pink">Смена</div>
                   <Select {...formik.getFieldProps("smena")}>
                     <option value="">Выберите смену</option>
-                    {timeArr.map((item) => (
+                    {timeArr2.map((item) => (
                         <option key={item} value={item}>{item}</option>
                     ))}
                   </Select>
@@ -269,5 +269,7 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
 };
 
 const timeArr = [0,1, 2, 3, 4, 5, 6,7,8,9,10];
+const timeArr2 = [1, 2, 3, 4, 5, 6,7,8,9,10];
+
 
 export default CallsTableBlock2;
