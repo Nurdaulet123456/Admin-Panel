@@ -114,8 +114,8 @@ const   ClassTableBlock: FC<IProps> = ({
                   class_teacher: values.classRuk,
                   osnova_plan: values.calls1 ? values.calls1 : null,
                   dopurok_plan: values.calls2 ? values.calls2 : null ,
-                  osnova_smena: smena1 && smena1 > 0 ? smena1 : null,
-                  dopurak_smena: smena2 && smena2 > 0 ? smena2 : null,
+                  osnova_smena: smena1 ? smena1 : null,
+                  dopurak_smena: smena2 ? smena2 : null,
                 },
                 {
                   headers: {
