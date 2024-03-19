@@ -132,8 +132,8 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
     if (dopid && getId) {
       formik.resetForm({
         values: {
-          start: dopid.start_time || "",
-          end: dopid.end_time || "",
+          start: dopid.start_time?.slice(0, -3) || "",
+          end: dopid.end_time?.slice(0, -3) || "",
           plan: String(dopid.plan) || "",
           number: String(dopid.number) || "",
           smena: String(dopid.smena) || "",
