@@ -52,12 +52,10 @@ const SchoolTableBlock1: FC<IProps> = ({
     initialValues: {
       name: "",
       prof: "",
-      tel: "",
     },
     validationSchema: Yup.object({
       name: Yup.string().required("Обязательно*"),
       prof: Yup.string().required("Обязательно*"),
-      tel: Yup.number().required("Обязательно*"),
     }),
     onSubmit: async (values) => {
       let headers = photo ? {
@@ -70,7 +68,6 @@ const SchoolTableBlock1: FC<IProps> = ({
         await instance
             .post("https://bilimge.kz/admins/api/school_administration/", {
               administrator_name: values.name,
-              phone_number: values.tel,
               position: values.prof,
               administator_photo: photo
             }, {
@@ -99,7 +96,6 @@ const SchoolTableBlock1: FC<IProps> = ({
         await instance
             .put(`https://bilimge.kz/admins/api/school_administration/${getId}/`, {
               administrator_name: values.name,
-              phone_number: values.tel,
               position: values.prof,
               administator_photo: photo
             }, {
@@ -131,7 +127,6 @@ const SchoolTableBlock1: FC<IProps> = ({
         values: {
           name: adminid.administrator_name || "",
           prof: adminid.position || "",
-          tel: adminid.phone_number || "",
         },
       });
       fetchAndSetPhoto(adminid.administator_photo);
@@ -150,7 +145,6 @@ const SchoolTableBlock1: FC<IProps> = ({
       values: {
         name: "",
         prof: "",
-        tel: "",
       },
     });
     setPhoto(null);
@@ -220,26 +214,6 @@ const SchoolTableBlock1: FC<IProps> = ({
                     style={{
                       borderColor:
                           formik.touched.prof && formik.errors.prof
-                              ? "red"
-                              : "#c1bbeb",
-                    }}
-                />
-              </div>
-
-              <div className="forms">
-                <div className="login_forms-label_pink">Номер телефона *</div>
-
-                {formik.touched.tel && formik.errors.tel ? (
-                    <div style={{color: "red"}}>{formik.errors.tel}</div>
-                ) : null}
-                <Input
-                    name={"tel"}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values.tel}
-                    style={{
-                      borderColor:
-                          formik.touched.tel && formik.errors.tel
                               ? "red"
                               : "#c1bbeb",
                     }}

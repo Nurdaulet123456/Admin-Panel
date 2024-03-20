@@ -58,10 +58,6 @@ const MenuTableBlock: FC<IProps> = ({ onReject, getId, menuid, onEdit }) => {
     validationSchema: Yup.object({
       week_day: Yup.number().required("Обязательно*"),
       name: Yup.string().required("Обязательно*"),
-      recipe: Yup.string().required("Обязательно*"),
-      exits1: Yup.string().required("Обязательно*"),
-      exits2: Yup.string().required("Обязательно*"),
-      exits3: Yup.string().required("Обязательно*"),
     }),
     onSubmit: async (values) => {
       if (!getId) {
