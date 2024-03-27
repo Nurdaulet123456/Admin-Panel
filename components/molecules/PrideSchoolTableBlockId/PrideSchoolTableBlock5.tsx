@@ -57,14 +57,14 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
     initialValues: {
       fullname: "",
       student_success: "",
-      endyear: "",
+      // endyear: "",
     },
     validationSchema: Yup.object({
       fullname: Yup.string().required("Обязательно*"),
       student_success: Yup.string().required("Обязательно*"),
-      endyear: Yup.string()
-          .matches(/^\d{4}-\d{4}$/, 'Неверный формат годового диапазона')
-          .required('Годовой диапазон обязателен для заполнения'),
+      // endyear: Yup.string()
+      //     .matches(/^\d{4}-\d{4}$/, 'Неверный формат годового диапазона')
+      //     .required('Годовой диапазон обязателен для заполнения'),
     }),
     onSubmit: async (values) => {
       let headers = photo ? {
@@ -77,7 +77,7 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
         await instance
             .post("https://bilimge.kz/admins/api/School_RedCertificateApi/", {
               fullname: values.fullname,
-              endyear: values.endyear,
+              // endyear: values.endyear,
               student_success: values.student_success,
               photo: photo
             }, {
@@ -107,7 +107,7 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
             .put(`https://bilimge.kz/admins/api/School_RedCertificateApi/${getId}/`,
                 {
                       fullname: values.fullname,
-                      endyear: values.endyear,
+                      // endyear: values.endyear,
                       student_success: values.student_success,
                       photo: photo
                     } , {
@@ -141,7 +141,7 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
         values: {
           fullname: atestid.fullname || "",
           student_success: atestid.student_success || "",
-          endyear: atestid.endyear || "",
+          // endyear: atestid.endyear || "",
         },
       });
       fetchAndSetPhoto(atestid.photo);
@@ -155,7 +155,7 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
       values: {
         fullname: "",
         student_success: "",
-        endyear: "",
+        // endyear: "",
       },
     });
     setPhoto(null);
@@ -235,25 +235,25 @@ const PrideSchoolTableBlock5: FC<IProps> = ({
                 />
               </div>
 
-              <div className="forms">
-                <div className="login_forms-label_pink">Год</div>
-                {formik.touched.endyear && formik.errors.endyear ? (
-                    <div style={{color: "red"}}>{formik.errors.endyear}</div>
-                ) : null}
-                <Input
-                    name={"endyear"}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values.endyear}
-                    style={{
-                      borderColor:
-                          formik.touched.endyear && formik.errors.endyear
-                              ? "red"
-                              : "#c1bbeb",
-                    }}
-                    placeholder={"YYYY-YYYY "}
-                />
-              </div>
+              {/*<div className="forms">*/}
+              {/*  <div className="login_forms-label_pink">Год</div>*/}
+              {/*  {formik.touched.endyear && formik.errors.endyear ? (*/}
+              {/*      <div style={{color: "red"}}>{formik.errors.endyear}</div>*/}
+              {/*  ) : null}*/}
+              {/*  <Input*/}
+              {/*      name={"endyear"}*/}
+              {/*      onChange={formik.handleChange}*/}
+              {/*      onBlur={formik.handleBlur}*/}
+              {/*      value={formik.values.endyear}*/}
+              {/*      style={{*/}
+              {/*        borderColor:*/}
+              {/*            formik.touched.endyear && formik.errors.endyear*/}
+              {/*                ? "red"*/}
+              {/*                : "#c1bbeb",*/}
+              {/*      }}*/}
+              {/*      placeholder={"YYYY-YYYY "}*/}
+              {/*  />*/}
+              {/*</div>*/}
 
               <div
                   className="flex"

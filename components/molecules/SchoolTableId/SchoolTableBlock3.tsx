@@ -23,7 +23,7 @@ const SchoolTableBlock3: FC<IProps> = ({
 
     const dispatch = useAppDispatch();
     const [photo, setPhoto] = useState<File | null>();
-
+    console.log(schoolPassport)
     const {
         showSuccessModal,
         showErrorModal,
@@ -141,62 +141,61 @@ const SchoolTableBlock3: FC<IProps> = ({
                 school_history: values.history,
             }
         ;
-        if(schoolPassport?.length === 0) {
-            await instance
-                .post(
-                    "https://bilimge.kz/admins/api/schoolpasport/",
-                    data,
-                    {
-                        headers: {
-                            Authorization: `Token ${getTokenInLocalStorage()}`,
+        if(photo) {
+            if (schoolPassport?.length === 0) {
+                await instance
+                    .post(
+                        "https://bilimge.kz/admins/api/schoolpasport/",
+                        data,
+                        {
+                            headers: {
+                                Authorization: `Token ${getTokenInLocalStorage()}`,
+                            },
                         },
-                    },
-                )
-                .then(async (res) => {
-                    if (res) {
-                        const formData = new FormData();
-
-                        formData.append("photo", photo ? photo : "");
-                        formData.append("id", String((res as any).id));
-
-                        try {
-                            const uploadPhotoResponse = await instance.post(
-                                "https://bilimge.kz/admins/api/schoolpasport/upload_photo/",
-                                formData,
-                                {
-                                    headers: {
-                                        Authorization: `Token ${getTokenInLocalStorage()}`,
-                                        "Content-Type": "multipart/form-data",
-                                    },
-                                },
-                            );
-                        } catch (err) {
-                            console.log(err);
-                        }
-                    }
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
-        }else {
-            await instance
-                .put(
-                    `https://bilimge.kz/admins/api/schoolpasport/${schoolPassport?.[0]?.id}/`,
-                    data,
-                    {
-                        headers: {
-                            Authorization: `Token ${getTokenInLocalStorage()}`,
-                        },
-                    },
-                )
-                .then(async (res) => {
-                    if (res) {
-
+                    )
+                    .then(async (res) => {
+                        if (res) {
                             const formData = new FormData();
-                            if(photo)
+
                             formData.append("photo", photo ? photo : "");
                             formData.append("id", String((res as any).id));
 
+                            try {
+                                const uploadPhotoResponse = await instance.post(
+                                    "https://bilimge.kz/admins/api/schoolpasport/upload_photo/",
+                                    formData,
+                                    {
+                                        headers: {
+                                            Authorization: `Token ${getTokenInLocalStorage()}`,
+                                            "Content-Type": "multipart/form-data",
+                                        },
+                                    },
+                                );
+                            } catch (err) {
+                                console.log(err);
+                            }
+                        }
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            } else {
+                await instance
+                    .put(
+                        `https://bilimge.kz/admins/api/schoolpasport/${schoolPassport?.[schoolPassport.length - 1]?.id}/`,
+                        data,
+                        {
+                            headers: {
+                                Authorization: `Token ${getTokenInLocalStorage()}`,
+                            },
+                        },
+                    )
+                    .then(async (res) => {
+                        if (res) {
+                            const formData = new FormData();
+                            if (photo)
+                                formData.append("photo", photo ? photo : "");
+                            formData.append("id", String((res as any).id));
                             try {
                                 const uploadPhotoResponse = await instance.put(
                                     "https://bilimge.kz/admins/api/schoolpasport/upload_photo/",
@@ -211,11 +210,12 @@ const SchoolTableBlock3: FC<IProps> = ({
                             } catch (err) {
                                 console.log(err);
                             }
-                    }
-                })
-                .catch((err) => {
-                    console.log(err);
-                });
+                        }
+                    })
+                    .catch((err) => {
+                        console.log(err);
+                    });
+            }
         }
     }
   });
@@ -225,39 +225,39 @@ const SchoolTableBlock3: FC<IProps> = ({
             if (schoolPassport && schoolPassport.length > 0) {
                 formik.resetForm({
                     values: {
-                        school_name: schoolPassport?.[0]?.school_name || "",
-                        year:  `${schoolPassport?.[0]?.established || ""}`,
-                        school_address: schoolPassport?.[0]?.school_address || "",
-                        childNumber: `${schoolPassport?.[0]?.amount_of_children || ""}`,
-                        classComplect: `${schoolPassport?.[0]?.number_of_classes || ""}`,
-                        boyNumber: `${schoolPassport?.[0]?.ul_sany || ""}`,
-                        girlNumber: `${schoolPassport?.[0]?.kiz_sany || ""}`,
-                        familyNumber: `${schoolPassport?.[0]?.amount_of_family || ""}`,
-                        parentsNumber: `${schoolPassport?.[0]?.amount_of_parents || ""}`,
-                        language: `${schoolPassport?.[0]?.school_lang || ""}`,
-                        status: `${schoolPassport?.[0]?.status || ""}`,
-                        capacity: `${schoolPassport?.[0]?.vmestimost || ""}`,
-                        actualNumber: `${schoolPassport?.[0]?.number_of_students || ""}`,
-                        preparatoryClassNumber: `${schoolPassport?.[0]?.dayarlyk_class_number || ""}`,
-                        preparatoryChildNumber: `${schoolPassport?.[0]?.dayarlyk_student_number || ""}`,
-                        elementarySchoolClass: `${schoolPassport?.[0]?.number_of_1_4_classes || ""}`,
-                        elementarySchoolChild: `${schoolPassport?.[0]?.number_of_1_4_students || ""}`,
-                        middleSchoolClass: `${schoolPassport?.[0]?.number_of_5_9_classes || ""}`,
-                        middleSchoolChild: `${schoolPassport?.[0]?.number_of_5_9_students || ""}`,
-                        highSchoolClass: `${schoolPassport?.[0]?.number_of_10_11_classes || ""}`,
-                        highSchoolChild: `${schoolPassport?.[0]?.number_of_10_11_students || ""}`,
-                        teachersNumber: `${schoolPassport?.[0]?.all_pedagog_number || ""}`,
-                        pedagogSheber: `${schoolPassport?.[0]?.pedagog_sheber || ""}`,
-                        pedagogZertteushi: `${schoolPassport?.[0]?.pedagog_zertteushy || ""}`,
-                        pedagogSarapshy: `${schoolPassport?.[0]?.pedagog_sarapshy || ""}`,
-                        pedagogModerator: `${schoolPassport?.[0]?.pedagog_moderator || ""}`,
-                        pedagog: `${schoolPassport?.[0]?.pedagog || ""}`,
-                        pedagogTagylymdamashy: `${schoolPassport?.[0]?.pedagog_stazher || ""}`,
-                        pedagogHigh: `${schoolPassport?.[0]?.pedagog_zhogary || ""}`,
-                        sanat1: `${schoolPassport?.[0]?.pedagog_1sanat || ""}`,
-                        sanat2: `${schoolPassport?.[0]?.pedagog_2sanat || ""}`,
-                        sanatZhok: `${schoolPassport?.[0]?.pedagog_sanat_zhok || ""}`,
-                        history: `${schoolPassport?.[0]?.school_history || ""}`
+                        school_name: schoolPassport?.[schoolPassport.length - 1]?.school_name || "",
+                        year:  `${schoolPassport?.[schoolPassport.length - 1]?.established || ""}`,
+                        school_address: schoolPassport?.[schoolPassport.length - 1]?.school_address || "",
+                        childNumber: `${schoolPassport?.[schoolPassport.length - 1]?.amount_of_children || ""}`,
+                        classComplect: `${schoolPassport?.[schoolPassport.length - 1]?.number_of_classes || ""}`,
+                        boyNumber: `${schoolPassport?.[schoolPassport.length - 1]?.ul_sany || ""}`,
+                        girlNumber: `${schoolPassport?.[schoolPassport.length - 1]?.kiz_sany || ""}`,
+                        familyNumber: `${schoolPassport?.[schoolPassport.length - 1]?.amount_of_family || ""}`,
+                        parentsNumber: `${schoolPassport?.[schoolPassport.length - 1]?.amount_of_parents || ""}`,
+                        language: `${schoolPassport?.[schoolPassport.length - 1]?.school_lang || ""}`,
+                        status: `${schoolPassport?.[schoolPassport.length - 1]?.status || ""}`,
+                        capacity: `${schoolPassport?.[schoolPassport.length - 1]?.vmestimost || ""}`,
+                        actualNumber: `${schoolPassport?.[schoolPassport.length - 1]?.number_of_students || ""}`,
+                        preparatoryClassNumber: `${schoolPassport?.[schoolPassport.length - 1]?.dayarlyk_class_number || ""}`,
+                        preparatoryChildNumber: `${schoolPassport?.[schoolPassport.length - 1]?.dayarlyk_student_number || ""}`,
+                        elementarySchoolClass: `${schoolPassport?.[schoolPassport.length - 1]?.number_of_1_4_classes || ""}`,
+                        elementarySchoolChild: `${schoolPassport?.[schoolPassport.length - 1]?.number_of_1_4_students || ""}`,
+                        middleSchoolClass: `${schoolPassport?.[schoolPassport.length - 1]?.number_of_5_9_classes || ""}`,
+                        middleSchoolChild: `${schoolPassport?.[schoolPassport.length - 1]?.number_of_5_9_students || ""}`,
+                        highSchoolClass: `${schoolPassport?.[schoolPassport.length - 1]?.number_of_10_11_classes || ""}`,
+                        highSchoolChild: `${schoolPassport?.[schoolPassport.length - 1]?.number_of_10_11_students || ""}`,
+                        teachersNumber: `${schoolPassport?.[schoolPassport.length - 1]?.all_pedagog_number || ""}`,
+                        pedagogSheber: `${schoolPassport?.[schoolPassport.length - 1]?.pedagog_sheber || ""}`,
+                        pedagogZertteushi: `${schoolPassport?.[schoolPassport.length - 1]?.pedagog_zertteushy || ""}`,
+                        pedagogSarapshy: `${schoolPassport?.[schoolPassport.length - 1]?.pedagog_sarapshy || ""}`,
+                        pedagogModerator: `${schoolPassport?.[schoolPassport.length - 1]?.pedagog_moderator || ""}`,
+                        pedagog: `${schoolPassport?.[schoolPassport.length - 1]?.pedagog || ""}`,
+                        pedagogTagylymdamashy: `${schoolPassport?.[schoolPassport.length - 1]?.pedagog_stazher || ""}`,
+                        pedagogHigh: `${schoolPassport?.[schoolPassport.length - 1]?.pedagog_zhogary || ""}`,
+                        sanat1: `${schoolPassport?.[schoolPassport.length - 1]?.pedagog_1sanat || ""}`,
+                        sanat2: `${schoolPassport?.[schoolPassport.length - 1]?.pedagog_2sanat || ""}`,
+                        sanatZhok: `${schoolPassport?.[schoolPassport.length - 1]?.pedagog_sanat_zhok || ""}`,
+                        history: `${schoolPassport?.[schoolPassport.length - 1]?.school_history || ""}`
                     },
                 });
                 const passport = await urlToFile(schoolPassport?.[0]?.photo);

@@ -75,12 +75,12 @@ const PrideSchoolTableBlock3: FC<IProps> = ({
     initialValues: {
       fullname: "",
       student_success: "",
-      class_id: "",
+      // class_id: "",
     },
     validationSchema: Yup.object({
       fullname: Yup.string().required("Обязательно*"),
       student_success: Yup.string().required("Обязательно*"),
-      class_id: Yup.number().required("Обязательно*"),
+      // class_id: Yup.number().required("Обязательно*"),
     }),
     onSubmit: async (values) => {
       let headers = photo ? {
@@ -93,7 +93,7 @@ const PrideSchoolTableBlock3: FC<IProps> = ({
         await instance
             .post("https://bilimge.kz/admins/api/PandikOlimpiadaApi/", {
               fullname: values.fullname,
-              classl: values.class_id,
+              // classl: values.class_id,
               student_success: values.student_success,
               photo: photo
             }, {
@@ -123,7 +123,7 @@ const PrideSchoolTableBlock3: FC<IProps> = ({
             .put(`https://bilimge.kz/admins/api/PandikOlimpiadaApi/${getId}/`,
                 {
                       fullname: values.fullname,
-                      classl: values.class_id,
+                      // classl: values.class_id,
                       student_success: values.student_success,
                       photo: photo
                     }, {
@@ -157,7 +157,7 @@ const PrideSchoolTableBlock3: FC<IProps> = ({
         values: {
           fullname: olimpid.fullname || "",
           student_success: olimpid.student_success || "",
-          class_id: olimpid.classl || "",
+          // class_id: olimpid.classl || "",
         },
       });
       fetchAndSetPhoto(olimpid.photo);
@@ -174,7 +174,7 @@ const PrideSchoolTableBlock3: FC<IProps> = ({
       values: {
         fullname: "",
         student_success: "",
-        class_id: "",
+        // class_id: "",
       },
     });
     setPhoto(null);
@@ -250,24 +250,24 @@ const PrideSchoolTableBlock3: FC<IProps> = ({
                 />
               </div>
 
-              <div className="forms sanaty">
-                <div className="login_forms-label_pink">Класс</div>
-                {formik.touched.class_id && formik.errors.class_id ? (
-                    <div style={{color: "red"}}>{formik.errors.class_id}</div>
-                ) : null}
-                <Input
-                    name={"class_id"}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values.class_id}
-                    style={{
-                      borderColor:
-                          formik.touched.class_id && formik.errors.class_id
-                              ? "red"
-                              : "#c1bbeb",
-                    }}
-                />
-              </div>
+              {/*<div className="forms sanaty">*/}
+              {/*  <div className="login_forms-label_pink">Класс</div>*/}
+              {/*  {formik.touched.class_id && formik.errors.class_id ? (*/}
+              {/*      <div style={{color: "red"}}>{formik.errors.class_id}</div>*/}
+              {/*  ) : null}*/}
+              {/*  <Input*/}
+              {/*      name={"class_id"}*/}
+              {/*      onChange={formik.handleChange}*/}
+              {/*      onBlur={formik.handleBlur}*/}
+              {/*      value={formik.values.class_id}*/}
+              {/*      style={{*/}
+              {/*        borderColor:*/}
+              {/*            formik.touched.class_id && formik.errors.class_id*/}
+              {/*                ? "red"*/}
+              {/*                : "#c1bbeb",*/}
+              {/*      }}*/}
+              {/*  />*/}
+              {/*</div>*/}
 
               <div
                   className="flex"
