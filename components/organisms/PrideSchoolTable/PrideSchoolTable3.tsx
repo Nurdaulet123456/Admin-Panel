@@ -49,7 +49,7 @@ const PrideSchoolTable3: FC<IProps> = ({ handleClickGetIdOlimp }) => {
               <Th>Фото</Th>
               <Th>ФИО</Th>
               <Th>Текст</Th>
-              <Th>Класс</Th>
+              {/*<Th>Класс</Th>*/}
               <Th>Действие</Th>
             </tr>
           </Thead>
@@ -65,7 +65,7 @@ const PrideSchoolTable3: FC<IProps> = ({ handleClickGetIdOlimp }) => {
                 </Td>
                 <Td>{item.fullname}</Td>
                 <Td>{item.student_success}</Td>
-                <Td>{item.classl} класс</Td>
+                {/*<Td>{item.classl} класс</Td>*/}
                 <Td>
                   <div
                     onClick={() =>

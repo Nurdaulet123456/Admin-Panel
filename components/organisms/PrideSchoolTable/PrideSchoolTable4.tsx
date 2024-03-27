@@ -49,7 +49,7 @@ const PrideSchoolTable4: FC<IProps> = ({ handleClickGetIdAltyn }) => {
               <Th>Фото</Th>
               <Th>ФИО</Th>
               <Th>Текст</Th>
-              <Th>Год</Th>
+              {/*<Th>Год</Th>*/}
               <Th>Действие</Th>
             </tr>
           </Thead>
@@ -65,7 +65,7 @@ const PrideSchoolTable4: FC<IProps> = ({ handleClickGetIdAltyn }) => {
                 </Td>
                 <Td>{item.fullname}</Td>
                 <Td>{item.student_success}</Td>
-                <Td>{item.endyear}</Td>
+                {/*<Td>{item.endyear}</Td>*/}
                 <Td>
                   <div
                     onClick={() =>
