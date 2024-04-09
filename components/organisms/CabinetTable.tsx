@@ -1,4 +1,4 @@
-import { FC } from "react";
+import {FC, useEffect, useState} from "react";
 import { IClassRoom } from "@/types/assets.type";
 import { DeleteIcons, PenIcons } from "../atoms/Icons";
 import { Table, Td, Th, Thead, Tr } from "../atoms/UI/Tables/Table";
@@ -14,6 +14,7 @@ interface IProps {
 
 const CabinetTable: FC<IProps> = ({ cabinet, handleClickGetId }) => {
   const dispatch = useAppDispatch();
+  const[cab,setCab] = useState<any[]>([]);
   const handleDeleteItems = async (id?: number) => {
     await instance
       .delete(`https://www.bilimge.kz/admins/api/classroom/${id}/`, {
@@ -29,6 +30,41 @@ const CabinetTable: FC<IProps> = ({ cabinet, handleClickGetId }) => {
       .catch((e) => console.log(e));
     dispatch(getClassRoomThunk());
   };
+
+  useEffect(() => {
+    function sortClassrooms(classrooms: IClassRoom[]) {
+      return classrooms.slice().sort((a, b) => {
+        const flatA = a.flat ?? 0;
+        const flatB = b.flat ?? 0;
+
+        if (flatA !== flatB) {
+          return flatA - flatB;
+        }
+
+        const numberA = a.classroom_number?.toString() ?? "";
+        const numberB = b.classroom_number?.toString() ?? "";
+
+        const isANumber = !isNaN(Number(a.classroom_number));
+        const isBNumber = !isNaN(Number(b.classroom_number));
+
+        if (isANumber && isBNumber) {
+          return parseInt(numberA, 10) - parseInt(numberB, 10);
+        }
+
+        if (!isANumber && isBNumber) {
+          return -1;
+        }
+        if (isANumber && !isBNumber) {
+          return 1;
+        }
+
+        return numberA.localeCompare(numberB);
+      });
+    }
+
+    console.log(cabinet)
+    setCab(sortClassrooms(cabinet || []))
+  }, [cabinet]);
   return (
     <div className="main_table">
       <div className="main_table-title">Кабинет</div>
@@ -46,8 +82,8 @@ const CabinetTable: FC<IProps> = ({ cabinet, handleClickGetId }) => {
             </tr>
           </Thead>
 
-          {cabinet &&
-            cabinet.map((item, index) => (
+          {cab &&
+            cab.map((item, index) => (
               <Tr key={item.id}>
                 <Td>{index + 1}</Td>
                 <Td>{item.classroom_name}</Td>

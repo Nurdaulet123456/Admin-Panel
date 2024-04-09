@@ -64,7 +64,11 @@ const TeachersTable: FC<IProps> = ({ handleClickGetId }) => {
                         <Td>{item.full_name}</Td>
                         <Td>
                           <div className="img-block">
-                            <img src={item.photo3x4} alt="" />
+                            {
+                              item.photo3x4 ?
+                              <img src={item.photo3x4} alt=""/> : "Нет фото"
+
+                            }
                           </div>
                         </Td>
                         <Td>

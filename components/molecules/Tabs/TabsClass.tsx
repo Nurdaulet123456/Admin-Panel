@@ -9,26 +9,22 @@ import React, { useEffect } from "react";
 const TabsClass = () => {
   const dispatch = useAppDispatch();
   const classess = useTypedSelector((state) => state.ia.iaclass);
-
+  console.log(classess)
   useEffect(() => {
     if (classess) {
       dispatch(getIAClassThunk());
     }
   }, [dispatch]);
-
   return (
     <>
       <TabsClassStyled>
         {classess &&
           classess?.slice().sort((a, b) => {
-            const matchA = a.class_name?.match(/^(\d+)([А-Яа-яA-Za-z]*)$/);
-            const matchB = b.class_name?.match(/^(\d+)([А-Яа-яA-Za-z]*)$/);
+            const numberA = parseInt(a?.class_number  || "", 10);
+            const numberB = parseInt(b?.class_number   || "", 10);
 
-            const numberA = parseInt(matchA?.[1] || "", 10);
-            const numberB = parseInt(matchB?.[1] || "", 10);
-
-            const textA = matchA?.[2] || "";
-            const textB = matchB?.[2] || "";
+            const textA = a?.class_letter || "";
+            const textB = b?.class_letter || "";
 
             if (numberA !== numberB) {
               return numberA - numberB;

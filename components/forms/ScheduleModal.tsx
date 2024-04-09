@@ -299,7 +299,34 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
                   <div className="sanaty">
                     <Select {...formik.getFieldProps("classroom")}>
                       <option value="">Выберите кабинет</option>
-                      {iaclassrooms?.map((item, index) => (
+                      {iaclassrooms?.slice().sort((a, b) => {
+                        const flatA = a.flat ?? 0;
+                        const flatB = b.flat ?? 0;
+
+                        if (flatA !== flatB) {
+                          return flatA - flatB;
+                        }
+
+                        const numberA = a.classroom_number?.toString() ?? "";
+                        const numberB = b.classroom_number?.toString() ?? "";
+
+                        const isANumber = !isNaN(Number(a.classroom_number));
+                        const isBNumber = !isNaN(Number(b.classroom_number));
+
+                        if (isANumber && isBNumber) {
+                          return parseInt(numberA, 10) - parseInt(numberB, 10);
+                        }
+
+                        if (!isANumber && isBNumber) {
+                          return -1;
+                        }
+                        if (isANumber && !isBNumber) {
+                          return 1;
+                        }
+
+                        return numberA.localeCompare(numberB);
+                      })
+                      .map((item, index) => (
                           <option key={index} value={item.id}>{item.classroom_name}/{item.classroom_number}</option>
                       ))}
                     </Select>
@@ -345,7 +372,34 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
                   <div className="sanaty">
                     <Select {...formik.getFieldProps("classroom2")}>
                       <option value="">Выберите кабинет</option>
-                      {iaclassrooms?.map((item, index) => (
+                      {iaclassrooms?.slice().sort((a, b) => {
+                        const flatA = a.flat ?? 0;
+                        const flatB = b.flat ?? 0;
+
+                        if (flatA !== flatB) {
+                          return flatA - flatB;
+                        }
+
+                        const numberA = a.classroom_number?.toString() ?? "";
+                        const numberB = b.classroom_number?.toString() ?? "";
+
+                        const isANumber = !isNaN(Number(a.classroom_number));
+                        const isBNumber = !isNaN(Number(b.classroom_number));
+
+                        if (isANumber && isBNumber) {
+                          return parseInt(numberA, 10) - parseInt(numberB, 10);
+                        }
+
+                        if (!isANumber && isBNumber) {
+                          return -1;
+                        }
+                        if (isANumber && !isBNumber) {
+                          return 1;
+                        }
+
+                        return numberA.localeCompare(numberB);
+                      })
+                      .map((item, index) => (
                           <option key={index} value={item.id}>{item.classroom_name}/{item.classroom_number}</option>
                       ))}
                     </Select>

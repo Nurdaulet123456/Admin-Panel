@@ -4,6 +4,7 @@ import Link from "next/link";
 
 import { useRouter } from "next/router";
 import { FC } from "react";
+import {rotate} from "next/dist/server/lib/squoosh/impl";
 
 interface IProps {
   tabs?: ITabs[];
@@ -13,6 +14,7 @@ interface IProps {
 
 const Tabs: FC<IProps> = ({ tabs, link, handleAddButtonClick }) => {
   const router = useRouter();
+  const rout = router?.asPath?.split(`${link}/`);
 
   return (
     <>
@@ -20,13 +22,13 @@ const Tabs: FC<IProps> = ({ tabs, link, handleAddButtonClick }) => {
         <Link href={`/${link}/${item.id}`} key={item.id}>
           <IdBlock
             background={
-              router?.asPath?.split("/")[2] === String(item.id) ? "#4090FF" : ""
+              rout[rout?.length - 1] === String(item.id) ? "#4090FF" : ""
             }
             color={
-              router?.asPath?.split("/")[2] === String(item.id) ? "#fff" : ""
+              rout[rout?.length - 1] === String(item.id) ? "#fff" : ""
             }
             border={
-              router?.asPath?.split("/")[2] === String(item.id) ? "white" : ""
+              rout[rout?.length - 1] === String(item.id) ? "white" : ""
             }
             onClick={handleAddButtonClick}
           >

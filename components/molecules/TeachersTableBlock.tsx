@@ -464,9 +464,6 @@ const TeachersTableBlock: FC<IProps> = ({
                 >
                   Аяқтаған жылы *
                 </div>
-                {/*{formik.touched.jobHistory && formik.errors.jobHistory && formik.errors.jobHistory[index] && formik.errors.jobHistory[index].end_date ? (*/}
-                {/*    <div style={{ color: "red" }}>{formik.errors.jobHistory[index].end_date}</div>*/}
-                {/*) : null}*/}
                 <Input
                     name={`jobHistory[${index}].end_date`}
                     onChange={formik.handleChange}

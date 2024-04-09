@@ -150,10 +150,6 @@ export interface ISchoolSocialMedia {
   qr_code?:string;
 }
 
-
-
-// School Sport
-
 export interface ISchoolSport {
   id?: number;
   fullname?: string;
@@ -163,8 +159,6 @@ export interface ISchoolSport {
   school?: number;
   class_id?: string;
 }
-
-// School Oner
 
 export interface ISchoolOner {
   id?: number;
@@ -176,7 +170,6 @@ export interface ISchoolOner {
   class_id?: string;
 }
 
-// School Olimp
 
 export interface ISchoolOlimp {
   id?: number;
@@ -308,6 +301,8 @@ export interface IClass {
   dopurok_plan?: any;
   dopurok_smena?: any;
   school?: number;
+  class_number?: string;
+  class_letter?:string;
 }
 
 // Avalibale
@@ -322,12 +317,14 @@ export interface IAClass {
   id?: number;
   class_name?: string;
   class_number?: string;
+  class_letter?:string;
 }
 
 export interface IAClassRooms {
   id?: number;
   classroom_name?: string;
-  classroom_number?: number;
+  classroom_number?: string;
+  flat?: number
 }
 
 export interface IARing {
@@ -373,7 +370,6 @@ export interface ISchedule {
   subject2?: ISubjectSch;
   classroom2?: IClassRoomSch;
   teacher2?: ITeacherSch;
-
 }
 
 export interface IDopSchedule {
@@ -389,7 +385,6 @@ export interface IDopSchedule {
   subject2?: ISubjectSch;
   classroom2?: IClassRoomSch;
   teacher2?: ITeacherSch;
-
 }
 
 export interface INotification {

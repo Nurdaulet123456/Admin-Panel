@@ -99,15 +99,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
     },
     validationSchema: Yup.object({
       name: Yup.string().required('Введите имя'),
-      // teacher: Yup.string().required('Введите учителя'),
-      // goal: Yup.string().required('Введите цель'),
-      // times: Yup.array().of(
-      //     Yup.string().nullable()
-      //         .matches(
-      //             /^([01][0-9]|2[0-3]):[0-5][0-9]-([01][0-9]|2[0-3]):[0-5][0-9]$/,
-      //             'Неправильно'
-      //         )
-      // ).min(1),
+
     }),
     onSubmit: async (values) => {
       if (!getId) {
@@ -219,6 +211,8 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
     }
     return temp;
   }
+
+
 
 
   useEffect(() => {

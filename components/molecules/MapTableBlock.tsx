@@ -207,30 +207,6 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
                         <div className="main_table-modal_forms">
                             <div className="forms">
                                 <div className="flex">
-                                    <div className="login_forms-label_pink">Карта</div>
-                                    {
-                                        map ? (
-                                            <div className="file-item">
-                                                <div className="file-info">
-                                                    <p>{map.name.substring(0, 14)}</p>
-                                                </div>
-                                                <div className="file-actions">
-                                                    <MdClear onClick={() => setMap(null)}/>
-                                                </div>
-                                            </div>):
-                                            (
-                                            <Input style={{width: "80%", marginBottom: "1%"}} type="file" name="photo"
-                                                   onChange={(event) => {
-                                                       return setMap(event?.target?.files?.[0]);
-                                                   }}
-                                                   accept=".svg"
-                                            />
-                                            )
-
-                                    }
-
-                                </div>
-                                <div className="flex">
                                     <div className="login_forms-label_pink">1 этаж</div>
                                     {
                                         flat1 ? (

@@ -97,7 +97,7 @@ function getFilenameFromUrl(url: string): string {
   const lastSlashIndex = url.lastIndexOf("/") + 1;
   const lastUnderscoreIndex = url.lastIndexOf("_");
   const extensionIndex = url.lastIndexOf(".");
-  const namePart = url.substring(lastSlashIndex, lastUnderscoreIndex);
+  const namePart = url.substring(lastSlashIndex,lastUnderscoreIndex > 0 ? lastUnderscoreIndex : extensionIndex);
   const extension = url.substring(extensionIndex);
 
   return `${namePart}${extension}`;

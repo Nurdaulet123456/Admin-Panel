@@ -4,7 +4,7 @@ import TabsClass from "@/components/molecules/Tabs/TabsClass";
 import ScheduleTable from "@/components/organisms/ScheduleTable";
 import MainLayouts from "@/layouts/MainLayouts";
 import { ITabs } from "@/types/assets.type";
-import { ArrowLeftIcons } from "@/components/atoms/Icons";
+import {ArrowLeftIcons, LogoutIcons, PlusIcons} from "@/components/atoms/Icons";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import {
@@ -26,53 +26,117 @@ import { getTokenInLocalStorage, getWeekDayNumber } from "@/utils/assets.utils";
 import {getMapThunk} from "@/store/thunks/schoolnfo.thunk";
 import {useModalLogic} from "@/hooks/useModalLogic";
 import DeleteModal from "@/components/modals/DeleteModal";
+import ScheduleTable1 from "@/components/organisms/ScheduleTables/ScheduleTable1";
+import ScheduleTableBlock from "@/components/molecules/ScheduleBlocks/ScheduleTableBlock";
 
 const ScheduleComponents = () => {
   const router = useRouter();
+    const [showActive, setShowActive] = useState<boolean>(false);
+    const [del, setDel] = useState<boolean>(false);
+    const [editActive, setEditActive] = useState<boolean>(false);
+    const [getId, setId] = useState<number | null>();
+    useEffect(() => {
+        console.log(router.asPath)
+
+    }, [router]);
+    const handleAddButtonClick = () => {
+        setEditActive(false);
+        setShowActive(!showActive);
+        setId(null);
+    };
+
     return (
     <MainLayouts>
-      {router.asPath !== "/schedule/1" && (
-        <div
-          className="flex"
-          style={{
-            justifyContent: "flex-start",
-            gap: "3rem",
-            marginBottom: "3.2rem",
-          }}
-        >
-          <div
-            style={{ cursor: "pointer" }}
-            onClick={() => {
-                router.push("/schedule/1");
-            }}
-          >
-            <ArrowLeftIcons />
-          </div>
-          <div className="class_name">
-            Класс:{" "}
-            {decodeURIComponent(router.asPath.split("/").at(-1) as string)}
-          </div>
-        </div>
-      )}
+        {router.query.id?.[0] === "1" && (
+            <>
+                {
+                    router.asPath !== "/schedule/1" ? (
+                        <>
+                            <HeaderSchedule classL={true}/>
+                            <Tables isOsnova={true}/>
+                            <Tables isOsnova={false}/>
+                        </>
+                    ) : (
+                        <>
+                            <div style={{
+                                width: "100%",
+                                display: "flex",
+                                justifyContent: "flex-start",
+                                marginBottom: "1.6rem",
+                                gap: "2.4rem",
+                            }}>
+                                <Tabs link="schedule" tabs={tabs}/>
+                            </div>
+                            <TabsClass/>
+                        </>
+                    )
+                }
+            </>
+        )
+        }
+        {router.query.id?.[0] === "2" && (
+            <>
+                <HeaderSchedule/>
+                <hr/>
+                <div style={{
+                    width: "100%",
+                    display: "flex",
+                    justifyContent: "flex-start",
+                    marginBottom: "1.6rem",
+                    gap: "2.4rem",
+            }}>
+                <Tabs link="schedule/2" tabs={autoTabs}/>
+            </div>
+                {
+                    router.asPath === "/schedule/2/1" && (
+                        <>
+                            <div
+                                style={{
+                                    width: "100%",
+                                    display: "flex",
+                                    justifyContent: "flex-end",
+                                    marginBottom: "1.6rem",
+                                }}
+                            >
+                                <Button
+                                    background={showActive || editActive ? "#CACACA" : "#27AE60"}
+                                    radius="14px"
+                                    style={{
+                                        width: "auto",
+                                    }}
+                                    onClick={handleAddButtonClick}
+                                >
+                                    <div
+                                        style={{
+                                            display: "flex",
+                                            alignItems: "center",
+                                            gap: ".8rem",
+                                        }}
+                                    >
+                                        {showActive || editActive ? <LogoutIcons/> : <PlusIcons/>}
+                                        {showActive || editActive ? "Закрыть" : "Добавить"}
+                                    </div>
+                                </Button>
+                            </div>
+                            {
+                                (showActive || editActive) && <ScheduleTableBlock/>
+                            }
+                            <ScheduleTable1/>
+                        </>
+                    )
+                }
+            </>
+        )}
 
-      {router.asPath === "/schedule/1" ? (
-        <TabsClass />
-      ) : (
-          <>
-              <Tables isOsnova={true}/>
-              <Tables isOsnova={false}/>
-          </>
-
-      )}
     </MainLayouts>
-  );
+    );
 };
 
 interface TablesProps {
     isOsnova?: boolean; // Опциональный пропс
 };
 
-const Tables: FC<TablesProps> = ({ isOsnova }) => {
+const Tables: FC<TablesProps> = ({isOsnova}) => {
     console.log(isOsnova)
     const dispatch = useAppDispatch();
     const iaring = useTypedSelector((state) => state.ia.iaring);
@@ -174,8 +238,6 @@ const Tables: FC<TablesProps> = ({ isOsnova }) => {
         } else {
             setSelectedCells([...selectedCells,cell]);
         }
-        console.log(selectedCells)
-        console.log(selectedCheckboxId)
     };
 
     const handleCheckboxClickPaste = (
@@ -329,7 +391,6 @@ const Tables: FC<TablesProps> = ({ isOsnova }) => {
                     gap: "2.4rem",
                 }}
             >
-                <Tabs link="schedule" tabs={tabs}/>
             </div>
             <div
                 style={{
@@ -397,6 +458,46 @@ const Tables: FC<TablesProps> = ({ isOsnova }) => {
     );
 };
 
+interface HeaderScheduleProps {
+    classL? :boolean;
+}
+
+const HeaderSchedule:FC<HeaderScheduleProps> = ({classL}) => {
+    const router = useRouter();
+    return(
+        <div
+            className="flex"
+            style={{
+                justifyContent: "flex-start",
+                gap: "3rem",
+                marginBottom: "3.2rem",
+            }}
+        >
+            <div
+                style={{cursor: "pointer"}}
+                onClick={() => {
+                    router.push("/schedule/1");
+                }}
+            >
+                <ArrowLeftIcons/>
+            </div>
+            {
+                classL ? (
+                    <div className="class_name">
+                        Класс:{" "}
+                        {decodeURIComponent(router.asPath.split("/").at(-1) as string)}
+                    </div>
+                ) : (
+                    <div className="class_name">
+                       Назад
+                    </div>
+                )
+            }
+
+        </div>
+    )
+}
+
 const tabs: ITabs[] = [
     {
         id: 1,
@@ -409,4 +510,18 @@ const tabs: ITabs[] = [
     },
 ];
 
+const autoTabs: ITabs[] = [
+    {
+        id: 1,
+        type: "Список"
+    },
+    {
+        id: 2,
+        type: "Автораспределение"
+    },
+    {
+        id: 3,
+        type: "Relations"
+    }
+]
 export default ScheduleComponents;

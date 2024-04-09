@@ -1,49 +1,62 @@
 .login 
     display: flex
     height: 100vh
-
+    width: 100%
     &_forms 
-        width: 55%
+        width: 100%
+        height: 100%
         display: flex
         align-items: center
         justify-content: center
+        font-size: 18px
+        font-style: normal
+        font-weight: 600
+        line-height: 150%
+        padding-right: 64px
+        padding-left: 64px
+
+        span
+            cursor: pointer
+
+        &-lang
+            width: 100%
+            display: flex
+            justify-content: end
+            align-items: center
 
         &-form
             width: 100%
-            max-width: 598px    
+            max-width: 598px
 
             border-radius: 20px
-            box-shadow: 0px 19px 40px 0px #0000000D
+            //box-shadow: 0px 19px 40px 0px #0000000D
 
-            padding-inline: 5.8rem
-
-            padding-top: 6.8rem
-            padding-bottom: 10.4rem
 
             input
                 margin-bottom: 2rem
 
-            button
-                margin-top: 2rem
-                width: auto
-                margin-left: 50%
-                transform: translateX(-50%)
+            //button
+            //    margin-top: 2rem
+            //    width: auto
+            //    transform: translateX(-50%)
 
         &-title
-            font-family: 'Montserrat', sans-serif
             font-weight: 700
-            font-size: 4.8rem
-            color: #1B447A
+            font-size: 40px
+            color: #232323
+            font-family: Inter, sans-serif
+            line-height: 110%
+            letter-spacing: -1.6px
 
-            margin-bottom: 4rem
+            //margin-bottom: 4rem
 
         &-subtitle
             font-weight: 400
-            font-size: 1.6rem
-
+            font-size: 18px
+            line-height: 150%
             margin-bottom: 1.6rem
 
-            color: #00000080
+            color: #969696
 
         &-sub
             font-weight: 600
@@ -61,34 +74,61 @@
 
             margin-bottom: 1.6rem
 
+        &-inp
+            padding: 16px
+            display: flex
+            align-items: center
+            border-radius: 10px
+            border: 1px solid #D9D9D9
+            width: 100%
+
+        &-but
+            display: flex
+            padding: 16px 8px
+            justify-content: center
+            align-items: center
+            border-radius: 10px
+            background: linear-gradient(to right, #5D49A0, #E9028E)
+            width: 100%
+            border: 0
+            color: white
+            font-size: 18px
+            font-weight: 600
+            line-height: 120%
+            letter-spacing: -0.18px
+            cursor: pointer
+
+
     &_content
-        width: 45%
-        background: #000 url(/loginBack.png) center center no-repeat
+        margin: 10px
+        width: 60%
+        background: #524FA2
         background-size: cover
-
-        padding-top: 24.2rem
-
-        padding-inline: 2.9rem
+        border-radius: 30px
+        display: flex
+        justify-content: center
+        align-items: start
+        flex-direction: column
+        gap: 4%
+        padding: 10px 8% 10px 7%
 
         &-title
             color: #FFFFFF
 
             text-transform: uppercase
 
-            font-weight: 600
+            font-weight: 800
 
-            font-size: 2.4rem
+            font-size: 36px
 
             span 
                 font-size: 4rem
 
         &-check
             color: #FFFFFF
-            font-weight: 700
+            font-weight: 800
             text-transform: uppercase
-            font-size: 2.4rem
-            
-            margin-top: 4.8rem
+            font-size: 24px
 
             div 
                 margin-bottom: 2.4rem
@@ -96,4 +136,4 @@
                 display: flex
                 align-items: center
                 gap: 2rem
-            
+

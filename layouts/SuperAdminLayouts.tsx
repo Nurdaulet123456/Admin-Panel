@@ -6,6 +6,8 @@ import SuperAdminSidebar from "@/components/organisms/SuperAdminSidebar";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { useRouter } from "next/router";
 import { ReactNode } from "react";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface ILayouts {
   children: ReactNode;
@@ -13,7 +15,11 @@ interface ILayouts {
 
 const SuperAdminLayouts = ({ children }: ILayouts) => {
   const router = useRouter();
-
+    const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+    const t = translations[router.locale || "kz"] || kz;
   const onLogout = async () => {
     try {
       router.push("/");
@@ -49,7 +55,7 @@ const SuperAdminLayouts = ({ children }: ILayouts) => {
             </div>
             <ButtonLogout onClick={onLogout}>
               <LogoutIcons />
-              Шығу
+                {t.actions.exit}
             </ButtonLogout>
           </div>
           {children}

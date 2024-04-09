@@ -12,6 +12,9 @@ import { useTypedSelector } from "@/hooks/useTypedSelector";
 import SuperAdminLayouts from "@/layouts/SuperAdminLayouts";
 import {getTokenInLocalStorage, scrollToTop} from "@/utils/assets.utils";
 import { LogoutIcons } from "@/components/atoms/Icons";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 const MainPage = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
@@ -20,7 +23,12 @@ const MainPage = () => {
   const dispatch = useAppDispatch();
   const school = useTypedSelector((state) => state.system.school);
   const schoolid = useTypedSelector((state) => state.system.schoolid);
-
+    const router = useRouter();
+    const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+    const t = translations[router.locale || "kz"] || kz;
   useEffect(() => {
     if (school) {
       dispatch(getSchoolThunk());
@@ -69,7 +77,7 @@ const MainPage = () => {
             }}
           >
             {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
-            {showActive || editActive ? "Назад" : "Добавить"}
+            {showActive || editActive ? t.actions.back : t.actions.add}
           </div>
         </Button>
       </div>

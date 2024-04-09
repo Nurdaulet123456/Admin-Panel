@@ -1,5 +1,4 @@
 import styled from "@emotion/styled";
-
 export const IdBlock = styled.div<{
   background?: string;
   color?: string;
@@ -10,11 +9,13 @@ export const IdBlock = styled.div<{
 
   border: 1px solid #092c4c;
   border-radius: 66px;
-  
 
-  font-size: 1.6rem;
+
+  color: #000;
+  font-size: 16px;
+  font-style: normal;
   font-weight: 500;
-  color: #092c4c;
+  line-height: 22.4px;
 
   cursor: pointer;
 

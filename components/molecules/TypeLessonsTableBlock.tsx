@@ -56,20 +56,20 @@ const TypeLessonsTableBlock: FC<IProps> = ({
   useEffect(() => {
     if (extraid && getId) {
       setUpdateInput((extraid?.type_full_name as string) || "");
-      setChooseColor((extraid?.type_color as string) || "");
+      // setChooseColor((extraid?.type_c/olor as string) || "");
     }
   }, [extraid]);
 
   const onSave = async () => {
     try {
-      if (updateInput && chooseColor) {
+      if (updateInput) {
         if (!getId) {
           await instance
             .post(
               "https://www.bilimge.kz/admins/api/extra_lesson/",
               {
                 type_full_name: updateInput,
-                type_color: chooseColor,
+                // type_color: chooseColor,
               },
               {
                 headers: {
@@ -139,28 +139,6 @@ const TypeLessonsTableBlock: FC<IProps> = ({
                   value={updateInput}
                   onChange={(e) => setUpdateInput(e.target.value)}
               />
-            </div>
-
-            <div className="login_forms-label_pink">Цвет</div>
-
-            <div
-                className="forms flex"
-                style={{
-                  flexWrap: "wrap",
-                  justifyContent: "flex-start",
-                  gap: "1rem",
-                  width: "70%",
-                }}
-            >
-              {typeColor.map((item) => (
-                  <ColorBlock
-                      color={item}
-                      key={item}
-                      onClick={() => setChooseColor(item)}
-                  >
-                    {chooseColor === item && <ColorCheckIcons/>}
-                  </ColorBlock>
-              ))}
             </div>
           </div>
 

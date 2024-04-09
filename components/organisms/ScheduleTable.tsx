@@ -56,7 +56,6 @@ const ScheduleTable = ({
     const url = `https://bilimge.kz/admins/api/class/?class_name=${decodeURIComponent(
         router.asPath?.split("/")?.at(-1) as string,
     )}`
-
     const fetchSchedule = async () => {
       try {
         const response = await axios.get(url, {

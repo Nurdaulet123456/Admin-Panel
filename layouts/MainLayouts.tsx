@@ -40,7 +40,6 @@ const MainLayouts = ({ children }: ILayouts) => {
                     }
                 });
         }
-
         getSchool();
     }, []);
 

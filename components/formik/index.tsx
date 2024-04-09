@@ -15,6 +15,7 @@ const InputStyled = styled(Field)`
   padding-inline: 1rem;
 `;
 
+
 export const ErrorMsg = styled.span`
   font-size: 12px;
   display: block;
@@ -33,3 +34,16 @@ export const Input: React.FC<FieldProps> = ({ ...props }) => {
     </>
   );
 };
+
+export const InputLog: React.FC<FieldProps> = ({ ...props }) => {
+  const [field, meta] = useField(props);
+  const hasError = Boolean(meta.touched && meta.error);
+
+  return (
+      <>
+        <Field type="text" {...props} {...field} />
+        {hasError && <ErrorMsg>{meta.error}</ErrorMsg>}
+      </>
+  );
+};
+

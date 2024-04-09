@@ -48,7 +48,6 @@ const TypeLessonsTable: FC<IProps> = ({ onEdit, handleClickGetId }) => {
             <tr>
               <Th>No</Th>
               <Th>Наименование</Th>
-              <Th>Цвет</Th>
               <Th>Действие</Th>
             </tr>
           </Thead>
@@ -58,9 +57,6 @@ const TypeLessonsTable: FC<IProps> = ({ onEdit, handleClickGetId }) => {
               <Tr key={item.id}>
                 <Td>{index + 1}</Td>
                 <Td>{item.type_full_name}</Td>
-                <Td>
-                  <ColorBlock color={item.type_color} circle />
-                </Td>
                 <Td>
                   <div
                     onClick={() =>

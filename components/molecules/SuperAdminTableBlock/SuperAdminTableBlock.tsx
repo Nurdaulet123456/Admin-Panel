@@ -23,6 +23,9 @@ import SuccessModal from "@/components/modals/SuccessModal";
 import { Formik, Form, Field, useFormik, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import TextField from "@mui/material/TextField";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
@@ -47,7 +50,12 @@ const SuperAdminTableBlock: FC<IProps> = ({
   onEdit,
 }) => {
   const dispatch = useAppDispatch();
-  console.log(schoolid)
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
   const {
     showSuccessModal,
     showErrorModal,

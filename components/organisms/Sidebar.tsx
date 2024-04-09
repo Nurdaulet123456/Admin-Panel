@@ -122,11 +122,7 @@ const sidebar: IType[] = [
     link: "notification",
   },
 
-  {
-    id: 14,
-    type: "Карта школы",
-    link: "map",
-  },
+
 ];
 
 export default Sidebar;

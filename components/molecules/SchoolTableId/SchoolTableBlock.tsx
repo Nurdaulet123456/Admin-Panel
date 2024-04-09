@@ -38,7 +38,7 @@ const SchoolTableBlock: FC<IProps> = ({
     const dispatch = useAppDispatch();
     const [photo, setPhoto] = useState<File | null>()
     const [photoId, setPhotoId] = useState<string | null>()
-
+    const [loading, setLoading] = useState<boolean>(false);
     const {
         showSuccessModal,
         showErrorModal,
@@ -58,20 +58,16 @@ const SchoolTableBlock: FC<IProps> = ({
             name: Yup.string().required("Обязательно*"),
         }),
         onSubmit: async (values) => {
-            // const formData = new FormData();
-            // formData.append("director_name", values.name);
-            // formData.append("phone_number", values.tel);
-            // formData.append("email", values.email);
-            // photo && formData.append("director_photo", photo);
             let headers = photo ? {
                 Authorization: `Token ${getTokenInLocalStorage()}`,
                 "Content-Type": "multipart/form-data",
             } : {
                 Authorization: `Token ${getTokenInLocalStorage()}`,
             };
-            console.log(directorId)
+            setLoading(true);
             if (directorId && directorId.length === 0) {
-                await instance
+                await
+                    instance
                     .post("https://bilimge.kz/admins/api/school_director/", {
                         director_name: values.name,
                         phone_number: values.tel,
@@ -98,10 +94,12 @@ const SchoolTableBlock: FC<IProps> = ({
                         if (showErrorModal && onReject) {
                             onReject(false);
                         }
+                    }).finally(() => {
+                        setLoading(false);
                     });
             } else {
                 await instance
-                    .put(`https://bilimge.kz/admins/api/school_director/1/`, {
+                    .put(`https://bilimge.kz/admins/api/school_director/${directorId?.[0]?.id}/`, {
                         director_name: values.name,
                         phone_number: values.tel,
                         email: values.email,
@@ -123,6 +121,10 @@ const SchoolTableBlock: FC<IProps> = ({
                         if (showErrorModal && onReject) {
                             onReject(false);
                         }
+                    }).finally(() => {
+                        console.log(loading)
+                        setLoading(false);
+                        console.log(loading)
                     });
             }
         }
@@ -147,6 +149,7 @@ const SchoolTableBlock: FC<IProps> = ({
         setPhoto(phot);
     }
 
+    console.log(directorId)
 
     function onDelete() {
         formik.resetForm({
@@ -181,7 +184,7 @@ const SchoolTableBlock: FC<IProps> = ({
                                         </div>
                                     </div>
                                 ) : (
-                                    <Input type="file" name="file" onChange={(event) => {
+                                    <Input type="file" name="file"  onChange={(event) => {
                                         return setPhoto(event?.target?.files?.[0]);
                                     }}
                                     />
@@ -261,13 +264,19 @@ const SchoolTableBlock: FC<IProps> = ({
                                 >
                                     Удалить
                                 </Button>
-                                <Button
-                                    background="#27AE60"
-                                    style={{width: "auto"}}
-                                    type="submit"
-                                >
-                                    Сохранить
-                                </Button>
+                                {
+                                    loading ? (
+                                        <span className="loading loading-spinner loading-md"></span>
+                                    ) : (
+                                        <Button
+                                            background="#27AE60"
+                                            style={{width: "auto"}}
+                                            type="submit"
+                                        >
+                                            Сохранить
+                                        </Button>
+                                    )
+                                }
                             </div>
                         </div>
                     </div>
