@@ -160,7 +160,7 @@ const SchoolTableBlock4: FC<IProps> = ({
                 <option value={"faceboook"}>
                   Facebook
                 </option>
-                <option value={"Youtube"}>
+                <option value={"youtube"}>
                   Youtube
                 </option>
               </Select>
