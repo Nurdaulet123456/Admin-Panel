@@ -47,11 +47,7 @@ const sidebar: IType[] = [
     type: "Администраторы",
     link: "administrators",
   },
-  {
-    id: 3,
-    type: "Карта школы",
-    link: "map",
-  },
+
 ];
 
 export default SuperAdminSidebar;

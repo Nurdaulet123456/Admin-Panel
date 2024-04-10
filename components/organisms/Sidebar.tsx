@@ -121,7 +121,11 @@ const sidebar: IType[] = [
     type: "Уведомления",
     link: "notification",
   },
-
+  {
+    id: 14,
+    type: "Карта школы",
+    link: "map",
+  },
 
 ];
 
