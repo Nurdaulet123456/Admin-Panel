@@ -57,8 +57,8 @@ export interface ISchoolInfo {
   timezone?: string;
   user?: any;
   region?: string;
-  coordinate_x: string;
-  coordinate_y: string;
+  coordinate_x?: string;
+  coordinate_y?: string;
 }
 
 // Users
