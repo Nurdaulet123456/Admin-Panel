@@ -19,7 +19,7 @@ interface IProps {
 
 const MainTable: FC<IProps> = ({ kruzhok, handleClickGetId }) => {
   const dispatch = useAppDispatch();
-
+  console.log(kruzhok)
   const handleDeleteItems = async (id?: number) => {
     await instance
       .delete(`https://bilimge.kz/admins/api/kruzhok/${id}/`, {

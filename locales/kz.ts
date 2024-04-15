@@ -103,7 +103,7 @@ export const kz = {
         password: "Құпия сөз",
         in: "Кіру",
         contentTitle: "Электронды кесте",
-        contentSubTitle: "оқу орындару үшін",
+        contentSubTitle: "оқу орындары үшін",
         content: [
             "Жылдам",
             "Ыңғайлы",

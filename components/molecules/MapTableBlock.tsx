@@ -71,8 +71,7 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
         validationSchema: Yup.object({
         }),
         onSubmit: async (values) => {
-            console.log(map)
-            console.log(flat1)
+
             const formData = new FormData();
             map && formData.append("map", map);
             flat1 && formData.append("flat1", flat1);
@@ -152,7 +151,6 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
         dispatch(getMapThunk());
         onDeleteModalClose();
     };
-
     useEffect(() => {
         const fetchFiles = async () => {
             if (mapId && mapId.length > 0) {

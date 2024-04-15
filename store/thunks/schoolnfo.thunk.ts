@@ -121,4 +121,9 @@ export const getMapIdThunk = createAsyncThunk(
     async (id?: number) => await assetsApi.getMapId(id),
 );
 
+export const getSliderThunk = createAsyncThunk(
+    "getSliderThunk",
+    async () => await assetsApi.getSlider(),
+);
+
 

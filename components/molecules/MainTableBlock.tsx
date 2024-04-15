@@ -17,6 +17,7 @@ import {
 } from "@/utils/assets.utils";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import {
+  getClassRoomThunk,
   getKruzhokInfoThunk,
   getKruzhokTeachersInfoThunk, getMenuThunk,
 } from "@/store/thunks/schoolnfo.thunk";
@@ -52,14 +53,18 @@ interface IProps {
 const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
   const dispatch = useAppDispatch();
   const teachers = useTypedSelector((state) => state.system.teachers);
+  const classroom = useTypedSelector((state) => state.system.classroom);
+
   const [showActive, setShowActive] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
   const [id, setId] = useState<number>();
   const [photoId, setPhotoId] = useState<string | null>()
-
   useEffect(() => {
     if (teachers) {
       dispatch(getKruzhokTeachersInfoThunk());
+    }
+    if(classroom) {
+      dispatch(getClassRoomThunk());
     }
   }, [dispatch]);
 
@@ -71,16 +76,18 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
     }
   };
 
-  const toDict = (arr?: any[]) => {
-    let temp: { week_day: string; start_end_time: string }[] = [];
+  const toDict = (arr?: any[], arr2?: any[]) => {
+    let temp: { week_day: string; start_end_time: string; classroom: number | null}[] = [];
     if (Array.isArray(arr)) {
       arr.forEach((item, i) => {
         if(item)
-        temp.push({week_day: String(i+1), start_end_time: String(item)});
+        temp.push({week_day: String(i+1), start_end_time: String(item), classroom: Number(arr2?.[i]) || null});
       });
     }
     return temp;
   }
+
+
 
   const formik = useFormik({
     initialValues: {
@@ -96,12 +103,21 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
            '',
            '',
         ],
+        classrooms: [
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+        ]
     },
     validationSchema: Yup.object({
       name: Yup.string().required('Введите имя'),
 
     }),
     onSubmit: async (values) => {
+      console.log(toDict(values.times, values.classrooms))
       if (!getId) {
               await instance
                 .post(
@@ -110,7 +126,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
                     kruzhok_name: values.name,
                     teacher: values.teacher,
                     purpose: values.goal,
-                    lessons: toDict(values.times),
+                    lessons: toDict(values.times, values.classrooms),
                   },
                   {
                     headers: {
@@ -155,7 +171,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
                       kruzhok_name: values.name,
                       teacher: values.teacher,
                       purpose: values.goal,
-                      lessons: toDict(values.times),
+                      lessons: toDict(values.times, values.classrooms),
                     },
                     {
                   headers: {
@@ -212,6 +228,21 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
     return temp;
   }
 
+  const setClassroom = (arr?: any[]) => {
+    let temp = [];
+    if (Array.isArray(arr)) {
+      arr.forEach((item) => {
+        temp[parseInt(String(item.week_day - 1))] = item.classroom;
+      });
+    }
+    for(let i = 0; i  < 6; i++) {
+      if(!temp[i]) {
+        temp[i] = '';
+      }
+    }
+    return temp;
+  }
+
 
 
 
@@ -224,6 +255,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
           teacher: kruzhokid.teacher?.id || '',
           goal: kruzhokid.purpose || '',
           times: setTime(kruzhokid.lessons),
+          classrooms: setClassroom(kruzhokid.lessons)
         },
       });
       fetchAndSetPhoto(kruzhokid.photo);
@@ -249,6 +281,14 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
           '',
           '',
         ],
+        classrooms: [
+          '',
+          '',
+          '',
+          '',
+          '',
+          '',
+        ]
       },
     });
   }
@@ -326,7 +366,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
                 <Select {...formik.getFieldProps("teacher")}>
                   <option value="">Выберите учителя</option>
                   {teachers?.map((item) => (
-                      <option value={item.id}>{item.full_name}</option>
+                      <option key={item.id} value={item.id}>{item.full_name}</option>
                   ))}
                 </Select>
               </div>
@@ -355,46 +395,37 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
               <div className="login_forms-label_pink">Күні</div>
               <div className="forms flex-between">
                   <div>
-                    {formik.values.times.slice(0, 3).map((time, index) => (
-                        <div key={index} className="flex-grid">
-                          <label htmlFor={`times.${index}`} className="login_forms-label_pink">{weekDay[index]}</label>
-                          <Input
-                              id={`times.${index}`}
-                              name={`times.${index}`}
-                              type="text"
-                              onChange={formik.handleChange}
-                              onBlur={formik.handleBlur}
-                              value={time}
-                              style={{
-                                borderColor: formik.touched.times && formik.errors.times && formik.errors.times[index] ? "red" : "#c1bbeb",
-                              }}
-                          />
+                    {formik.values.times.map((time, index) => (
+                        <div key={index}>
+                          <div className="flex-grid">
+                            <label htmlFor={`times.${index}`}
+                                   className="login_forms-label_pink">{weekDay[index]}</label>
+                            <Input
+                                id={`times.${index}`}
+                                name={`times.${index}`}
+                                type="text"
+                                onChange={formik.handleChange}
+                                onBlur={formik.handleBlur}
+                                value={time}
+                                style={{
+                                  borderColor: formik.touched.times && formik.errors.times && formik.errors.times[index] ? "red" : "#c1bbeb",
+                                }}
+                            />
+                          </div>
+                          <div className="flex-grid">
+                            <label htmlFor={`times.${index}`}
+                                   className="login_forms-label_pink">Кабинет</label>
+                            <Select {...formik.getFieldProps(`classrooms[${index}]`)}>
+                              <option value="">Выберите кабинет</option>
+                              {classroom?.map((item) => (
+                                  <option key={item.id} value={item.id}>{item.classroom_name}/{item.classroom_number}</option>
+                              ))}
+                            </Select>
+                          </div>
                         </div>
+
                     ))}
                   </div>
-
-                  <div>
-                    {formik.values.times.slice(3, 6).map((time, index) => (
-                        <div key={index + 3} className="flex-grid">
-                          <label htmlFor={`times.${index + 3}`}
-                                 className="login_forms-label_pink">{weekDay[index + 3]}</label>
-                          {/*{formik.touched.times && formik.errors.times && formik.errors.times[index+3] && (*/}
-                          {/*    <div style={{ color: "red" }}>{formik.errors.times[index+3]}</div>*/}
-                          {/*)}*/}
-                          <Input
-                              id={`times.${index + 3}`}
-                              name={`times.${index + 3}`}
-                              type="text"
-                              onChange={formik.handleChange}
-                              onBlur={formik.handleBlur}
-                              value={time}
-                              style={{
-                                borderColor: formik.touched.times && formik.errors.times && formik.errors.times[index + 3] ? "red" : "#c1bbeb",
-                              }}
-                          />
-                        </div>
-                    ))}
-                </div>
               </div>
 
               <div

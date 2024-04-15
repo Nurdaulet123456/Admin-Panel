@@ -18,7 +18,7 @@ import {
     getSchoolPhotosThunk,
     getSchoolSocialIdThunk,
     getSchoolSocialThunk,
-    getSchoolThunk,
+    getSchoolThunk, getSliderThunk,
     getUsersThunk,
 } from "../thunks/schoolnfo.thunk";
 import {
@@ -30,7 +30,7 @@ import {
     ISchoolInfo,
     ISchoolPassport,
     ISchoolPhotos,
-    ISchoolSocialMedia,
+    ISchoolSocialMedia, ISlider,
     IUsers,
 } from "@/types/assets.type";
 
@@ -296,6 +296,16 @@ export const schoolInfoSlice = createSlice({
                     return {
                         ...state,
                         map: action.payload,
+                    };
+                }
+            },
+        ).addCase(
+            getSliderThunk.fulfilled,
+            (state, action: PayloadAction<ISlider[]>) => {
+                if (action.payload) {
+                    return {
+                        ...state,
+                        slider: action.payload,
                     };
                 }
             },

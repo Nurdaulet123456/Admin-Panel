@@ -73,6 +73,8 @@ const SuperAdminTableBlock: FC<IProps> = ({
       city: "",
       url: "",
       timezone: "",
+      x: "",
+      y: "",
     },
     validationSchema: Yup.object({
       kz: Yup.string().required("Обязательно*"),
@@ -81,7 +83,6 @@ const SuperAdminTableBlock: FC<IProps> = ({
       url: Yup.string().required("Обязательно*"),
     }),
     onSubmit: async (values) => {
-      console.log(values);
       if (!getId) {
         await instance
           .post(
@@ -93,6 +94,8 @@ const SuperAdminTableBlock: FC<IProps> = ({
               url: values.url,
               region: values.city,
               timezone: "GMT+5",
+              coordinate_x : values.x,
+              coordinate_y : values.y,
             },
             {
               headers: {
@@ -127,6 +130,8 @@ const SuperAdminTableBlock: FC<IProps> = ({
               url: values.url,
               region: values.city,
               timezone: "GMT+5",
+              coordinate_x : values.x,
+              coordinate_y : values.y,
             },
             {
               headers: {
@@ -163,6 +168,8 @@ const SuperAdminTableBlock: FC<IProps> = ({
           city: schoolid.region || "",
           url: schoolid.url || "",
           timezone: schoolid.timezone || "",
+          x: schoolid.coordinate_x || "",
+          y: schoolid.coordinate_y || "",
         },
       });
     }
@@ -177,6 +184,8 @@ const SuperAdminTableBlock: FC<IProps> = ({
         city: "",
         url: "",
         timezone: "",
+        x: "",
+        y: "",
       },
     });
   }
@@ -195,17 +204,17 @@ const SuperAdminTableBlock: FC<IProps> = ({
                   Наименование школы (KZ)*
                 </div>
                 {formik.touched.kz && formik.errors.kz ? (
-                  <div style={{ color: "red" }}>{formik.errors.kz}</div>
+                    <div style={{color: "red"}}>{formik.errors.kz}</div>
                 ) : null}
                 <Input
-                  name={"kz"}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.kz}
-                  style={{
-                    borderColor:
-                      formik.touched.kz && formik.errors.kz ? "red" : "#c1bbeb",
-                  }}
+                    name={"kz"}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.kz}
+                    style={{
+                      borderColor:
+                          formik.touched.kz && formik.errors.kz ? "red" : "#c1bbeb",
+                    }}
                 />
               </div>
 
@@ -214,17 +223,17 @@ const SuperAdminTableBlock: FC<IProps> = ({
                   Наименование школы (RU)*
                 </div>
                 {formik.touched.ru && formik.errors.ru ? (
-                  <div style={{ color: "red" }}>{formik.errors.ru}</div>
+                    <div style={{color: "red"}}>{formik.errors.ru}</div>
                 ) : null}
                 <Input
-                  name={"ru"}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.ru}
-                  style={{
-                    borderColor:
-                      formik.touched.ru && formik.errors.ru ? "red" : "#c1bbeb",
-                  }}
+                    name={"ru"}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.ru}
+                    style={{
+                      borderColor:
+                          formik.touched.ru && formik.errors.ru ? "red" : "#c1bbeb",
+                    }}
                 />
               </div>
 
@@ -233,19 +242,19 @@ const SuperAdminTableBlock: FC<IProps> = ({
                   Наименование школы (ENG)*
                 </div>
                 {formik.touched.eng && formik.errors.eng ? (
-                  <div style={{ color: "red" }}>{formik.errors.eng}</div>
+                    <div style={{color: "red"}}>{formik.errors.eng}</div>
                 ) : null}
                 <Input
-                  name={"eng"}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values.eng}
-                  style={{
-                    borderColor:
-                      formik.touched.eng && formik.errors.eng
-                        ? "red"
-                        : "#c1bbeb",
-                  }}
+                    name={"eng"}
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={formik.values.eng}
+                    style={{
+                      borderColor:
+                          formik.touched.eng && formik.errors.eng
+                              ? "red"
+                              : "#c1bbeb",
+                    }}
                 />
               </div>
 
@@ -253,7 +262,7 @@ const SuperAdminTableBlock: FC<IProps> = ({
                 <div>
                   <div className="login_forms-label_pink">Город</div>
                   {formik.touched.city && formik.errors.city ? (
-                    <div style={{ color: "red" }}>{formik.errors.city}</div>
+                      <div style={{color: "red"}}>{formik.errors.city}</div>
                   ) : null}
                   <Select {...formik.getFieldProps("city")}>
                     <option value="">Выберите регион</option>
@@ -266,59 +275,79 @@ const SuperAdminTableBlock: FC<IProps> = ({
                 <div>
                   <div className="login_forms-label_pink">URL</div>
                   {formik.touched.url && formik.errors.url ? (
-                    <div style={{ color: "red" }}>{formik.errors.url}</div>
+                      <div style={{color: "red"}}>{formik.errors.url}</div>
                   ) : null}
                   <Input
-                    name={"url"}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values.url}
-                    style={{
-                      borderColor:
-                        formik.touched.url && formik.errors.url
-                          ? "red"
-                          : "#c1bbeb",
-                    }}
+                      name={"url"}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.url}
+                      style={{
+                        borderColor:
+                            formik.touched.url && formik.errors.url
+                                ? "red"
+                                : "#c1bbeb",
+                      }}
+                  />
+                </div>
+              </div>
+              <div className="forms flex">
+                <div>
+                  <div className="login_forms-label_pink">X Координата</div>
+                  {formik.touched.x && formik.errors.x ? (
+                      <div style={{color: "red"}}>{formik.errors.x}</div>
+                  ) : null}
+                  <Input
+                      name={"x"}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.x}
+                      style={{
+                        borderColor:
+                            formik.touched.x && formik.errors.x
+                                ? "red"
+                                : "#c1bbeb",
+                      }}
                   />
                 </div>
 
                 <div>
-                  {/*<div className="login_forms-label_pink">Тайм-зона</div>*/}
-                  {/*{formik.touched.timezone && formik.errors.timezone ? (*/}
-                  {/*  <div style={{ color: "red" }}>{formik.errors.timezone}</div>*/}
-                  {/*) : null}*/}
-                  {/*<Input*/}
-                  {/*  name={"timezone"}*/}
-                  {/*  onChange={formik.handleChange}*/}
-                  {/*  onBlur={formik.handleBlur}*/}
-                  {/*  value={formik.values.timezone}*/}
-                  {/*  style={{*/}
-                  {/*    borderColor:*/}
-                  {/*      formik.touched.timezone && formik.errors.timezone*/}
-                  {/*        ? "red"*/}
-                  {/*        : "#c1bbeb",*/}
-                  {/*  }}*/}
-                  {/*/>*/}
+                  <div className="login_forms-label_pink">Y Координата</div>
+                  {formik.touched.y && formik.errors.y ? (
+                      <div style={{color: "red"}}>{formik.errors.y}</div>
+                  ) : null}
+                  <Input
+                      name={"y"}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.y}
+                      style={{
+                        borderColor:
+                            formik.touched.y && formik.errors.y
+                                ? "red"
+                                : "#c1bbeb",
+                      }}
+                  />
                 </div>
               </div>
             </div>
           </div>
           <div
-            className="flex"
-            style={{ justifyContent: "flex-end", gap: "1.6rem" }}
+              className="flex"
+              style={{justifyContent: "flex-end", gap: "1.6rem"}}
           >
             <Button
-              background="#CACACA"
-              color="#645C5C"
-              style={{ width: "auto" }}
-              onClick={() => onDelete()}
+                background="#CACACA"
+                color="#645C5C"
+                style={{width: "auto"}}
+                onClick={() => onDelete()}
             >
               Удалить
             </Button>
             <Button
-              background="#27AE60"
-              style={{ width: "auto" }}
-              type="submit"
+                background="#27AE60"
+                style={{width: "auto"}}
+                type="submit"
             >
               Сохранить
             </Button>

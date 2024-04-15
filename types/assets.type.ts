@@ -57,6 +57,8 @@ export interface ISchoolInfo {
   timezone?: string;
   user?: any;
   region?: string;
+  coordinate_x: string;
+  coordinate_y: string;
 }
 
 // Users
@@ -305,7 +307,6 @@ export interface IClass {
   class_letter?:string;
 }
 
-// Avalibale
 
 export interface IASchool {
   id?: number;
@@ -439,5 +440,20 @@ export interface IMap {
   flat3?: string;
   flat4?: string;
   flat5?: string;
+  school?: number;
+}
+
+export interface ISlider {
+  id:number
+  photo1?: string;
+  photo2?: string;
+  photo3?: string;
+  photo4?: string;
+  photo5?: string;
+  photo6?: string;
+  photo7?: string;
+  photo8?: string;
+  photo9?: string;
+  photo10?: string;
   school?: number;
 }

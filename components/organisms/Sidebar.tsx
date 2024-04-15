@@ -126,7 +126,11 @@ const sidebar: IType[] = [
     type: "Карта школы",
     link: "map",
   },
-
+  {
+    id: 15,
+    type: "Фото",
+    link: "slider"
+  }
 ];
 
 export default Sidebar;

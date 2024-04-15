@@ -44,7 +44,7 @@ const MainLayouts = ({ children }: ILayouts) => {
     }, []);
 
   return (
-    <div className="container">
+    <div className={`container`}>
       <Sidebar />
 
       <div className="main">

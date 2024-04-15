@@ -8,7 +8,7 @@ import {
   ISchoolPassport,
   ISchoolPhotos,
   ISchoolSocialMedia,
-  IUsers, ISchoolDirector, INotification, IMap,
+  IUsers, ISchoolDirector, INotification, IMap, ISlider,
 } from "@/types/assets.type";
 
 export interface ISchoolInfo {
@@ -37,6 +37,7 @@ export interface ISchoolInfo {
   notificationId?: INotification;
   maps?: IMap[];
   map?: IMap;
+  slider: ISlider[];
 }
 
 export const initaialStateSchoolInfo: ISchoolInfo = {
@@ -64,4 +65,5 @@ export const initaialStateSchoolInfo: ISchoolInfo = {
   notificationId:{},
   maps: [],
   map: {},
+  slider: [],
 };
