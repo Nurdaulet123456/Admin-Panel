@@ -56,7 +56,7 @@ const MainTable: FC<IProps> = ({ kruzhok, handleClickGetId }) => {
               <Tr key={item.id}>
                 <Td>{index + 1}</Td>
                 <Td>{item.kruzhok_name}</Td>
-                <Td>{formatName(item.teacher.full_name)}</Td>
+                <Td>{formatName(item.teacher?.full_name || "")}</Td>
                 <Td>{item.purpose}</Td>
                 <Td>
                   {item.lessons?.map((i) => (

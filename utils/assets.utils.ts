@@ -75,7 +75,7 @@ export function removeSecondOfTime(time?: string): string {
 }
 
 export function formatName(fullName: string): string {
-  const nameParts: string[] = fullName.split(" ");
+  const nameParts: string[] = fullName?.split(" ");
   const lastName: string = nameParts[0];
 
   let firstName: string, middleName: string | undefined;
