@@ -116,7 +116,7 @@ export const assetsApi = {
     });
   },
 
-  async getSchoolById(id?: number): Promise<ISchoolInfo> {
+  async getSchoolById(id?: string): Promise<ISchoolInfo> {
     return await instance.get(
       `https://www.bilimge.kz/admins/api/school/${id ? id : ""}`,
       {

@@ -59,9 +59,14 @@ const PrideSchoolTable2: FC<IProps> = ({ handleClickGetIdOner }) => {
               <Tr>
                 <Td>{index + 1}</Td>
                 <Td>
-                  <div className="img-block">
-                    <img src={item.photo} alt={item.photo} />
-                  </div>
+                  {
+                    item.photo ?
+                        <div className="img-block">
+
+                          <img src={item.photo} alt={item.photo}/>
+                        </div> :
+                        "Нет фото"
+                  }
                 </Td>
                 <Td>{item.fullname}</Td>
                 <Td>{item.student_success}</Td>

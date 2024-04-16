@@ -35,10 +35,6 @@ const ScheduleComponents = () => {
     const [del, setDel] = useState<boolean>(false);
     const [editActive, setEditActive] = useState<boolean>(false);
     const [getId, setId] = useState<number | null>();
-    useEffect(() => {
-        console.log(router.asPath)
-
-    }, [router]);
     const handleAddButtonClick = () => {
         setEditActive(false);
         setShowActive(!showActive);
@@ -189,6 +185,10 @@ const Tables: FC<TablesProps> = ({isOsnova}) => {
         classroomId: any,
         typezId: any,
         itemId: any,
+        teacher2Id: any,
+        subject2Id: any,
+        classroom2Id: any,
+
     ) => {
         const cell = {
             day,
@@ -200,13 +200,17 @@ const Tables: FC<TablesProps> = ({isOsnova}) => {
             subjectId,
             classroomId,
             typezId,
-            itemId
+            itemId,
+            teacher2Id,
+            subject2Id,
+            classroom2Id,
         };
-        console.log(cell)
 
         if (selectMode) {
             setSelectedCells([]);
         }
+
+        console.log(cell)
 
         const isSelected = selectedCells.some(
             (selectedCell) =>
@@ -334,6 +338,9 @@ const Tables: FC<TablesProps> = ({isOsnova}) => {
                         subject: copiedData[0]?.subjectId,
                         classroom: copiedData[0]?.classroomId,
                         typez: copiedData[0]?.typezId,
+                        teacher2: copiedData[0]?.teacher2Id,
+                        subject2: copiedData[0]?.subject2Id,
+                        classroom2: copiedData[0]?.classroom2Id,
                     },
                     {
                         headers: {

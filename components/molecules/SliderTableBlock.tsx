@@ -69,8 +69,6 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, photo, onEdit }) => {
         validationSchema: Yup.object({
         }),
         onSubmit: async (values) => {
-            console.log(photo1)
-            console.log(photo2)
             const formData = new FormData();
             photo1 && formData.append("photo1", photo1);
             photo2 && formData.append("photo2", photo2);
@@ -221,7 +219,7 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, photo, onEdit }) => {
             {showDeleteModal && <DeleteModal onClose = {onDeleteModalClose} handleDelete={handleDelete}/>}
             <form onSubmit={formik.handleSubmit}>
                 <div className="main_table-modal">
-                    <div className="main_table-modal_title">Карта школы</div>
+                    <div className="main_table-modal_title">Фото-слайдер</div>
                     <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
                         <div className="main_table-modal_forms" >
                             <div className="forms" style={{display: "flex", flexDirection: "column", gap: "10px"}}>

@@ -9,7 +9,7 @@ import { getSchoolThunk } from "@/store/thunks/schoolnfo.thunk";
 
 interface IProps {
   school?: ISchoolInfo[];
-  onEdit?: (id?: number) => void;
+  onEdit?: (id?: string) => void;
 }
 
 const SuperAdminTable: FC<IProps> = ({ school, onEdit }) => {
@@ -50,7 +50,7 @@ const SuperAdminTable: FC<IProps> = ({ school, onEdit }) => {
                 <Td>{index + 1}</Td>
                 <Td>{item.school_kz_name}</Td>
                 <Td>
-                  <div onClick={() => onEdit && onEdit(item.id)}>
+                  <div onClick={() => onEdit && onEdit(item.url)}>
                     <PenIcons />
                   </div>
 

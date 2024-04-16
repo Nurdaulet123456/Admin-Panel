@@ -326,7 +326,10 @@ const ScheduleTable = ({
                                                   scheduleItem?.subject?.id,
                                                   scheduleItem?.classroom?.id,
                                                   scheduleItem?.typez?.id,
-                                                  scheduleItem?.id
+                                                  scheduleItem?.id,
+                                                  scheduleItem?.teacher2?.id,
+                                                  scheduleItem?.subject2?.id,
+                                                  scheduleItem?.classroom2?.id,
                                               )
                                           }
                                       />

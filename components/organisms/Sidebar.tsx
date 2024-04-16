@@ -128,7 +128,7 @@ const sidebar: IType[] = [
   },
   {
     id: 15,
-    type: "Фото",
+    type: "Фото-слайдер",
     link: "slider"
   }
 ];

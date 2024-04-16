@@ -43,7 +43,7 @@ export const getSchoolThunk = createAsyncThunk(
 
 export const getSchoolIdThunk = createAsyncThunk(
   "getSchoolIdThunk",
-  async (id?: number) => await assetsApi.getSchoolById(id),
+  async (id?: string) => await assetsApi.getSchoolById(id),
 );
 
 export const getUsersThunk = createAsyncThunk(

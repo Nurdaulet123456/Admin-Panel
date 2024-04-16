@@ -41,7 +41,7 @@ const MainPage = () => {
     setGetId(undefined);
   };
 
-  const handleGetId = async (id?: number) => {
+  const handleGetId = async (id?: any) => {
     setEditActive(true);
     setShowActive(!showActive);
     setGetId(id);
