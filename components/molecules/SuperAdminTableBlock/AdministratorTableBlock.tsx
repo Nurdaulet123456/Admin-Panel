@@ -31,6 +31,9 @@ import {
 } from "@mui/material";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 // import Select from "react-select";
 
 interface UpdateInputProps {
@@ -53,6 +56,12 @@ const AdministratorTableBlock: FC<IProps> = ({
   onEdit,
 }) => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
   const school = useTypedSelector((state) => state.ia.iaschool);
   const {
     showSuccessModal,
@@ -64,7 +73,6 @@ const AdministratorTableBlock: FC<IProps> = ({
   } = useModalLogic();
 
   const [schoolId, setId] = useState(getId ? usersid?.school : 8946542);
-  console.log(schoolId + " asdf");
 
   useEffect(() => {
     dispatch(getIASchoolThunk());
@@ -187,7 +195,7 @@ const AdministratorTableBlock: FC<IProps> = ({
       {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
       <form onSubmit={formik.handleSubmit}>
         <div className="main_table-modal">
-          <div className="main_table-modal_title">Админстраторы</div>
+          <div className="main_table-modal_title">{t.superadmin.administrators}</div>
           <div>
             <div className="main_table-modal_forms" style={{ width: "100%" }}>
               <div className="forms flex" style={{ gap: "1.6rem" }}>
@@ -233,7 +241,7 @@ const AdministratorTableBlock: FC<IProps> = ({
                   <div></div>
                 ) : (
                   <div>
-                    <div className="login_forms-label_pink">Пароль</div>
+                    <div className="login_forms-label_pink">{t.superadmin.password}</div>
                     {formik.touched.password && formik.errors.password ? (
                       <div style={{ color: "red" }}>
                         {formik.errors.password}
@@ -257,7 +265,7 @@ const AdministratorTableBlock: FC<IProps> = ({
 
               {schoolId && (
                 <FormControl sx={{ width: "35%" }}>
-                  <div className="login_forms-label_pink">School *</div>
+                  <div className="login_forms-label_pink">{t.superadmin.schoolSelection}</div>
                   <Select
                     id="demo-simple-select"
                     value={schoolId}

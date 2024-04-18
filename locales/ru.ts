@@ -66,7 +66,9 @@
             wednesday: "Среда",
             thursday: "Четверг",
             friday: "Пятница",
-            saturday: "Суббота"
+            saturday: "Суббота",
+            section: "Кружок",
+            photo: "Фото",
         },
         classes: {
             class: "Класс",
@@ -97,7 +99,8 @@
             selectAll: "Выбрать все",
             add: "Добавить",
             exit: "Выход",
-            back: "Назад"
+            back: "Назад",
+            close: "Закрыть"
         },
         login: {
             "login": "Вход",
@@ -112,5 +115,33 @@
                 "Удобно",
                 "Современно"
             ]
+        },
+        superadmin: {
+            "superAdmin": "Super Admin",
+            "schools": "Школы",
+            "administrators": "Администраторы",
+            "withinSchools": "Школы ішіндегі",
+            "schoolsList": "Список школ",
+            "action": "Действие",
+            "add": "Добавить",
+            "schoolNameKZ": "Наименование школы (KZ)*",
+            "schoolNameRU": "Наименование школы (RU)*",
+            "schoolNameENG": "Наименование школы (ENG)*",
+            "city": "Город",
+            "URL": "URL",
+            "xCoordinate": "X Координата",
+            "yCoordinate": "Y Координата",
+            "delete": "Удалить",
+            "save": "Сохранить",
+            "back": "Назад",
+            "success": "Успешно прошел",
+            "filledDataSaved": "Заполненные данные успешно сохранены",
+            "required": "Обязательно",
+            "admin": "Администратор",
+            "school": "Школа",
+            "username": "Username*",
+            "password": "Пароль",
+            "schoolSelection": "Школа *"
         }
+
     }

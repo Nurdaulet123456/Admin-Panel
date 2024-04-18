@@ -65,7 +65,8 @@ export const kz = {
         wednesday: "Сәрсенбі",
         thursday: "Бейсенбі",
         friday: "Жұма",
-        saturday: "Сенбі"
+        saturday: "Сенбі",
+        section: "Үйірме"
     },
     classes: {
         class: "Сынып",
@@ -95,7 +96,9 @@ export const kz = {
         delete: "Өшіру",
         selectAll: "Барлығын таңдау",
         add: "Қосу",
-        exit: "Шығу"
+        exit: "Шығу",
+        close: "Жабу",
+
     }, login: {
         login: "Кіру",
         welcome: "Қош келдіңіз!!!",
@@ -109,5 +112,34 @@ export const kz = {
             "Ыңғайлы",
             "Заманауи"
         ]
+    }, superadmin: {
+        "superAdmin": "Супер Админ",
+        "schools": "Мектептер",
+        "administrators": "Администраторлар",
+        "withinSchools": "Мектеп ішінде",
+        "schoolsList": "Мектептер тізімі",
+        "action": "Іс-әрекет",
+        "add": "Қосу",
+        "schoolNameKZ": "Мектеп атауы (KZ)*",
+        "schoolNameRU": "Мектеп атауы (RU)*",
+        "schoolNameENG": "Мектеп атауы (ENG)*",
+        "city": "Қала",
+        "URL": "URL",
+        "xCoordinate": "X Координатасы",
+        "yCoordinate": "Y Координатасы",
+        "delete": "Жою",
+        "save": "Сақтау",
+        "back": "Артқа",
+        "success": "Сәтті аяқталды",
+        "filledDataSaved": "Толтырылған деректер сәтті сақталды",
+        "required": "Міндетті",
+        "withinAdministrators": "Администраторлар ішінде",
+        "shouldBeAdministratorsWithinSchools": "Мектептер ішінде администратор болу керек",
+        "admin": "Администратор",
+        "school": "Мектеп",
+        "username": "Пайдаланушы аты*",
+        "password": "Құпия сөз",
+        "schoolSelection": "Мектеп *"
     }
+
 };

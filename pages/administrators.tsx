@@ -9,6 +9,9 @@ import { useTypedSelector } from "@/hooks/useTypedSelector";
 import { getUsersThunk } from "@/store/thunks/schoolnfo.thunk";
 import { getUserIdThunk } from "@/store/thunks/available.thunk";
 import {scrollToTop} from "@/utils/assets.utils";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 const MainPage = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
@@ -16,7 +19,12 @@ const MainPage = () => {
   const dispatch = useAppDispatch();
   const users = useTypedSelector((state) => state.system.users);
   const usersid = useTypedSelector((state) => state.ia.userid);
-
+    const router = useRouter();
+    const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+    const t = translations[router.locale || "kz"] || kz;
   const [getId, setId] = useState<number>();
 
   useEffect(() => {
@@ -67,7 +75,7 @@ const MainPage = () => {
             }}
           >
             {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
-            {showActive || editActive ? "Назад" : "Добавить"}
+            {showActive || editActive ? t.superadmin.back : t.superadmin.add}
           </div>
         </Button>
       </div>

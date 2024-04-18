@@ -8,6 +8,9 @@ import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { getUsersThunk } from "@/store/thunks/schoolnfo.thunk";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import { getIASchoolThunk } from "@/store/thunks/available.thunk";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IProps {
   users?: IUsers[];
@@ -16,7 +19,12 @@ interface IProps {
 
 const AdministratorTable: FC<IProps> = ({ users, handleClickGetId }) => {
   const dispatch = useAppDispatch();
-
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
   const handleDeleteItems = async (id?: number) => {
     await instance
       .delete(`https://www.bilimge.kz/admins/api/users/${id}/`, {
@@ -50,17 +58,17 @@ const AdministratorTable: FC<IProps> = ({ users, handleClickGetId }) => {
 
   return (
     <div className="main_table">
-      <div className="main_table-title">Школы</div>
+      <div className="main_table-title">{t.superadmin.schools}</div>
 
       <div className="main_table-block">
         <Table>
           <Thead>
             <tr>
               <Th>No</Th>
-              <Th>Admin</Th>
-              <Th>Школа</Th>
+              <Th>{t.superadmin.admin}</Th>
+              <Th>{t.superadmin.school}</Th>
               <Th>URL</Th>
-              <Th>Действие</Th>
+              <Th>{t.superadmin.action}</Th>
             </tr>
           </Thead>
 

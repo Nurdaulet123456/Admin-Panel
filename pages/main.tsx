@@ -13,13 +13,22 @@ import {
   getKruzhokInfoThunk,
 } from "@/store/thunks/schoolnfo.thunk";
 import {scrollToTop} from "@/utils/assets.utils";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
+import {useRouter} from "next/router";
 
 const MainPage = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
 
   const [editActive, setEditActive] = useState<boolean>(false);
   const [getId, setId] = useState<number>();
+  const router = useRouter();
 
+  const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+  const t = translations[router.locale || "kz"] || kz;
   const dispatch = useAppDispatch();
   const kruzhok = useTypedSelector((state) => state.system.kruzhok);
   const kruzhokid = useTypedSelector((state) => state.system.kruzhokid);
@@ -72,7 +81,7 @@ const MainPage = () => {
                   }}
               >
                   {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
-                  {showActive || editActive ? "Закрыть" : "Добавить"}
+                  {showActive || editActive ? t.actions.close : t.actions.add}
               </div>
           </Button>
       </div>

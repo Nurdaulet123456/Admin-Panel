@@ -6,6 +6,9 @@ import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { getSchoolThunk } from "@/store/thunks/schoolnfo.thunk";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IProps {
   school?: ISchoolInfo[];
@@ -14,6 +17,12 @@ interface IProps {
 
 const SuperAdminTable: FC<IProps> = ({ school, onEdit }) => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
   const handleDeleteItems = async (id?: number) => {
     await instance
       .delete(`https://www.bilimge.kz/admins/api/school/${id}/`, {
@@ -32,15 +41,15 @@ const SuperAdminTable: FC<IProps> = ({ school, onEdit }) => {
 
   return (
     <div className="main_table">
-      <div className="main_table-title">Школы</div>
+      <div className="main_table-title">{t.superadmin.schools}</div>
 
       <div className="main_table-block">
         <Table>
           <Thead>
             <tr>
-              <Th>No</Th>
-              <Th>Список школ</Th>
-              <Th>Действие</Th>
+              <Th>№</Th>
+              <Th>{t.superadmin.schoolsList}</Th>
+              <Th>{t.superadmin.action}</Th>
             </tr>
           </Thead>
 

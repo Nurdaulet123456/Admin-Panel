@@ -30,6 +30,9 @@ import * as Yup from "yup";
 import {array} from "yup";
 import {useDropzone} from "react-dropzone";
 import {MdClear} from "react-icons/md";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
+import {useRouter} from "next/router";
 
 interface IUpdateInput {
   name?: string;
@@ -54,7 +57,12 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
   const dispatch = useAppDispatch();
   const teachers = useTypedSelector((state) => state.system.teachers);
   const classroom = useTypedSelector((state) => state.system.classroom);
-
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
   const [showActive, setShowActive] = useState<boolean>(false);
   const [text, setText] = useState<string>("");
   const [id, setId] = useState<number>();
@@ -305,7 +313,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
   return (
       <div className="main_table-modal">
         <form onSubmit={formik.handleSubmit}>
-          <div className="main_table-modal_title">Үйірме</div>
+          <div className="main_table-modal_title">{t.clubs.section}</div>
 
           <div className="main_table-modal_flex" style={{gap: "1.6rem"}}>
             <div className="main_table-modal_upload">
@@ -342,7 +350,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
 
             <div className="main_table-modal_forms">
               <div className="forms">
-                <div className="login_forms-label_pink">Кружок (Үйірме атауы)</div>
+                <div className="login_forms-label_pink">{t.clubs.clubName}</div>
 
                 {formik.touched.name && formik.errors.name ? (
                     <div style={{color: "red"}}>{formik.errors.name}</div>
@@ -362,7 +370,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
               </div>
 
               <div className="forms">
-                <div className="login_forms-label_pink">Учитель ФИО</div>
+                <div className="login_forms-label_pink">{t.clubs.teacherFullName}</div>
                 <Select {...formik.getFieldProps("teacher")}>
                   <option value="">Выберите учителя</option>
                   {teachers?.map((item) => (
@@ -372,7 +380,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
               </div>
 
               <div className="forms">
-                <div className="login_forms-label_pink">Цель (Мақсаты)</div>
+                <div className="login_forms-label_pink">{t.clubs.clubGoal}</div>
 
                 {formik.touched.goal && formik.errors.goal ? (
                     <div style={{color: "red"}}>{formik.errors.goal}</div>
@@ -392,7 +400,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
 
                 <div className="length">{formik.values.goal?.length}/2000</div>
               </div>
-              <div className="login_forms-label_pink">Күні</div>
+              <div className="login_forms-label_pink">{t.clubs.date}</div>
               <div className="forms flex-between">
                   <div>
                     {formik.values.times.map((time, index) => (

@@ -195,13 +195,13 @@ const SuperAdminTableBlock: FC<IProps> = ({
       {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
       {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
       <div className="main_table-modal">
-        <div className="main_table-modal_title">Школы</div>
+        <div className="main_table-modal_title">{t.superadmin.schools}</div>
         <form onSubmit={formik.handleSubmit}>
           <div className="main_table-modal_flex">
             <div className="main_table-modal_forms">
               <div className="forms">
                 <div className="login_forms-label_pink">
-                  Наименование школы (KZ)*
+                  {t.superadmin.schoolNameKZ}
                 </div>
                 {formik.touched.kz && formik.errors.kz ? (
                     <div style={{color: "red"}}>{formik.errors.kz}</div>
@@ -220,7 +220,8 @@ const SuperAdminTableBlock: FC<IProps> = ({
 
               <div className="forms">
                 <div className="login_forms-label_pink">
-                  Наименование школы (RU)*
+                  {t.superadmin.schoolNameRU}
+
                 </div>
                 {formik.touched.ru && formik.errors.ru ? (
                     <div style={{color: "red"}}>{formik.errors.ru}</div>
@@ -239,7 +240,8 @@ const SuperAdminTableBlock: FC<IProps> = ({
 
               <div className="forms">
                 <div className="login_forms-label_pink">
-                  Наименование школы (ENG)*
+                  {t.superadmin.schoolNameENG}
+
                 </div>
                 {formik.touched.eng && formik.errors.eng ? (
                     <div style={{color: "red"}}>{formik.errors.eng}</div>
@@ -260,7 +262,7 @@ const SuperAdminTableBlock: FC<IProps> = ({
 
               <div className="forms flex">
                 <div>
-                  <div className="login_forms-label_pink">Город</div>
+                  <div className="login_forms-label_pink">{t.superadmin.city}</div>
                   {formik.touched.city && formik.errors.city ? (
                       <div style={{color: "red"}}>{formik.errors.city}</div>
                   ) : null}
@@ -342,14 +344,14 @@ const SuperAdminTableBlock: FC<IProps> = ({
                 style={{width: "auto"}}
                 onClick={() => onDelete()}
             >
-              Удалить
+              {t.superadmin.delete}
             </Button>
             <Button
                 background="#27AE60"
                 style={{width: "auto"}}
                 type="submit"
             >
-              Сохранить
+              {t.superadmin.save}
             </Button>
           </div>
         </form>

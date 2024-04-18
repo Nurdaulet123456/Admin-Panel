@@ -241,7 +241,7 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, photo, onEdit }) => {
                                                        onChange={(event) => {
                                                            return setPhoto1(event?.target?.files?.[0]);
                                                        }}
-                                                       accept=".svg, .jpg, .png"
+                                                       accept=".svg, .jpg, .png, .jpeg"
                                                 />
                                             )
 
