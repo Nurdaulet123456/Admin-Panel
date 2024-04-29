@@ -4,6 +4,8 @@ export const useModalLogic = () => {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showAllDeleteModal, setShowAllDeleteModal] = useState(false);
+
   const onSuccessModalClose = () => {
     setShowSuccessModal(false);
   };
@@ -14,6 +16,10 @@ export const useModalLogic = () => {
 
   const onDeleteModalClose = () => {
     setShowDeleteModal(false);
+  };
+
+  const onDeleteAllModalClose = () => {
+    setShowAllDeleteModal(false);
   };
 
   const showSuccess = () => {
@@ -27,16 +33,24 @@ export const useModalLogic = () => {
   const showDelete = () => {
     setShowDeleteModal(true);
   };
+  const showAllDelete = () => {
+    setShowAllDeleteModal(true);
+  };
+
+
 
   return {
     showSuccessModal,
     showErrorModal,
     showDeleteModal,
+    showAllDeleteModal,
+    showAllDelete,
+    onDeleteAllModalClose,
     onSuccessModalClose,
     onErrorModalClose,
     onDeleteModalClose,
     showSuccess,
     showError,
-    showDelete
+    showDelete,
   };
 };

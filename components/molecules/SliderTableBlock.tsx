@@ -38,8 +38,6 @@ interface IProps {
 const MapTableBlock: FC<IProps> = ({ onReject, getId, photo, onEdit }) => {
     const [showActive, setShowActive] = useState<boolean>(false);
     const dispatch = useAppDispatch();
-    console.log(photo)
-    console.log(getTokenInLocalStorage())
     const {
         showSuccessModal,
         showErrorModal,
@@ -265,7 +263,7 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, photo, onEdit }) => {
                                                        onChange={(event) => {
                                                            return setPhoto2(event?.target?.files?.[0]);
                                                        }}
-                                                       accept=".svg, .jpg, .png"
+                                                       accept=".svg, .jpg, .png, .jpeg"
                                                 />
                                             )
 
@@ -289,7 +287,7 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, photo, onEdit }) => {
                                                        onChange={(event) => {
                                                            return setPhoto3(event?.target?.files?.[0]);
                                                        }}
-                                                       accept=".svg, .jpg, .png"
+                                                       accept=".svg, .jpg, .png, .jpeg"
                                                 />
                                             )
                                     }
@@ -312,7 +310,7 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, photo, onEdit }) => {
                                                        onChange={(event) => {
                                                            return setPhoto4(event?.target?.files?.[0]);
                                                        }}
-                                                       accept=".svg, .jpg, .png"
+                                                       accept=".svg, .jpg, .png, .jpeg"
                                                 />
                                             )
                                     }
@@ -335,7 +333,7 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, photo, onEdit }) => {
                                                        onChange={(event) => {
                                                            return setPhoto5(event?.target?.files?.[0]);
                                                        }}
-                                                       accept=".svg, .jpg, .png"
+                                                       accept=".svg, .jpg, .png, .jpeg"
                                                 />
                                             )
                                     }
@@ -358,7 +356,7 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, photo, onEdit }) => {
                                                        onChange={(event) => {
                                                            return setPhoto6(event?.target?.files?.[0]);
                                                        }}
-                                                       accept=".svg, .jpg, .png"
+                                                       accept=".svg, .jpg, .png, .jpeg"
                                                 />
                                             )
                                     }
@@ -381,7 +379,7 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, photo, onEdit }) => {
                                                        onChange={(event) => {
                                                            return setPhoto6(event?.target?.files?.[0]);
                                                        }}
-                                                       accept=".svg, .jpg, .png"
+                                                       accept=".svg, .jpg, .png, .jpeg"
                                                 />
                                             )
                                     }
@@ -404,7 +402,7 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, photo, onEdit }) => {
                                                        onChange={(event) => {
                                                            return setPhoto6(event?.target?.files?.[0]);
                                                        }}
-                                                       accept=".svg, .jpg, .png"
+                                                       accept=".svg, .jpg, .png, .jpeg"
                                                 />
                                             )
                                     }
@@ -427,7 +425,7 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, photo, onEdit }) => {
                                                        onChange={(event) => {
                                                            return setPhoto6(event?.target?.files?.[0]);
                                                        }}
-                                                       accept=".svg, .jpg, .png"
+                                                       accept=".svg, .jpg, .png, .jpeg"
                                                 />
                                             )
                                     }
@@ -450,7 +448,7 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, photo, onEdit }) => {
                                                        onChange={(event) => {
                                                            return setPhoto6(event?.target?.files?.[0]);
                                                        }}
-                                                       accept=".svg, .jpg, .png"
+                                                       accept=".svg, .jpg, .png, .jpeg"
                                                 />
                                             )
                                     }

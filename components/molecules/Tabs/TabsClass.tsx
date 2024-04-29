@@ -9,7 +9,6 @@ import React, { useEffect } from "react";
 const TabsClass = () => {
   const dispatch = useAppDispatch();
   const classess = useTypedSelector((state) => state.ia.iaclass);
-  console.log(classess)
   useEffect(() => {
     if (classess) {
       dispatch(getIAClassThunk());

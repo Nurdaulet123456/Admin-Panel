@@ -28,6 +28,7 @@ import {useModalLogic} from "@/hooks/useModalLogic";
 import DeleteModal from "@/components/modals/DeleteModal";
 import ScheduleTable1 from "@/components/organisms/ScheduleTables/ScheduleTable1";
 import ScheduleTableBlock from "@/components/molecules/ScheduleBlocks/ScheduleTableBlock";
+import DeleteAllModal from "@/components/modals/DeleteAllModal";
 
 const ScheduleComponents = () => {
   const router = useRouter();
@@ -137,6 +138,7 @@ const Tables: FC<TablesProps> = ({isOsnova}) => {
     const dispatch = useAppDispatch();
     const iaring = useTypedSelector((state) => state.ia.iaring);
     const iaDopRing = useTypedSelector((state) => state.ia.iaDopRing);
+    const classess = useTypedSelector((state) => state.ia.iaclass);
 
     const [selectMode, setSelectMode] = useState<boolean>(false);
     const [selectModePaste, setSelectModePaste] = useState<boolean>(false);
@@ -210,7 +212,6 @@ const Tables: FC<TablesProps> = ({isOsnova}) => {
             setSelectedCells([]);
         }
 
-        console.log(cell)
 
         const isSelected = selectedCells.some(
             (selectedCell) =>
@@ -282,14 +283,18 @@ const Tables: FC<TablesProps> = ({isOsnova}) => {
     };
 
     const {
+        showAllDeleteModal,
         showDeleteModal,
         onDeleteModalClose,
         showDelete,
+        onDeleteAllModalClose,
+        showAllDelete
     } = useModalLogic();
 
 
 
     const handleDelete = async () => {
+
         const urlPost = isOsnova ? "https://bilimge.kz/admins/api/schedule/" : "https://bilimge.kz/admins/api/DopUrokApi/";
         for(const checkboxId of selectedCheckboxId) {
             await instance
@@ -299,22 +304,45 @@ const Tables: FC<TablesProps> = ({isOsnova}) => {
                     },
                 })
                 .then((res) => {
-                    console.log("Good")
+                    onDeleteModalClose();
+                    dispatch(getScheduleThunk());
+                    dispatch(getDopScheduleThunk());
+                    setSelectModePaste(false);
+                    setCopiedData([]);
+                    setSelectedCells([]);
+                    setSelectedCellsPaste([]);
+                    setSelectedCheckboxId([]);
                 })
                 .catch((e) => console.log(e));
         }
-        dispatch(getMapThunk());
-        onDeleteModalClose();
-        dispatch(getScheduleThunk());
-        dispatch(getDopScheduleThunk());
-        setSelectModePaste(false);
-        setCopiedData([]);
-        setSelectedCells([]);
-        setSelectedCellsPaste([]);
-        setSelectedCheckboxId([]);
 
     };
-
+    const router = useRouter();
+    const handleDeleteAll = async () => {
+        const id = classess?.find((item) => item.class_name === decodeURIComponent(
+            router.asPath?.split("/")?.at(-1) as string,
+        ))?.id;
+        const urlPost = isOsnova ? "https://bilimge.kz/admins/api/delete_class_schedule/" : "https://bilimge.kz/admins/api/delete_class_dopurok/";
+            await instance
+                .post(`${urlPost}`, {
+                    class_id: id
+                }, {
+                    headers: {
+                        Authorization: `Token ${getTokenInLocalStorage()}`,
+                    }
+                })
+                .then((res) => {
+                    dispatch(getScheduleThunk());
+                    dispatch(getDopScheduleThunk());
+                    setSelectModePaste(false);
+                    setCopiedData([]);
+                    setSelectedCells([]);
+                    setSelectedCellsPaste([]);
+                    setSelectedCheckboxId([]);
+                })
+                .catch((e) => console.log(e));
+        onDeleteAllModalClose();
+    };
 
     const handleCopyClick = () => {
         setCopiedData([...selectedCells]);
@@ -376,10 +404,11 @@ const Tables: FC<TablesProps> = ({isOsnova}) => {
             dispatch(getIADopRingThunk());
         }
     }, [dispatch]);
-    console.log(getTokenInLocalStorage())
     return(
         <>
             {showDeleteModal && <DeleteModal onClose = {onDeleteModalClose} handleDelete={handleDelete}/>}
+            {showAllDeleteModal && <DeleteAllModal onClose = {onDeleteAllModalClose} handleDelete={handleDeleteAll}/>}
+
             <div
                 style={{
                     width: "100%",
@@ -408,6 +437,14 @@ const Tables: FC<TablesProps> = ({isOsnova}) => {
                     gap: "2.4rem",
                 }}
             >
+                <Button
+                    background="#CACACA"
+                    color="#645C5C"
+                    radius="14px"
+                    onClick={showAllDelete}
+                >
+                    Удалить все
+                </Button>
                 <Button
                     background="#CACACA"
                     color="#645C5C"

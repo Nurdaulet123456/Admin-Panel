@@ -154,6 +154,9 @@ const SchoolTableBlock4: FC<IProps> = ({
               <div className="login_forms-label_pink">Тип</div>
               <Select {...formik.getFieldProps("type")}>
                 <option value="">Выберите тип</option>
+                <option value={"website"}>
+                  Site
+                </option>
                 <option value={"instagram"}>
                   Instagram
                 </option>
@@ -167,7 +170,7 @@ const SchoolTableBlock4: FC<IProps> = ({
             </div>
 
             <div className="main_table-modal_forms">
-              {/*<div className="forms">*/}
+            {/*<div className="forms">*/}
               {/*  <div className="login_forms-label_pink">URL</div>*/}
 
               {/*  {formik.touched.url && formik.errors.url ? (*/}
