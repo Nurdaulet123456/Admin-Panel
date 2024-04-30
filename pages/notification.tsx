@@ -11,6 +11,9 @@ import {getNotificationIdThunk} from "@/store/thunks/schoolnfo.thunk";
 import NotificationTableBlock from "@/components/molecules/NotificationTableBlock";
 import NotificationTable from "@/components/organisms/NotificationTable";
 import {scrollToTop} from "@/utils/assets.utils";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
+import {useRouter} from "next/router";
 
 const NotificationsPage = () => {
     const [showActive, setShowActive] = useState<boolean>(false);
@@ -35,6 +38,13 @@ const NotificationsPage = () => {
             dispatch(getNotificationIdThunk(id));
         }
     };
+
+    const router = useRouter();
+    const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+    const t = translations[router.locale || "kz"] || kz;
 
     return (
         <MainLayouts>
@@ -62,7 +72,7 @@ const NotificationsPage = () => {
     }}
 >
     {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
-    {showActive || editActive ? "Закрыть" : "Добавить"}
+    {showActive || editActive ? t.actions.close : t.actions.add}
     </div>
     </Button>
     </div>

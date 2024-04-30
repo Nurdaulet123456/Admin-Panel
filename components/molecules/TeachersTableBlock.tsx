@@ -25,6 +25,9 @@ import SuccessModal from "@/components/modals/SuccessModal";
 import {useModalLogic} from "@/hooks/useModalLogic";
 import {MdClear} from "react-icons/md";
 import * as perf_hooks from "perf_hooks";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IHistoryProps {
   start_date?: number;
@@ -66,7 +69,6 @@ const TeachersTableBlock: FC<IProps> = ({
   const dispatch = useAppDispatch();
   const [photo, setPhoto] = useState<File | null>()
   const [photoId, setPhotoId] = useState<string | null>()
-
   const {
     showSuccessModal,
     showErrorModal,
@@ -76,7 +78,12 @@ const TeachersTableBlock: FC<IProps> = ({
     showError,
   } = useModalLogic();
 
-
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
   const reset = (isDelete: boolean, isJob: boolean, index: number) => {
     const name = formik.values.name;
     const sanaty = formik.values.sanaty;
@@ -356,7 +363,7 @@ const TeachersTableBlock: FC<IProps> = ({
       <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
         <div className="main_table-modal_upload">
           <div>
-            <div className="login_forms-label_pink">Фото *</div>
+            <div className="login_forms-label_pink">Фото</div>
             {
               photo ? (
                   <div className="file-item">
@@ -377,9 +384,9 @@ const TeachersTableBlock: FC<IProps> = ({
           </div>
 
           <div style={{marginTop: "2.4rem"}} className="sanaty">
-            <div className="login_forms-label_pink">Біліктілік санаты</div>
+            <div className="login_forms-label_pink">{t.teachers.qualificationCategory}</div>
             <Select {...formik.getFieldProps("sanaty")}>
-              <option value="">Выберите разряд</option>
+              <option value="">{t.teachers.selectCategory}</option>
               {sanatyArr.map((item) => (
                   <option value={item.id}>{item.type}</option>
               ))}
@@ -389,7 +396,7 @@ const TeachersTableBlock: FC<IProps> = ({
 
         <div className="main_table-modal_forms">
           <div className="forms">
-            <div className="login_forms-label_pink">ФИО</div>
+            <div className="login_forms-label_pink">{t.teachers.fullName}</div>
             {formik.touched.name && formik.errors.name ? (
                 <div style={{ color: "red" }}>{formik.errors.name}</div>
             ) : null}
@@ -408,7 +415,7 @@ const TeachersTableBlock: FC<IProps> = ({
           </div>
 
           <div className="forms">
-            <div className="login_forms-label_pink">Пән атауы</div>
+            <div className="login_forms-label_pink">{t.teachers.subjectName}</div>
 
             {formik.touched.pan && formik.errors.pan ? (
                 <div style={{ color: "red" }}>{formik.errors.pan}</div>
@@ -430,7 +437,7 @@ const TeachersTableBlock: FC<IProps> = ({
       </div>
 
       <div className="login_forms-label_pink" style={{ color: "#E94E29" }}>
-        Жұмыс тәжірбиесі
+        {t.teachers.experience}
       </div>
       <div style={{ position: "relative" }}>
         {formik.initialValues.jobHistory.map((experience, index) => (
@@ -441,7 +448,7 @@ const TeachersTableBlock: FC<IProps> = ({
                   className="login_forms-label_pink mb-0"
                   style={{ width: "100%" }}
                 >
-                  Бастаған жылы *
+                  {t.teachers.yearStarted}
                 </div>
                 {/*{formik.touched.jobHistory && formik.errors.jobHistory && isErrorWithProperty<{start_date: string}>(formik.errors.jobHistory[index], 'start_date') ? (*/}
                 {/*    <div style={{ color: "red" }}>{formik.errors.jobHistory[index].start_date}</div>*/}
@@ -462,7 +469,7 @@ const TeachersTableBlock: FC<IProps> = ({
                   className="login_forms-label_pink mb-0"
                   style={{ width: "100%" }}
                 >
-                  Аяқтаған жылы *
+                  {t.teachers.yearEnded}
                 </div>
                 <Input
                     name={`jobHistory[${index}].end_date`}
@@ -481,14 +488,14 @@ const TeachersTableBlock: FC<IProps> = ({
                       type="button"
                       onClick={() => reset(true,true,index)}
                   >
-                    Remove Job History
+                    {t.teachers.delete}
                   </AddButtton>
               )}
             </div>
 
             <div className="forms" style={{ marginBlock: "3.2rem" }}>
               <div className="login_forms-label_pink">
-                Жұмыс жасаған аймақ *
+                {t.teachers.placeOfWork}
               </div>
               {/*{formik.touched.jobHistory && formik.errors.jobHistory && formik.errors.jobHistory[index] && formik.errors.jobHistory[index].job_characteristic ? (*/}
               {/*    <div style={{ color: "red" }}>{formik.errors.jobHistory[index].job_characteristic}</div>*/}
@@ -520,12 +527,12 @@ const TeachersTableBlock: FC<IProps> = ({
 
       <div className="forms" style={{ position: "relative" }}>
         <div className="login_forms-label_pink" style={{ color: "#E94E29" }}>
-          Мамандығы
+          {t.teachers.specialty}
         </div>
         {formik.initialValues.specification.map((item, index) => (
           <div key={index}>
             <div className="forms flex-grid-20">
-              <div className="login_forms-label_pink mb-0">Бітірген жылы *</div>
+              <div className="login_forms-label_pink mb-0">{t.teachers.yearEnded}</div>
               {/*{formik.touched.specification && formik.errors.specification && formik.errors.specification[index] && formik.errors.specification[index].end_date ? (*/}
               {/*    <div style={{ color: "red" }}>{formik.errors.specification[index].end_date}</div>*/}
               {/*) : null}*/}
@@ -542,7 +549,7 @@ const TeachersTableBlock: FC<IProps> = ({
             </div>
 
             <div className="forms flex-grid-20">
-              <div className="login_forms-label_pink mb-0">Университет *</div>
+              <div className="login_forms-label_pink mb-0">Университет</div>
               {/*{formik.touched.specification && formik.errors.specification && formik.errors.specification[index] && formik.errors.specification[index].speciality_university ? (*/}
               {/*    <div style={{ color: "red" }}>{formik.errors.specification[index].speciality_university}</div>*/}
               {/*) : null}*/}
@@ -563,14 +570,14 @@ const TeachersTableBlock: FC<IProps> = ({
                 className="login_forms-label_pink mb-0"
                 style={{ width: "100%" }}
               >
-                Деңгей *
+                {t.teachers.level}
               </div>
               <Select {...formik.getFieldProps(`specification[${index}].degree`)}>
-                <option value="">Выберите уровень образования</option>
+                <option value="">{t.teachers.selectLevel}</option>
                 <option value={"bakalavr"}>Бакалавр</option>
                 <option value={"magistratura"}>Магистрант</option>
                 <option value={"doktorantura"}>Докторант</option>
-                <option value={"srednee"}>Среднее образование</option>
+                <option value={"srednee"}>{router.locale === "kz" ? "Орта білім" : "Среднее образование"}</option>
               </Select>
             </div>
 
@@ -579,7 +586,7 @@ const TeachersTableBlock: FC<IProps> = ({
                 className="login_forms-label_pink mb-0"
                 style={{ width: "100%" }}
               >
-                Мамандығы *
+                {t.teachers.specialty}
               </div>
               {/*{formik.touched.specification && formik.errors.specification && formik.errors.specification[index] && formik.errors.specification[index] ? (*/}
               {/*    <div style={{ color: "red" }}>{formik.errors.specification[index]}</div>*/}
@@ -600,7 +607,7 @@ const TeachersTableBlock: FC<IProps> = ({
                     type="button"
                     onClick={() => reset(true,false,index)}
                 >
-                  Remove Job History
+                  {t.teachers.delete}
                 </AddButtton>
             )}
           </div>
@@ -629,10 +636,10 @@ const TeachersTableBlock: FC<IProps> = ({
             getId ? onEdit && onEdit(false) : onReject && onReject(false)
           }
         >
-          Удалить
+          {t.teachers.delete}
         </Button>
         <Button background="#27AE60" style={{ width: "auto" }} type={"submit"}>
-          Сохранить
+          {t.teachers.save}
         </Button>
       </div>
     </div>

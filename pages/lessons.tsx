@@ -8,6 +8,9 @@ import MainLayouts from "@/layouts/MainLayouts";
 import { getLessonsIdThunk } from "@/store/thunks/pride.thunk";
 import { useState } from "react";
 import {scrollToTop} from "@/utils/assets.utils";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 const LessonsPage = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
@@ -16,7 +19,12 @@ const LessonsPage = () => {
 
   const dispatch = useAppDispatch();
   const lessonsid = useTypedSelector((state) => state.pride.lessonsid);
-
+    const router = useRouter();
+    const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+    const t = translations[router.locale || "kz"] || kz;
   const handleAddButtonClick = () => {
     setEditActive(false);
     setShowActive(!showActive);
@@ -58,7 +66,7 @@ const LessonsPage = () => {
             }}
           >
             {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
-            {showActive || editActive ? "Закрыть" : "Добавить"}
+            {showActive || editActive ? t.actions.close : t.actions.add}
           </div>
         </Button>
       </div>

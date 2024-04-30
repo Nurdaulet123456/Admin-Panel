@@ -10,6 +10,9 @@ import { useTypedSelector } from "@/hooks/useTypedSelector";
 import { getMenuIdThunk, getMenuThunk } from "@/store/thunks/schoolnfo.thunk";
 import {useSelector} from "react-redux";
 import {scrollToTop} from "@/utils/assets.utils";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 const MenuPage = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
@@ -20,6 +23,12 @@ const MenuPage = () => {
   const dispatch = useAppDispatch();
   const menu = useTypedSelector((state) => state.system.menu);
   const menuid = useTypedSelector((state) => state.system.menuid);
+    const router = useRouter();
+    const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+    const t = translations[router.locale || "kz"] || kz;
 
   useEffect(() => {
     if (menu) {
@@ -69,7 +78,7 @@ const MenuPage = () => {
             }}
           >
             {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
-            {showActive || editActive ? "Закрыть" : "Добавить"}
+            {showActive || editActive ? t.actions.close : t.actions.add}
           </div>
         </Button>
       </div>

@@ -121,11 +121,10 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
         ]
     },
     validationSchema: Yup.object({
-      name: Yup.string().required('Введите имя'),
+      name: Yup.string().required(t.clubs.writeClubName),
 
     }),
     onSubmit: async (values) => {
-      console.log(toDict(values.times, values.classrooms))
       if (!getId) {
               await instance
                 .post(
@@ -313,7 +312,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
   return (
       <div className="main_table-modal">
         <form onSubmit={formik.handleSubmit}>
-          <div className="main_table-modal_title">{t.clubs.section}</div>
+          <div className="main_table-modal_title">{t.clubs.name}</div>
 
           <div className="main_table-modal_flex" style={{gap: "1.6rem"}}>
             <div className="main_table-modal_upload">
@@ -327,12 +326,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
                 backgroundColor: "white",
               }}>
                 <input {...getInputProps()} />
-                {
-                  isDragActive ?
-                      <p>Drop the files here ...</p> :
-                      <p>Drag and drop some files here, or click to select files</p>
-                }
-
+                     <p>{t.clubs.clickInside}</p>
               </div>
               {photo && <div className="file-item">
                 <div className="file-info">
@@ -372,7 +366,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
               <div className="forms">
                 <div className="login_forms-label_pink">{t.clubs.teacherFullName}</div>
                 <Select {...formik.getFieldProps("teacher")}>
-                  <option value="">Выберите учителя</option>
+                  <option value="">{t.clubs.selectTeacher}</option>
                   {teachers?.map((item) => (
                       <option key={item.id} value={item.id}>{item.full_name}</option>
                   ))}
@@ -380,7 +374,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
               </div>
 
               <div className="forms">
-                <div className="login_forms-label_pink">{t.clubs.clubGoal}</div>
+                <div className="login_forms-label_pink">{t.clubs.goal}</div>
 
                 {formik.touched.goal && formik.errors.goal ? (
                     <div style={{color: "red"}}>{formik.errors.goal}</div>
@@ -407,7 +401,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
                         <div key={index}>
                           <div className="flex-grid">
                             <label htmlFor={`times.${index}`}
-                                   className="login_forms-label_pink">{weekDay[index]}</label>
+                                   className="login_forms-label_pink">{router.locale === "kz" ? weekDayKz[index] : weekDay[index]}</label>
                             <Input
                                 id={`times.${index}`}
                                 name={`times.${index}`}
@@ -424,7 +418,7 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
                             <label htmlFor={`times.${index}`}
                                    className="login_forms-label_pink">Кабинет</label>
                             <Select {...formik.getFieldProps(`classrooms[${index}]`)}>
-                              <option value="">Выберите кабинет</option>
+                              <option value="">{t.clubs.selectRoom}</option>
                               {classroom?.map((item) => (
                                   <option key={item.id} value={item.id}>{item.classroom_name}/{item.classroom_number}</option>
                               ))}
@@ -447,14 +441,15 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
                     style={{width: "auto"}}
                     onClick={onDelete}
                 >
-                  Удалить
+                  {t.clubs.delete}
                 </Button>
                 <Button
                     background="#27AE60"
                     style={{width: "auto"}}
                     type={"submit"}
                 >
-                  Сохранить
+                  {t.clubs.save}
+
                 </Button>
               </div>
             </div>
@@ -465,5 +460,5 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
 };
 
 const weekDay = ["Понедельник", "Вторник", "Среда", "Четверг", "Пятница", "Суббота"];
-
+const weekDayKz = ["Дүйсенбі","Сейсенбі","Сәрсенбі","Бейсенбі","Жұма","Сенбі","Жексенбі"]
 export default MainTableBlock;

@@ -6,6 +6,9 @@ import { formatWeekDay, getTokenInLocalStorage } from "@/utils/assets.utils";
 import { instance } from "@/api/axios.instance";
 import { getMenuThunk } from "@/store/thunks/schoolnfo.thunk";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IProps {
   menu: IMenu[] | undefined;
@@ -16,7 +19,12 @@ interface IProps {
 
 const MenuTable: FC<IProps> = ({ menu, setDel, del, handleClickGetId }) => {
   const dispatch = useAppDispatch();
-
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
   const handleDeleteItems = async (id?: number) => {
     await instance
       .delete(`https://www.bilimge.kz/admins/api/menu/${id}/`, {
@@ -35,18 +43,18 @@ const MenuTable: FC<IProps> = ({ menu, setDel, del, handleClickGetId }) => {
 
   return (
     <div className="main_table">
-      <div className="main_table-title">Меню</div>
+      <div className="main_table-title">{t.canteenMenu.name}</div>
 
       <div className="main_table-block">
         <Table>
           <Thead>
             <tr>
-              <Th>No</Th>
-              <Th>Күні</Th>
-              <Th>Аты</Th>
-              <Th>Құрамы</Th>
-              <Th>Выход</Th>
-              <Th>Действие</Th>
+              <Th>№</Th>
+              <Th>{t.canteenMenu.date}</Th>
+              <Th>{t.canteenMenu.foodName}</Th>
+              <Th>{t.canteenMenu.foodComposition}</Th>
+              <Th>{t.canteenMenu.servings}</Th>
+              <Th>{t.bells.action}</Th>
             </tr>
           </Thead>
 

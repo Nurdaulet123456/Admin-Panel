@@ -8,6 +8,9 @@ import MainLayouts from "@/layouts/MainLayouts";
 import { getExtraIdThunk } from "@/store/thunks/pride.thunk";
 import { useState } from "react";
 import {scrollToTop} from "@/utils/assets.utils";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 const TypeLessonsPage = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
@@ -23,6 +26,13 @@ const TypeLessonsPage = () => {
     setId(undefined);
 
   };
+
+    const router = useRouter();
+    const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+    const t = translations[router.locale || "kz"] || kz;
 
   const handleClickGetId = (id?: number) => {
     setEditActive(true);
@@ -61,7 +71,7 @@ const TypeLessonsPage = () => {
                   }}
               >
                   {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
-                  {showActive || editActive ? "Закрыть" : "Добавить"}
+                  {showActive || editActive ? t.actions.close : t.actions.add}
               </div>
           </Button>
       </div>

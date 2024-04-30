@@ -8,6 +8,9 @@ import MainLayouts from "@/layouts/MainLayouts";
 import { getClassIdThunk, getClassThunk } from "@/store/thunks/schoolnfo.thunk";
 import { useEffect, useState } from "react";
 import {scrollToTop} from "@/utils/assets.utils";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 const ClassPage = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
@@ -19,7 +22,6 @@ const ClassPage = () => {
     setShowActive(!showActive);
     setId(undefined);
   };
-
 
   const dispatch = useAppDispatch();
   const classinfo = useTypedSelector((state) => state.system.class);
@@ -40,8 +42,12 @@ const ClassPage = () => {
         }
     };
 
-
-    console.log(classinfo);
+    const router = useRouter();
+    const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+    const t = translations[router.locale || "kz"] || kz;
 
   return (
     <MainLayouts>
@@ -69,7 +75,7 @@ const ClassPage = () => {
                   }}
               >
                   {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
-                  {showActive || editActive ? "Закрыть" : "Добавить"}
+                  {showActive || editActive ? t.actions.close : t.actions.add}
               </div>
           </Button>
       </div>

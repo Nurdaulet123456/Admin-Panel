@@ -6,6 +6,9 @@ import { FC, useEffect } from "react";
 import { getTeachersThunk } from "@/store/thunks/pride.thunk";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IProps {
   handleClickGetId?: (id?: number) => void;
@@ -19,7 +22,12 @@ const TeachersTable: FC<IProps> = ({ handleClickGetId }) => {
       disptach(getTeachersThunk());
     }
   }, [disptach]);
-
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
   const handleDeleteItems = async (id?: number) => {
     await instance
       .delete(`https://bilimge.kz/admins/api/teacher/${id}/`, {
@@ -38,16 +46,16 @@ const TeachersTable: FC<IProps> = ({ handleClickGetId }) => {
 
   return (
     <div className="main_table">
-      <div className="main_table-title">Преподаватели</div>
+      <div className="main_table-title">{t.teachers.title} </div>
 
       <div className="main_table-block">
         <Table>
           <Thead>
             <tr>
-              <Th>No</Th>
-              <Th>ФИО</Th>
+              <Th>№</Th>
+              <Th>{t.teachers.fullName}</Th>
               <Th>Фото</Th>
-              <Th>Действие</Th>
+              <Th>{t.teachers.action}</Th>
             </tr>
           </Thead>
 

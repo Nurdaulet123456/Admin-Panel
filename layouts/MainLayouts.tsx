@@ -6,6 +6,9 @@ import { localStorageWrapper } from "@/components/data/storage";
 import { useRouter } from "next/router";
 import {instance} from "@/api/axios.instance";
 import {getTokenInLocalStorage} from "@/utils/assets.utils";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
+import Link from "next/link";
 
 interface ILayouts {
   children: ReactNode;
@@ -43,6 +46,12 @@ const MainLayouts = ({ children }: ILayouts) => {
         getSchool();
     }, []);
 
+    const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+    const t = translations[router.locale || "kz"] || kz;
+
   return (
     <div className={`container`}>
       <Sidebar />
@@ -58,6 +67,18 @@ const MainLayouts = ({ children }: ILayouts) => {
                     gap: "4rem",
                 }}
             >
+                {router.locale === "kz" ? (
+                        <Link href={"/main"} locale="ru">
+                            <div className={""} >
+                                <span>Русский</span></div>
+                        </Link> ) :
+                    (
+                        <Link href={"/main"}  locale="kz">
+                            <div className={""}>
+                                <span>Қазақша</span></div>
+                        </Link>
+                    )
+                }
                 <div
                     style={{
                         fontSize: "1.6rem",
@@ -69,7 +90,7 @@ const MainLayouts = ({ children }: ILayouts) => {
                 </div>
                 <ButtonLogout onClick={onLogout}>
                     <LogoutIcons/>
-                    Шығу
+                    {t.exit.action}
                 </ButtonLogout>
             </div>
             {children}

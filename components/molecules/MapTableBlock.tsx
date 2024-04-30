@@ -21,6 +21,9 @@ import { useFormik, useField, Formik, Form } from "formik";
 import * as Yup from "yup";
 import {MdClear} from "react-icons/md";
 import DeleteModal from "@/components/modals/DeleteModal";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IUpdateInput {
     name?: string;
@@ -38,8 +41,13 @@ interface IProps {
 const MapTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
     const [showActive, setShowActive] = useState<boolean>(false);
     const dispatch = useAppDispatch();
-    console.log(mapId)
-    console.log(getTokenInLocalStorage())
+    const router = useRouter();
+    const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+    const t = translations[router.locale || "kz"] || kz;
+
     const {
         showSuccessModal,
         showErrorModal,
@@ -200,7 +208,7 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
             {showDeleteModal && <DeleteModal onClose = {onDeleteModalClose} handleDelete={handleDelete}/>}
             <form onSubmit={formik.handleSubmit}>
                 <div className="main_table-modal">
-                    <div className="main_table-modal_title">Карта школы</div>
+                    <div className="main_table-modal_title">{t.schoolMap.name}</div>
                     <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
                         <div className="main_table-modal_forms">
                             <div className="forms">
@@ -327,14 +335,14 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, mapId, onEdit }) => {
                                     type="button"
                                     onClick={showDelete}
                                 >
-                                    Удалить
+                                    {t.schoolMap.delete}
                                 </Button>
                                 <Button
                                     background="#27AE60"
-                                    style={{ width: "auto" }}
+                                    style={{width: "auto"}}
                                     type={"submit"}
                                 >
-                                    Сохранить
+                                    {t.schoolMap.save}
                                 </Button>
                             </div>
                         </div>

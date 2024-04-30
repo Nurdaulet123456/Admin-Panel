@@ -6,6 +6,9 @@ import { FC, useEffect } from "react";
 import { getNewsThunk } from "@/store/thunks/pride.thunk";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IProps {
   handleClickGetId?: (id?: number) => void;
@@ -14,7 +17,12 @@ interface IProps {
 const NewsTable: FC<IProps> = ({ handleClickGetId }) => {
   const dispatch = useAppDispatch();
   const news = useTypedSelector((state) => state.pride.news);
-
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
   useEffect(() => {
     if (news) {
       dispatch(getNewsThunk());
@@ -36,18 +44,18 @@ const NewsTable: FC<IProps> = ({ handleClickGetId }) => {
 
   return (
     <div className="main_table">
-      <div className="main_table-title">Новости</div>
+      <div className="main_table-title">{t.news.title}</div>
 
       <div className="main_table-block">
         <Table>
           <Thead>
             <tr>
-              <Th>No</Th>
-              <Th>Тип</Th>
-              <Th>Фото</Th>
-              <Th>Текст</Th>
-              <Th>Дата</Th>
-              <Th>Действие</Th>
+              <Th>№</Th>
+              <Th>{t.news.type}</Th>
+              <Th>{t.news.photo}</Th>
+              <Th>{t.news.text}</Th>
+              <Th>{t.news.date}</Th>
+              <Th>{t.news.action}</Th>
             </tr>
           </Thead>
 

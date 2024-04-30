@@ -7,6 +7,9 @@ import { Dispatch, FC, SetStateAction, useEffect } from "react";
 import { getExtraThunk } from "@/store/thunks/pride.thunk";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
+  import {useRouter} from "next/router";
+  import {kz} from "@/locales/kz";
+  import {ru} from "@/locales/ru";
 
 interface IProps {
   onEdit?: Dispatch<SetStateAction<boolean>>;
@@ -16,7 +19,12 @@ interface IProps {
 const TypeLessonsTable: FC<IProps> = ({ onEdit, handleClickGetId }) => {
   const dispatch = useAppDispatch();
   const extra = useTypedSelector((state) => state.pride.extra);
-
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
   useEffect(() => {
     if (extra) {
       dispatch(getExtraThunk());
@@ -41,14 +49,14 @@ const TypeLessonsTable: FC<IProps> = ({ onEdit, handleClickGetId }) => {
 
   return (
     <div className="main_table">
-      <div className="main_table-title">Тип занятий</div>
+      <div className="main_table-title">{t.lessonTypes.nameL}</div>
       <div className="main_table-block">
         <Table>
           <Thead>
             <tr>
-              <Th>No</Th>
-              <Th>Наименование</Th>
-              <Th>Действие</Th>
+              <Th>№</Th>
+              <Th>{t.lessonTypes.name}</Th>
+              <Th>{t.lessonTypes.action}</Th>
             </tr>
           </Thead>
 

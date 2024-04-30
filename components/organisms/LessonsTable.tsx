@@ -6,6 +6,9 @@ import { FC, useEffect } from "react";
 import { getLessonsThunk } from "@/store/thunks/pride.thunk";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IProps {
   handleClickGetId?: (id?: number) => void;
@@ -14,7 +17,12 @@ interface IProps {
 const LessonsTable: FC<IProps> = ({ handleClickGetId }) => {
   const dispatch = useAppDispatch();
   const lessons = useTypedSelector((state) => state.pride.lessons);
-
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
   useEffect(() => {
     if (lessons) {
       dispatch(getLessonsThunk());
@@ -39,15 +47,15 @@ const LessonsTable: FC<IProps> = ({ handleClickGetId }) => {
 
   return (
     <div className="main_table">
-      <div className="main_table-title">Предметы</div>
+      <div className="main_table-title">{t.subjects.title}</div>
 
       <div className="main_table-block">
         <Table>
           <Thead>
             <tr>
-              <Th>No</Th>
-              <Th>Наименование</Th>
-              <Th>Действие</Th>
+              <Th>№</Th>
+              <Th>{t.subjects.subjectName}</Th>
+              <Th>{t.subjects.action}</Th>
             </tr>
           </Thead>
 

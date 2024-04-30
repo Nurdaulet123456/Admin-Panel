@@ -8,6 +8,9 @@ import { getExtraThunk } from "@/store/thunks/pride.thunk";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import {getNotificationThunk} from "@/store/thunks/schoolnfo.thunk";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IProps {
     onEdit?: Dispatch<SetStateAction<boolean>>;
@@ -17,13 +20,18 @@ interface IProps {
 const NotificationTable: FC<IProps> = ({ onEdit, handleClickGetId }) => {
     const dispatch = useAppDispatch();
     const notifications = useTypedSelector((state) => state.system.notifications);
-    console.log(notifications)
+    const router = useRouter();
+    const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+    const t = translations[router.locale || "kz"] || kz;
+
     useEffect(() => {
         if (notifications) {
             dispatch(getNotificationThunk());
         }
     }, [dispatch]);
-    console.log(notifications, "sd")
 
 
     const handleDeleteItems = async (id?: number) => {
@@ -44,14 +52,14 @@ const NotificationTable: FC<IProps> = ({ onEdit, handleClickGetId }) => {
 
     return (
         <div className="main_table">
-            <div className="main_table-title">Уведомления</div>
+            <div className="main_table-title">{t.notifications.name}</div>
             <div className="main_table-block">
                 <Table>
                     <Thead>
                         <tr>
-                            <Th>No</Th>
-                            <Th>Текст </Th>
-                            <Th>Действие</Th>
+                            <Th>№</Th>
+                            <Th>{t.notifications.text}</Th>
+                            <Th>{t.notifications.action}</Th>
                         </tr>
                     </Thead>
 

@@ -23,7 +23,6 @@ const MainPage = () => {
   const [editActive, setEditActive] = useState<boolean>(false);
   const [getId, setId] = useState<number>();
   const router = useRouter();
-
   const translations: any= {
         kz: kz,
         ru: ru,

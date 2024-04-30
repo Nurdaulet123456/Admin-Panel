@@ -12,6 +12,8 @@ import CallsTableBlock2 from "@/components/molecules/Calls/CallsTableBlock2";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import { getDopIdThunk, getOSIdThunk } from "@/store/thunks/pride.thunk";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 const CallsComponents = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
@@ -49,8 +51,14 @@ const CallsComponents = () => {
       dispatch(getOSIdThunk(id));
     }
   };
+    const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+    const t = translations[router.locale || "kz"] || kz;
 
-  return (
+
+    return (
     <MainLayouts>
       <div
         style={{
@@ -79,7 +87,7 @@ const CallsComponents = () => {
               }}
           >
             {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
-            {showActive || editActive ? "Закрыть" : "Добавить"}
+            {showActive || editActive ? t.actions.close :t.actions.add}
           </div>
         </Button>
       </div>
@@ -114,12 +122,12 @@ const CallsComponents = () => {
 const tabs: ITabs[] = [
   {
     id: 1,
-    type: "Основной урок",
+    type: "Негізгі сабақ",
   },
 
   {
     id: 2,
-    type: "Доп. урок",
+    type: "Қосымша сабақ",
   },
 ];
 

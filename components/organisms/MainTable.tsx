@@ -11,6 +11,9 @@ import {
 import { instance } from "@/api/axios.instance";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getKruzhokInfoThunk } from "@/store/thunks/schoolnfo.thunk";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
+import {useRouter} from "next/router";
 
 interface IProps {
   kruzhok: IKruzhok[] | undefined;
@@ -19,7 +22,7 @@ interface IProps {
 
 const MainTable: FC<IProps> = ({ kruzhok, handleClickGetId }) => {
   const dispatch = useAppDispatch();
-  console.log(kruzhok)
+
   const handleDeleteItems = async (id?: number) => {
     await instance
       .delete(`https://bilimge.kz/admins/api/kruzhok/${id}/`, {
@@ -34,20 +37,27 @@ const MainTable: FC<IProps> = ({ kruzhok, handleClickGetId }) => {
     dispatch(getKruzhokInfoThunk());
   };
 
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
+
   return (
     <div className="main_table">
-      <div className="main_table-title">Үйірме</div>
+      <div className="main_table-title">{t.clubs.name}</div>
 
       <div className="main_table-block">
         <Table>
           <Thead>
             <tr>
-              <Th>No</Th>
-              <Th>Кружок (Үйірме)</Th>
-              <Th>Учитель ФИО</Th>
-              <Th>Цель (Мақсаты)</Th>
-              <Th>Время (Уақыты)</Th>
-              <Th>Действие</Th>
+              <Th>№</Th>
+              <Th>{t.clubs.clubName}</Th>
+              <Th>{t.clubs.teacherFullName}</Th>
+              <Th>{t.clubs.goal}</Th>
+              <Th>{t.clubs.date}</Th>
+              <Th>{t.bells.action}</Th>
             </tr>
           </Thead>
 

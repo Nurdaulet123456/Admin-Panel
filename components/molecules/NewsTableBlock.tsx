@@ -24,6 +24,9 @@ import {useDropzone} from 'react-dropzone'
 import news from "@/pages/news";
 import { MdClear } from "react-icons/md";
 import {log} from "console";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface UpdateInputProps {
   text?: string;
@@ -45,7 +48,12 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
   const [text, setText] = useState<string>("");
   const [id, setId] = useState<number>();
   const [updateInput, setUpdateInput] = useState<UpdateInputProps>({});
-
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
   const {
     showSuccessModal,
     showErrorModal,
@@ -61,21 +69,18 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
 
   const onDrop = useCallback((acceptedFiles: any[])=> {
     if (files.length >= 10) {
-      console.log('Maximum file limit reached.');
       return;
     } else {
       const newFilesToAdd = acceptedFiles.slice(0, 10 - files.length);
       const updatedFiles: File[] = [...files, ...newFilesToAdd];
       setFiles(updatedFiles);
 
-      console.log(updatedFiles)
     }
   }, [files])
   const {getRootProps, getInputProps, isDragActive} = useDropzone({onDrop})
 
   const handleRemoveFile = (index: number) => {
     setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
-    console.log(files)
   };
 
   const formik = useFormik({
@@ -217,30 +222,28 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
           <div className="main_table-modal_flex" style={{gap: "1.6rem"}}>
             <div className="main_table-modal_upload">
               <div style={{marginBottom: "2.4rem"}} className="sanaty">
-                <div className="login_forms-label_pink">Тип</div>
+                <div className="login_forms-label_pink">{t.news.type}</div>
                 <Select {...formik.getFieldProps("type")}>
-                  <option value="manual">Ручной</option>
+                  <option value="manual">{t.news.manual}</option>
                   <option value="facebook">Facebook</option>
+                  <option value="instagram">Instagram</option>
+
                 </Select>
               </div>
               {
-                formik.values.type !=="facebook" &&
+                  formik.values.type !=="facebook" &&
                   <>
-                    <div className="login_forms-label_pink">Фото *</div>
+                    <div className="login_forms-label_pink">Фото</div>
                     <div {...getRootProps()} style={{
-                      border: '2px dashed #ccc', /* Штрихованный бордер */
-                      padding: '20px', /* Паддинг внутри div */
-                      borderRadius: '5px', /* Скругленные углы */
-                      textAlign: 'center', /* Текст по центру */
-                      marginBottom: '20px', /* Отступ снизу */
-                      backgroundColor:"white",
+                      border: '2px dashed #ccc',
+                      padding: '20px',
+                      borderRadius: '5px',
+                      textAlign: 'center',
+                      marginBottom: '20px',
+                      backgroundColor: "white",
                     }}>
                       <input {...getInputProps()}/>
-                      {
-                        isDragActive ?
-                            <p>Drop the files here ...</p> :
-                            <p>Drag and drop some files here, or click to select files</p>
-                      }
+                      <p>{t.clubs.clickInside}</p>
                     </div>
 
                     {files.length > 0 && (
@@ -270,7 +273,7 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
                 {
                     formik.values.type !== "facebook" &&
                     <>
-                      <div className="login_forms-label_pink">Уақыты</div>
+                      <div className="login_forms-label_pink">{t.news.dateFormat}</div>
 
                       {formik.touched.date && formik.errors.date ? (
                           <div style={{color: "red"}}>{formik.errors.date}</div>
@@ -289,10 +292,8 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
                       />
                     </>
                 }
-
-
                 <div className="forms">
-                  <div className="login_forms-label_pink">Текст</div>
+                  <div className="login_forms-label_pink">{t.news.text}</div>
                   {formik.touched.text && formik.errors.text ? (
                       <div style={{color: "red"}}>{formik.errors.text}</div>
                   ) : null}
@@ -326,14 +327,14 @@ const NewsTableBlock: FC<IProps> = ({ onEdit, onReject, newsid, getId }) => {
                       }
                       type="button"
                   >
-                    Удалить
+                    {t.news.delete}
                   </Button>
                   <Button
                       background="#27AE60"
                       style={{width: "auto"}}
                       type="submit"
                   >
-                    Сохранить
+                    {t.news.save}
                   </Button>
                 </div>
               </div>

@@ -6,6 +6,9 @@ import { FC } from "react";
 import { instance } from "@/api/axios.instance";
 import { getClassThunk } from "@/store/thunks/schoolnfo.thunk";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IProps {
   classinfo?: IClass[];
@@ -26,23 +29,27 @@ const ClassTable: FC<IProps> = ({ classinfo, handleClickGetId }) => {
     dispatch(getClassThunk());
   };
 
-  console.log(classinfo);
-
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
   return (
     <div className="main_table">
-      <div className="main_table-title">Классы</div>
+      <div className="main_table-title">{t.classes.classes}</div>
 
       <div className="main_table-block">
         <Table>
           <Thead>
             <tr>
-              <Th>No</Th>
-              <Th>Класс</Th>
-              <Th>Кабинет</Th>
-              <Th>Классный руководиль</Th>
-              <Th>План звонков</Th>
-              <Th>Смена</Th>
-              <Th>Действие</Th>
+              <Th>№</Th>
+              <Th>{t.classes.classes}</Th>
+              <Th>{t.classes.room}</Th>
+              <Th>{t.classes.classTeacher}</Th>
+              <Th>{t.classes.bellSchedule}</Th>
+              <Th>{t.bells.shift}</Th>
+              <Th>{t.bells.action}</Th>
             </tr>
           </Thead>
           {/* {classinfo &&

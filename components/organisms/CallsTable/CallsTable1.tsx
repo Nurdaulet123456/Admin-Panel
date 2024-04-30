@@ -10,6 +10,9 @@ import {
   removeSecondOfTime,
 } from "@/utils/assets.utils";
 import {ICalls} from "@/types/assets.type";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IProps {
   handleClickGetIdOS?: (id?: number) => void;
@@ -25,6 +28,13 @@ const CallsTable: FC<IProps> = ({ handleClickGetIdOS }) => {
 
     }
   }, [dispatch]);
+
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
 
   useEffect(() => {
     if(os) {
@@ -62,7 +72,7 @@ const CallsTable: FC<IProps> = ({ handleClickGetIdOS }) => {
 
   return (
     <div className="main_table">
-      <div className="main_table-title">Основной урок </div>
+      <div className="main_table-title">{t.bells.mainLesson}</div>
 
       <div className="main_table-block" style={{display: "flex", flexWrap: "wrap", gap: "4%"}}>
         {
@@ -79,10 +89,10 @@ const CallsTable: FC<IProps> = ({ handleClickGetIdOS }) => {
                       marginBottom: "20px",
                     }} key={index}>
                       <div style={{color: "#D12E34", fontWeight: "bold"}}>
-                        План звонков: <span style={{color: "black"}}>{call[0].plan}</span>
+                        {t.bells.bellsPlan}: <span style={{color: "black"}}>{call[0].plan}</span>
                       </div>
                       <div style={{color: "#D12E34", fontWeight: "bold"}}>
-                        Смена: <span style={{color: "black"}}>{call[0].smena}</span>
+                        {t.bells.shift}: <span style={{color: "black"}}>{call[0].smena}</span>
                       </div>
                       <div>
 
@@ -91,9 +101,9 @@ const CallsTable: FC<IProps> = ({ handleClickGetIdOS }) => {
                         <Thead>
                           <tr>
                             <Th>№</Th>
-                            <Th>Начало урока</Th>
-                            <Th>Конец урока</Th>
-                            <Th>Действия</Th>
+                            <Th>{t.bells.lessonStart}</Th>
+                            <Th>{t.bells.lessonEnd}</Th>
+                            <Th>{t.bells.action}</Th>
                           </tr>
                         </Thead>
 

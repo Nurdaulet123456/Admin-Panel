@@ -19,6 +19,9 @@ import { getIAClassRoomThunk } from "@/store/thunks/available.thunk";
 import {useFormik} from "formik";
 import * as Yup from "yup";
 import loginForms from "@/components/forms/LoginForms";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IProps {
   onEdit?: Dispatch<SetStateAction<boolean>>;
@@ -60,6 +63,13 @@ const   ClassTableBlock: FC<IProps> = ({
       dispatch(getOSThunk());
     }
   }, [dispatch]);
+
+    const router = useRouter();
+    const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+    const t = translations[router.locale || "kz"] || kz;
 
   const formik = useFormik({
     initialValues: {
@@ -175,7 +185,7 @@ const   ClassTableBlock: FC<IProps> = ({
         <form onSubmit={formik.handleSubmit}>
           <div className="main_table-modal_forms">
             <div className="forms">
-              <div className="login_forms-label_pink">Класс</div>
+              <div className="login_forms-label_pink">{t.classes.class}</div>
               {formik.touched.class && formik.errors.class ? (
                   <div style={{color: "red"}}>{formik.errors.class}</div>
               ) : null}
@@ -190,17 +200,17 @@ const   ClassTableBlock: FC<IProps> = ({
                             ? "red"
                             : "#c1bbeb",
                   }}
-                  placeholder="Напишите класс"
+                  placeholder={t.classes.writeClass}
               />
             </div>
 
             <div className="forms">
               <div className="sanaty">
                 <div className="login_forms-label_pink">
-                  Классный руководитель
+                    {t.classes.classTeacher}
                 </div>
                 <Select {...formik.getFieldProps("classRuk")}>
-                  <option value="">Выберите классного руководителя</option>
+                  <option value="">{t.classes.selectClassTeacher}</option>
                     {teachers && teachers.slice().sort((a, b) => {
                         const nameA = a.full_name || '';
                         const nameB = b.full_name || '';
@@ -221,9 +231,9 @@ const   ClassTableBlock: FC<IProps> = ({
                 }}
             >
               <div className="sanaty">
-                <div className="login_forms-label_pink">Кабинет</div>
+                <div className="login_forms-label_pink">{t.classes.room}</div>
                 <Select {...formik.getFieldProps("cabinet")}>
-                  <option value="">Выберите кабинет</option>
+                  <option value="">{t.classes.selectRoom}</option>
                   {classroom?.map((item, index) => (
                       <option key={index} value={item.id}>{item.classroom_name}/{item.classroom_number}</option>
                   ))}
@@ -231,9 +241,9 @@ const   ClassTableBlock: FC<IProps> = ({
               </div>
 
               <div className="sanaty">
-                <div className="login_forms-label_pink">Оқыту тілі</div>
+                <div className="login_forms-label_pink">{t.classes.languageOfInstruction}</div>
                 <Select {...formik.getFieldProps("language")}>
-                  <option value="">Выберите язык</option>
+                  <option value="">{t.classes.selectLanguage}</option>
                   <option value="KZ">KZ</option>
                   <option value="ENG">EN</option>
                   <option value="RU">RU</option>
@@ -241,7 +251,7 @@ const   ClassTableBlock: FC<IProps> = ({
               </div>
             </div>
 
-            <div className="label_title">Основной урок</div>
+            <div className="label_title">{t.bells.mainLesson}</div>
             <div
                 className="forms flex"
                 style={{
@@ -251,16 +261,15 @@ const   ClassTableBlock: FC<IProps> = ({
                 }}
             >
               <div className="sanaty">
-                <div className="login_forms-label_pink">План звонка</div>
+                <div className="login_forms-label_pink">{t.classes.bellSchedule}</div>
                 <Select {...formik.getFieldProps("calls1")}  onChange={(event) => {
-                    // Обновление через контекст
                     const selectedItem = os?.find(item => item.plan === Number(event.target.value));
                     if (selectedItem) {
                         setSmena1(selectedItem.smena);
                     }
                     formik.handleChange(event);
                 }}>
-                  <option value="">Выберите номер звонка</option>
+                  <option value="">{t.classes.selectSchedule}</option>
                   {Array.from(new Set(os?.map(item => item.plan)))
                       .map((plan, index) => (
                           <option key={index} value={plan}>{plan}</option>
@@ -268,7 +277,7 @@ const   ClassTableBlock: FC<IProps> = ({
                 </Select>
               </div>
             </div>
-              <div className="label_title">Доп. урок</div>
+              <div className="label_title">{t.classes.additionalLesson}</div>
             <div
                 className="forms flex"
                 style={{
@@ -278,7 +287,7 @@ const   ClassTableBlock: FC<IProps> = ({
                 }}
             >
               <div className="sanaty">
-                <div className="login_forms-label_pink">План звонка</div>
+                <div className="login_forms-label_pink">{t.classes.bellSchedule}</div>
                 <Select {...formik.getFieldProps("calls2")} onChange={(event) => {
                     const selectedItem = dop?.find(item => item.plan === Number(event.target.value));
                     if (selectedItem) {
@@ -286,7 +295,7 @@ const   ClassTableBlock: FC<IProps> = ({
                     }
                     formik.handleChange(event);
                 }}>
-                  <option value="">Выберите номер звонка</option>
+                  <option value="">{t.classes.selectSchedule}</option>
                   {  Array.from(new Set(dop?.map(item => item.plan)))
                       .map((plan, index) => (
                           <option key={index} value={plan}>{plan}</option>
@@ -307,14 +316,15 @@ const   ClassTableBlock: FC<IProps> = ({
                 onClick={onDelete}
                 type="button"
             >
-              Удалить
+                {t.classes.delete}
             </Button>
             <Button
                 background="#27AE60"
                 style={{width: "auto"}}
                 type="submit"
             >
-              Сохранить
+                {t.classes.save}
+
             </Button>
           </div>
         </form>

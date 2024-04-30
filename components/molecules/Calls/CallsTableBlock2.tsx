@@ -19,6 +19,9 @@ import ErrorModal from "@/components/modals/ErrorModal";
 import SuccessModal from "@/components/modals/SuccessModal";
 import {useFormik} from "formik";
 import * as Yup from "yup";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface UpdateInputProps {
   start?: string;
@@ -44,6 +47,12 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
     showSuccess,
     showError,
   } = useModalLogic();
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
 
   const formik = useFormik({
     initialValues: {
@@ -61,7 +70,6 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
       smena: Yup.string().required("Обязательно*"),
     }),
     onSubmit: async (values) => {
-      console.log(values);
       if (!getId) {
         const res = await instance.post(
             "https://bilimge.kz/admins/api/DopUrokRingApi/",
@@ -159,7 +167,7 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
       {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
       <div className="main_table-modal">
         <form onSubmit={formik.handleSubmit}>
-          <div className="login_forms-label_pink">Дополнительный урок</div>
+          <div className="login_forms-label_pink">{t.bells.additionalLesson}</div>
           <div className="main_table-modal_forms">
             <div
                 className="forms flex"
@@ -170,9 +178,9 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
                 }}
             >
               <div>
-                <div className="login_forms-label_pink">План звонков</div>
+                <div className="login_forms-label_pink">{t.bells.bellsPlan}</div>
                 <Select {...formik.getFieldProps("plan")}>
-                  <option value="">Выберите план звонка</option>
+                  <option value="">{t.bells.selectBellsPlan}</option>
                   {timeArr2.map((item) => (
                       <option key={item} value={item}>{item}</option>
                   ))}
@@ -180,9 +188,9 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
               </div>
 
               <div>
-                <div className="login_forms-label_pink">Номер урока</div>
+                <div className="login_forms-label_pink">{t.bells.lessonNumber}</div>
                 <Select {...formik.getFieldProps("number")}>
-                  <option value="">Выберите номер урока</option>
+                  <option value="">{t.bells.selectLessonNumber}</option>
                   {timeArr.map((item) => (
                       <option key={item} value={item}>{item}</option>
                   ))}
@@ -191,9 +199,9 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
 
               <div>
                 <div>
-                  <div className="login_forms-label_pink">Смена</div>
+                  <div className="login_forms-label_pink">{t.bells.shift}</div>
                   <Select {...formik.getFieldProps("smena")}>
-                    <option value="">Выберите смену</option>
+                    <option value="">{t.bells.selectShift}</option>
                     {timeArr2.map((item) => (
                         <option key={item} value={item}>{item}</option>
                     ))}
@@ -203,7 +211,7 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
             </div>
 
             <div className="forms">
-              <div className="login_forms-label_pink">Начало дополнительного урока</div>
+              <div className="login_forms-label_pink">{t.bells.lessonStart}</div>
               {formik.touched.start && formik.errors.start ? (
                   <div style={{color: "red"}}>{formik.errors.start}</div>
               ) : null}
@@ -222,7 +230,7 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
             </div>
 
             <div className="forms">
-              <div className="login_forms-label_pink">Конец дополнительного урока</div>
+              <div className="login_forms-label_pink">{t.bells.lessonEnd}</div>
               {formik.touched.end && formik.errors.end ? (
                   <div style={{color: "red"}}>{formik.errors.end}</div>
               ) : null}
@@ -252,14 +260,14 @@ const CallsTableBlock2: FC<IProps> = ({ onReject, dopid, getId, onEdit }) => {
                 onClick={onDelete}
                 type="button"
             >
-              Удалить
+              {t.bells.close}
             </Button>
             <Button
                 background="#27AE60"
                 style={{width: "auto"}}
                 type="submit"
             >
-              Сохранить
+              {t.bells.save}
             </Button>
           </div>
         </form>

@@ -12,6 +12,9 @@ import { useModalLogic } from "@/hooks/useModalLogic";
 import ErrorModal from "@/components/modals/ErrorModal";
 import SuccessModal from "@/components/modals/SuccessModal";
 import {getNotificationThunk} from "@/store/thunks/schoolnfo.thunk";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IProps {
     onReject?: Dispatch<SetStateAction<boolean>>;
@@ -39,12 +42,13 @@ const NotificationTableBlock: FC<IProps> = ({
         showError,
     } = useModalLogic();
 
-    // useEffect(() => {
-    //     if (extraid && getId) {
-    //         setUpdateInput((extraid?.type_full_name as string) || "");
-    //         setChooseColor((extraid?.type_color as string) || "");
-    //     }
-    // }, [extraid]);
+    const router = useRouter();
+    const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+    const t = translations[router.locale || "kz"] || kz;
+
 
     const onSave = async () => {
         try {
@@ -115,11 +119,11 @@ const NotificationTableBlock: FC<IProps> = ({
             {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
             {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
             <div className="main_table-modal">
-                <div className="login_forms-label_pink">Текст</div>
+                <div className="login_forms-label_pink">{t.notifications.text}</div>
                 <div className="main_table-modal_forms">
                     <div className="forms">
                         <TextArea
-                            placeholder="Напишите уведомление"
+                            placeholder={t.notifications.writeNotification}
                             name="type"
                             value={updateInput}
                             onChange={(e) => setUpdateInput(e.target.value)}/>
@@ -135,10 +139,10 @@ const NotificationTableBlock: FC<IProps> = ({
                         style={{width: "auto"}}
                         onClick={() => onReject && onReject(false)}
                     >
-                        Удалить
+                        {t.notifications.delete}
                     </Button>
                     <Button background="#27AE60" style={{width: "auto"}} onClick={onSave}>
-                        Сохранить
+                        {t.notifications.save}
                     </Button>
                 </div>
             </div>

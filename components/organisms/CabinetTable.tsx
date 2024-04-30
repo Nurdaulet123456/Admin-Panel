@@ -6,6 +6,9 @@ import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import { getClassRoomThunk } from "@/store/thunks/schoolnfo.thunk";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IProps {
   cabinet?: IClassRoom[];
@@ -15,6 +18,14 @@ interface IProps {
 const CabinetTable: FC<IProps> = ({ cabinet, handleClickGetId }) => {
   const dispatch = useAppDispatch();
   const[cab,setCab] = useState<any[]>([]);
+
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
+
   const handleDeleteItems = async (id?: number) => {
     await instance
       .delete(`https://www.bilimge.kz/admins/api/classroom/${id}/`, {
@@ -62,23 +73,22 @@ const CabinetTable: FC<IProps> = ({ cabinet, handleClickGetId }) => {
       });
     }
 
-    console.log(cabinet)
     setCab(sortClassrooms(cabinet || []))
   }, [cabinet]);
   return (
     <div className="main_table">
-      <div className="main_table-title">Кабинет</div>
+      <div className="main_table-title">{t.room.title}</div>
 
       <div className="main_table-block">
         <Table>
           <Thead>
             <tr>
-              <Th>No</Th>
-              <Th>Наименование</Th>
-              <Th>Кабинет номері</Th>
-              <Th>Этаж</Th>
-              <Th>Корпус</Th>
-              <Th>Действие</Th>
+              <Th>№</Th>
+              <Th>{t.room.roomName}</Th>
+              <Th>{t.room.roomNumber}</Th>
+              <Th>{t.room.floor}</Th>
+              <Th>{t.room.building}</Th>
+              <Th>{t.room.action}</Th>
             </tr>
           </Thead>
 

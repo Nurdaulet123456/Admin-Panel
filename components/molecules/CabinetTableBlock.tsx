@@ -21,6 +21,9 @@ import ErrorModal from "../modals/ErrorModal";
 import SuccessModal from "../modals/SuccessModal";
 import { useFormik } from "formik";
 import * as Yup from "yup";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IUpdateInputProps {
   name?: string;
@@ -52,6 +55,13 @@ const CabinetTableBlock: FC<IProps> = ({
     showSuccess,
     showError,
   } = useModalLogic();
+
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
 
   const formik = useFormik({
     initialValues: {
@@ -162,10 +172,10 @@ const CabinetTableBlock: FC<IProps> = ({
       {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
       <form onSubmit={formik.handleSubmit}>
         <div className="main_table-modal">
-          <div className="main_table-modal_title">Кабинет</div>
+          <div className="main_table-modal_title">{t.room.title}</div>
           <div className="main_table-modal_forms">
             <div className="forms">
-              <div className="login_forms-label_pink">Наименование *</div>
+              <div className="login_forms-label_pink">{t.room.roomName}</div>
               {formik.touched.name && formik.errors.name ? (
                 <div style={{ color: "red" }}>{formik.errors.name}</div>
               ) : null}
@@ -185,7 +195,7 @@ const CabinetTableBlock: FC<IProps> = ({
 
             <div className="flex">
               <div className="forms" style={{width:"30%"}}>
-                <div className="login_forms-label_pink">Номер кабинета *</div>
+                <div className="login_forms-label_pink">{t.room.roomNumber}</div>
                 {formik.touched.gr && formik.errors.gr ? (
                   <div style={{ color: "red" }}>{formik.errors.gr}</div>
                 ) : null}
@@ -202,7 +212,7 @@ const CabinetTableBlock: FC<IProps> = ({
               </div>
 
               <div className="forms" style={{width:"30%"}}>
-                <div className="login_forms-label_pink">Этаж</div>
+                <div className="login_forms-label_pink">{t.room.floor}</div>
                 {formik.touched.floor && formik.errors.floor ? (
                   <div style={{ color: "red" }}>{formik.errors.floor}</div>
                 ) : null}
@@ -217,12 +227,11 @@ const CabinetTableBlock: FC<IProps> = ({
                         ? "red"
                         : "#c1bbeb",
                   }}
-                  placeholder={"Не написано"}
                 />
               </div>
 
               <div className="forms" style={{width:"30%"}}>
-                <div className="login_forms-label_pink">Корпус</div>
+                <div className="login_forms-label_pink">{t.room.building}</div>
                 {formik.touched.corpuse && formik.errors.corpuse ? (
                   <div style={{ color: "red" }}>{formik.errors.corpuse}</div>
                 ) : null}
@@ -237,7 +246,6 @@ const CabinetTableBlock: FC<IProps> = ({
                         ? "red"
                         : "#c1bbeb",
                   }}
-                  placeholder={"Не написано"}
                 />
               </div>
             </div>
@@ -253,14 +261,14 @@ const CabinetTableBlock: FC<IProps> = ({
               type="button"
               onClick={onDelete}
             >
-              Удалить
+              {t.room.delete}
             </Button>
             <Button
               background="#27AE60"
               style={{ width: "auto" }}
               type="submit"
             >
-              Сохранить
+              {t.room.save}
             </Button>
           </div>
         </div>

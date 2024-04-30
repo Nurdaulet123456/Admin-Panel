@@ -19,6 +19,9 @@ import ErrorModal from "../modals/ErrorModal";
 import SuccessModal from "../modals/SuccessModal";
 import { useFormik, useField, Formik, Form } from "formik";
 import * as Yup from "yup";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IUpdateInput {
   name?: string;
@@ -36,7 +39,12 @@ interface IProps {
 const MenuTableBlock: FC<IProps> = ({ onReject, getId, menuid, onEdit }) => {
   const [showActive, setShowActive] = useState<boolean>(false);
   const dispatch = useAppDispatch();
-
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
   const {
     showSuccessModal,
     showErrorModal,
@@ -159,19 +167,20 @@ const MenuTableBlock: FC<IProps> = ({ onReject, getId, menuid, onEdit }) => {
     });
   }
 
+
   return (
     <>
       {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
       {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
       <form onSubmit={formik.handleSubmit}>
         <div className="main_table-modal">
-          <div className="main_table-modal_title">Меню</div>
+          <div className="main_table-modal_title">{t.canteenMenu.name}</div>
 
           <div className="main_table-modal_flex" style={{ gap: "1.6rem" }}>
             <div className="main_table-modal_upload sanaty">
-              <div className="login_forms-label_pink">Күні</div>
+              <div className="login_forms-label_pink">{t.canteenMenu.date}</div>
               <Select {...formik.getFieldProps("week_day")}>
-                <option value="">Выберите день недели</option>
+                <option value="">{t.canteenMenu.selectDay}</option>
                 {timeArr.map((item) => (
                   <option value={item.id}>{item.type}</option>
                 ))}
@@ -180,7 +189,7 @@ const MenuTableBlock: FC<IProps> = ({ onReject, getId, menuid, onEdit }) => {
 
             <div className="main_table-modal_forms">
               <div className="forms">
-                <div className="login_forms-label_pink">Тамақ атауы</div>
+                <div className="login_forms-label_pink">{t.canteenMenu.foodName}</div>
                 {formik.touched.name && formik.errors.name ? (
                   <div style={{ color: "red" }}>{formik.errors.name}</div>
                 ) : null}
@@ -199,7 +208,7 @@ const MenuTableBlock: FC<IProps> = ({ onReject, getId, menuid, onEdit }) => {
               </div>
 
               <div className="forms">
-                <div className="login_forms-label_pink">Құрамы</div>
+                <div className="login_forms-label_pink">{t.canteenMenu.foodComposition}</div>
                 {formik.touched.recipe && formik.errors.recipe ? (
                   <div style={{ color: "red" }}>{formik.errors.recipe}</div>
                 ) : null}
@@ -222,7 +231,7 @@ const MenuTableBlock: FC<IProps> = ({ onReject, getId, menuid, onEdit }) => {
                   className="login_forms-label_pink"
                   style={{ marginBottom: "0" }}
                 >
-                  Выходы:
+                  {t.canteenMenu.servings}
                 </div>
                 {formik.touched.exits1 && formik.errors.exits1 ? (
                   <div style={{ color: "red" }}>{formik.errors.exits1}</div>

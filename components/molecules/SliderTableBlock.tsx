@@ -21,6 +21,9 @@ import { useFormik, useField, Formik, Form } from "formik";
 import * as Yup from "yup";
 import {MdClear} from "react-icons/md";
 import DeleteModal from "@/components/modals/DeleteModal";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IUpdateInput {
     name?: string;
@@ -49,6 +52,13 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, photo, onEdit }) => {
         showError,
         showDelete,
     } = useModalLogic();
+    const router = useRouter();
+    const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+    const t = translations[router.locale || "kz"] || kz;
+
 
     const [photo1, setPhoto1] = useState<File | null>();
     const [photo2, setPhoto2] = useState<File | null>();
@@ -241,6 +251,7 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, photo, onEdit }) => {
                                                        }}
                                                        accept=".svg, .jpg, .png, .jpeg"
                                                 />
+
                                             )
 
                                     }
@@ -465,14 +476,14 @@ const MapTableBlock: FC<IProps> = ({ onReject, getId, photo, onEdit }) => {
                                     type="button"
                                     onClick={showDelete}
                                 >
-                                    Удалить
+                                    {t.photoSlider.delete}
                                 </Button>
                                 <Button
                                     background="#27AE60"
                                     style={{width: "auto"}}
                                     type={"submit"}
                                 >
-                                    Сохранить
+                                    {t.photoSlider.save}
                                 </Button>
                             </div>
                         </div>

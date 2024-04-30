@@ -291,8 +291,6 @@ const Tables: FC<TablesProps> = ({isOsnova}) => {
         showAllDelete
     } = useModalLogic();
 
-
-
     const handleDelete = async () => {
 
         const urlPost = isOsnova ? "https://bilimge.kz/admins/api/schedule/" : "https://bilimge.kz/admins/api/DopUrokApi/";

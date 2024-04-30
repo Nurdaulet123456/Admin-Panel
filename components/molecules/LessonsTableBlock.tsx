@@ -14,6 +14,9 @@ import SuccessModal from "../modals/SuccessModal";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import { getMenuThunk } from "@/store/thunks/schoolnfo.thunk";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
@@ -41,6 +44,12 @@ const LessonsTableBlock: FC<IProps> = ({
     showSuccess,
     showError,
   } = useModalLogic();
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
 
   const formik = useFormik({
     initialValues: {
@@ -144,7 +153,7 @@ const LessonsTableBlock: FC<IProps> = ({
             <div className="main_table-modal_forms">
               <div className="forms flex" style={{ alignItems: "flex-start" }}>
                 <div style={{ width: "70%" }}>
-                  <div className="login_forms-label_pink">Наименование*</div>
+                  <div className="login_forms-label_pink">{t.subjects.subjectName}</div>
                   {formik.touched.name && formik.errors.name ? (
                     <div style={{ color: "red" }}>{formik.errors.name}</div>
                   ) : null}
@@ -162,9 +171,9 @@ const LessonsTableBlock: FC<IProps> = ({
                   />
                 </div>
                 <div className="sanaty">
-                  <div className="login_forms-label_pink">Уровень занятий</div>
+                  <div className="login_forms-label_pink">{t.subjects.classLevel}</div>
                   <Select {...formik.getFieldProps("sanat")}>
-                    <option value="">Не выбрано</option>
+                    <option value="EASY">EASY</option>
                     {timeArr.map((item) => (
                       <option value={item.type}>{item.type}</option>
                     ))}
@@ -185,14 +194,14 @@ const LessonsTableBlock: FC<IProps> = ({
               type="button"
               onClick={onDelete}
             >
-              Удалить
+              {t.subjects.delete}
             </Button>
             <Button
               background="#27AE60"
               style={{ width: "auto" }}
               type="submit"
             >
-              Сохранить
+              {t.subjects.save}
             </Button>
           </div>
         </div>
@@ -202,9 +211,8 @@ const LessonsTableBlock: FC<IProps> = ({
 };
 
 const timeArr = [
-  { id: 1, type: "EASY" },
-  { id: 2, type: "MEDIUM" },
-  { id: 3, type: "HARD" },
+  { id: 1, type: "MEDIUM" },
+  { id: 2, type: "HARD" },
 ];
 
 export default LessonsTableBlock;

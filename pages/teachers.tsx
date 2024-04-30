@@ -8,6 +8,9 @@ import MainLayouts from "@/layouts/MainLayouts";
 import { getTeacherIdThunk } from "@/store/thunks/available.thunk";
 import { useState } from "react";
 import {scrollToTop} from "@/utils/assets.utils";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 const TeachersPage = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
@@ -17,7 +20,12 @@ const TeachersPage = () => {
 
   const dispatch = useAppDispatch();
   const teachersid = useTypedSelector((state) => state.ia.teachersid);
-
+    const router = useRouter();
+    const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+    const t = translations[router.locale || "kz"] || kz;
   const handleAddButtonClick = () => {
     setEditActive(false);
     setShowActive(!showActive);
@@ -59,7 +67,7 @@ const TeachersPage = () => {
             }}
           >
             {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
-            {showActive || editActive ? "Назад" : "Добавить"}
+            {showActive || editActive ? t.actions.close : t.actions.add}
           </div>
         </Button>
       </div>

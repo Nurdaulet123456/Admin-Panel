@@ -11,6 +11,9 @@ import {
   getClassRoomThunk,
 } from "@/store/thunks/schoolnfo.thunk";
 import {scrollToTop} from "@/utils/assets.utils";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 const CabinetPage = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
@@ -20,7 +23,12 @@ const CabinetPage = () => {
   const dispatch = useAppDispatch();
   const cabinet = useTypedSelector((state) => state.system.classroom);
   const cabinetid = useTypedSelector((state) => state.system.classroomid);
-
+    const router = useRouter();
+    const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+    const t = translations[router.locale || "kz"] || kz;
   useEffect(() => {
     if (cabinet) {
       dispatch(getClassRoomThunk());
@@ -70,7 +78,7 @@ const CabinetPage = () => {
             }}
           >
             {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
-            {showActive || editActive ? "Закрыть" : "Добавить"}
+            {showActive || editActive ? t.actions.close : t.actions.add}
           </div>
         </Button>
       </div>
