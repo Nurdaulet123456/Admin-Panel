@@ -11,13 +11,13 @@ import {Input, Select} from "../../atoms/UI/Inputs/Input";
 import { instance } from "@/api/axios.instance";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
 import {
-  getClassNameThunk,
+  getClassNameThunk, getPrideThunk,
   getSchoolSportThunk,
 } from "@/store/thunks/pride.thunk";
 import {getTokenInLocalStorage, urlToFile} from "@/utils/assets.utils";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import ClassNamesModal from "@/components/modals/ClassNames";
-import { ISchoolSport } from "@/types/assets.type";
+import {ISchoolPride, ISchoolSport} from "@/types/assets.type";
 import { useModalLogic } from "@/hooks/useModalLogic";
 import ErrorModal from "@/components/modals/ErrorModal";
 import SuccessModal from "@/components/modals/SuccessModal";
@@ -30,6 +30,9 @@ import school from "@/pages/school";
 import {log} from "console";
 import {MdClear} from "react-icons/md";
 import {headers} from "next/headers";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface UpdateInputProps {
   fullname: string;
@@ -41,21 +44,18 @@ interface UpdateInputProps {
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
   onEdit?: Dispatch<SetStateAction<boolean>>;
-  sportid?: ISchoolSport;
+  prideId?: ISchoolPride;
   getId?: number;
 }
 
 const PrideSchoolTableBlock1: FC<IProps> = ({
   onReject,
   onEdit,
-  sportid,
+  prideId,
   getId,
 }) => {
   const dispatch = useAppDispatch();
   const classes = useTypedSelector((state) => state.ia.iaclass);
-  const [showActive, setShowActive] = useState<boolean>(false);
-  const [text, setText] = useState<string>("");
-  const [id, setId] = useState<number>();
   const clasname = useTypedSelector((state) => state.pride.classname);
   const [photo, setPhoto] = useState<File | null>()
 
@@ -75,6 +75,12 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
   }, [dispatch]);
 
 
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
 
   useEffect(() => {
     if (clasname) {
@@ -86,11 +92,12 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
     initialValues: {
       fullname: "",
       student_success: "",
+      type: ""
     },
     validationSchema: Yup.object({
-      fullname: Yup.string().required("Обязательно*"),
-      student_success: Yup.string().required("Обязательно*"),
-      // class_id: Yup.number().required("Обязательно*"),
+      fullname: Yup.string().required("*"),
+      student_success: Yup.string().required("*"),
+      type: Yup.string().required("*"),
     }),
     onSubmit: async (values) => {
       let headers = photo ? {
@@ -101,10 +108,10 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
       };
       if (!getId) {
                 await instance
-                  .post("https://bilimge.kz/admins/api/Sport_SuccessApi/", {
+                  .post("https://bilimge.kz/admins/api/proudofschool/", {
                     fullname: values.fullname,
-                    // classl: String(values.class_id),
                     student_success: values.student_success,
+                    type: values.type,
                     photo: photo
                   }, {
                     headers: {
@@ -114,7 +121,7 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
                   })
                   .then((res) => {
                     if (res) {
-                      dispatch(getSchoolSportThunk());
+                      dispatch(getPrideThunk());
                       showSuccess();
                       onDelete();
                       if (showSuccessModal && onReject) {
@@ -130,18 +137,19 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
                   });
               } else {
                 await instance
-                  .put(`https://bilimge.kz/admins/api/Sport_SuccessApi/${getId}/`,
+                  .put(`https://bilimge.kz/admins/api/proudofschool/${getId}/`,
                       {
                         fullname: values.fullname,
                         // classl: String(values.class_id),
                         student_success: values.student_success,
+                        type: values.type,
                         photo: photo || null
                       } , {
                     headers: headers,
                   })
                   .then((res) => {
                     if (res) {
-                        dispatch(getSchoolSportThunk());
+                        dispatch(getPrideThunk());
                         showSuccess();
                         if (showSuccessModal && onReject) {
                           onReject(false);
@@ -159,17 +167,19 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
   });
 
   useEffect(() => {
-    if (sportid && getId) {
+    if (prideId && getId) {
       formik.resetForm({
         values: {
-          fullname: sportid.fullname || "",
-          student_success: sportid.student_success || "",
+          fullname: prideId.fullname || "",
+          student_success: prideId.student_success || "",
+          type: prideId.success || ""
+
           // class_id: sportid.classl || "",
         },
       });
-      fetchAndSetPhoto(sportid.photo)
+      fetchAndSetPhoto(prideId.photo)
     }
-  }, [sportid, getId]);
+  }, [prideId, getId]);
   async function fetchAndSetPhoto(photoUrl?: string) {
     const phot = await urlToFile(photoUrl);
     setPhoto(phot);
@@ -181,6 +191,7 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
       values: {
         fullname: "",
         student_success: "",
+        type: ""
         // class_id: "",
       },
     });
@@ -193,7 +204,7 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
       {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
       <div className="main_table-modal">
         <form onSubmit={formik.handleSubmit}>
-          <div className="main_table-modal_title">Должность</div>
+          <div className="main_table-modal_title"> </div>
           <div className="main_table-modal_flex" style={{gap: "1.6rem"}}>
             <div className="main_table-modal_upload">
               <div className="login_forms-label_pink">Фото *</div>
@@ -216,8 +227,19 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
             </div>
 
             <div className="main_table-modal_forms">
+              <div style={{marginBottom: "2.4rem"}} className="sanaty">
+                <div className="login_forms-label_pink">{t.schoolPride.type}</div>
+                <Select {...formik.getFieldProps("type")}>
+                  <option value="sport">Спорт</option>
+                  <option value="oner">{t.schoolPride.art}</option>
+                  <option value="olimpiada">{t.schoolPride.academicOlympiad}</option>
+                  <option value="altynbelgi">{t.schoolPride.goldMedal}</option>
+                  <option value="redcertificate">{t.schoolPride.redCertificate}</option>
+
+                </Select>
+              </div>
               <div className="forms">
-                <div className="login_forms-label_pink">ФИО *</div>
+              <div className="login_forms-label_pink">{t.schoolPride.fullName}</div>
 
                 {formik.touched.fullname && formik.errors.fullname ? (
                     <div style={{color: "red"}}>{formik.errors.fullname}</div>
@@ -237,7 +259,7 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
               </div>
 
               <div className="forms">
-                <div className="login_forms-label_pink">Текст</div>
+                <div className="login_forms-label_pink">{t.schoolPride.text}</div>
                 {formik.touched.student_success && formik.errors.student_success ? (
                     <div style={{color: "red"}}>{formik.errors.student_success}</div>
                 ) : null}
@@ -300,7 +322,7 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
         </form>
       </div>
     </>
-);
+  );
 };
 
 export default PrideSchoolTableBlock1;

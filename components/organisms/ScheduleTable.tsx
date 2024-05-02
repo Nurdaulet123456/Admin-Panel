@@ -16,6 +16,8 @@ import {getTokenInLocalStorage} from "@/utils/assets.utils";
 import {useTypedSelector} from "@/hooks/useTypedSelector";
 import {instance} from "@/api/axios.instance";
 import axios from 'axios';
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 
 interface IProps {
@@ -50,6 +52,11 @@ const ScheduleTable = ({
     day_index?: any;
   }>();
   const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
   const schedule = isOsnova ? useTypedSelector((state) => state.ia.sch) : useTypedSelector((state) => state.ia.dopSch);
   const [classPlan, setClassPlan] = useState<any>({});
   useEffect(() => {
@@ -132,7 +139,7 @@ const ScheduleTable = ({
         )}
       <div style={{marginBottom: "5vh"}}>
         <div className="main_table-title">
-          {isOsnova ? "Основные уроки" : "Дополнительные уроки"}
+          {isOsnova ?  t.schedule.mainLessons : t.schedule.additionalLessons}
         </div>
         <TableContainer
             component={Paper}
@@ -154,7 +161,7 @@ const ScheduleTable = ({
                         marginBottom: "1.6rem",
                       }}
                   >
-                    Дата
+                    {t.schedule.date}
                   </div>
                   {" "}
                   <div
@@ -164,7 +171,7 @@ const ScheduleTable = ({
                         fontWeight: "500",
                       }}
                   >
-                    Время
+                    {t.schedule.time}
                   </div>
                 </TableCell>
                 {days.map((day, index) => (
@@ -178,7 +185,7 @@ const ScheduleTable = ({
                           textAlign: "center",
                         }}
                     >
-                      {day}
+                      {router.locale === "kz" ? daysKz[index] : day}
                     </TableCell>
                 ))}
               </TableRow>
@@ -313,8 +320,6 @@ const ScheduleTable = ({
 
                                   {selectMode && (
                                       <Checkbox
-                                          // defaultChecked={isSelected}
-                                          // checked={selectedCheckboxId === scheduleItem.id}
                                           onClick={() =>
                                               handleCheckboxClick(
                                                   day,
@@ -359,7 +364,6 @@ const ScheduleTable = ({
 
                                   {selectModePaste && (
                                       <Checkbox
-                                          // checked={isSelectedPaste}
                                           onClick={() =>
                                               handleCheckboxClickPaste(
                                                   day,
@@ -393,5 +397,14 @@ const days = [
   "Пятница",
   "Суббота",
 ];
+
+const daysKz = [
+    "Дүйсенбі",
+    "Сейсенбі",
+  "Сәрсенбі",
+  "Бейсенбі",
+  "Жұма",
+  "Сенбі",
+]
 
 export default ScheduleTable;

@@ -1,40 +1,40 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { initaialStatePrideInfo } from "../types/pride.system";
 import {
-  getClassNameThunk,
-  getDopIdThunk,
-  getDopThunk,
-  getExtraIdThunk,
-  getExtraThunk,
-  getLessonsIdThunk,
-  getLessonsThunk,
-  getNewsIdThunk,
-  getNewsThunk,
-  getOSIdThunk,
-  getOSThunk,
-  getSchoolAltynIdThunk,
-  getSchoolAltynThunk,
-  getSchoolAtestIdThunk,
-  getSchoolAtestThunk,
-  getSchoolOlimpIdThunk,
-  getSchoolOlimpThunk,
-  getSchoolOnerIdThunk,
-  getSchoolOnerThunk,
-  getSchoolSportIdThunk,
-  getSchoolSportThunk,
-  getTeachersThunk,
+    getClassNameThunk,
+    getDopIdThunk,
+    getDopThunk,
+    getExtraIdThunk,
+    getExtraThunk,
+    getLessonsIdThunk,
+    getLessonsThunk,
+    getNewsIdThunk,
+    getNewsThunk,
+    getOSIdThunk,
+    getOSThunk, getPrideIDThunk, getPrideThunk,
+    getSchoolAltynIdThunk,
+    getSchoolAltynThunk,
+    getSchoolAtestIdThunk,
+    getSchoolAtestThunk,
+    getSchoolOlimpIdThunk,
+    getSchoolOlimpThunk,
+    getSchoolOnerIdThunk,
+    getSchoolOnerThunk,
+    getSchoolSportIdThunk,
+    getSchoolSportThunk,
+    getTeachersThunk,
 } from "../thunks/pride.thunk";
 import {
-  ICalls,
-  IClassName,
-  IExtraLessons,
-  ILessons,
-  INews,
-  ISchoolAltyn,
-  ISchoolAtest,
-  ISchoolOlimp,
-  ISchoolOner,
-  ISchoolSport,
+    ICalls,
+    IClassName,
+    IExtraLessons,
+    ILessons,
+    INews,
+    ISchoolAltyn,
+    ISchoolAtest,
+    ISchoolOlimp,
+    ISchoolOner, ISchoolPride,
+    ISchoolSport,
 } from "@/types/assets.type";
 
 export const pridelInfoSlice = createSlice({
@@ -307,7 +307,29 @@ export const pridelInfoSlice = createSlice({
           }
           return state;
         },
-      );
+      ).addCase(
+        getPrideThunk.fulfilled,
+        (state, action: PayloadAction<ISchoolPride[]>) => {
+            if (action.payload) {
+                return {
+                    ...state,
+                    pride: action.payload,
+                };
+            }
+            return state;
+        },
+    ).addCase(
+        getPrideIDThunk.fulfilled,
+        (state, action: PayloadAction<ISchoolPride>) => {
+            if (action.payload) {
+                return {
+                    ...state,
+                    prideId: action.payload,
+                };
+            }
+            return state;
+        },
+    );
   },
 });
 

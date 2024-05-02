@@ -24,9 +24,7 @@ const MainLayouts = ({ children }: ILayouts) => {
       console.error("Logout error:", err);
     }
   };
-
     const [schoolName, setSchoolName] = useState<string>();
-
     useEffect(() => {
         async function getSchool() {
             await instance

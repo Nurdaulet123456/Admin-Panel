@@ -3,26 +3,34 @@ import { DeleteIcons, PenIcons } from "../../atoms/Icons";
 import { Table, Td, Th, Thead, Tr } from "../../atoms/UI/Tables/Table";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import { FC, useEffect } from "react";
-import { getSchoolSportThunk } from "@/store/thunks/pride.thunk";
+import {getPrideThunk, getSchoolSportThunk} from "@/store/thunks/pride.thunk";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IProps {
-  handleClickGetIdSport?: (id?: number) => void;
+  handleGetPrideId?: (id?: number) => void;
 }
 
-const PrideSchoolTable1: FC<IProps> = ({ handleClickGetIdSport }) => {
+const PrideSchoolTable1: FC<IProps> = ({ handleGetPrideId }) => {
   const dispatch = useAppDispatch();
-  const sport = useTypedSelector((state) => state.pride.sport);
-
+  const pride = useTypedSelector((state) => state.pride.pride);
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
   useEffect(() => {
-    if (sport) {
-      dispatch(getSchoolSportThunk());
+    if (pride) {
+      dispatch(getPrideThunk());
     }
   }, [dispatch]);
   const handleDeleteItems = async (id?: number) => {
     await instance
-      .delete(`https://bilimge.kz/admins/api/Sport_SuccessApi/${id}/`, {
+      .delete(`https://bilimge.kz/admins/api/proudofschool/${id}/`, {
         headers: {
           Authorization: `Token ${getTokenInLocalStorage()}`,
         },
@@ -33,28 +41,28 @@ const PrideSchoolTable1: FC<IProps> = ({ handleClickGetIdSport }) => {
         }
       })
       .catch((e) => console.log(e));
-    dispatch(getSchoolSportThunk());
+    dispatch(getPrideThunk());
   };
 
   return (
     <div className="main_table">
-      <div className="main_table-title">Спорт</div>
+      <div className="main_table-title">{t.schoolPride.title}</div>
 
       <div className="main_table-block">
         <Table>
           <Thead>
             <tr>
-              <Th>No</Th>
+              <Th>№</Th>
               <Th>Фото</Th>
-              <Th>ФИО</Th>
-              <Th>Текст</Th>
-              {/*<Th>Класс</Th>*/}
-              <Th>Действие</Th>
+              <Th>{t.schoolPride.fullName}</Th>
+              <Th>{t.schoolPride.type}</Th>
+              <Th>{t.schoolPride.text}</Th>
+              <Th>{t.bells.action}</Th>
             </tr>
           </Thead>
 
-          {sport &&
-            sport.map((item, index) => (
+          {pride &&
+            pride.map((item, index) => (
               <Tr key={item.id}>
                 <Td>{index + 1}</Td>
                 <Td>
@@ -69,12 +77,12 @@ const PrideSchoolTable1: FC<IProps> = ({ handleClickGetIdSport }) => {
 
                 </Td>
                 <Td>{item.fullname}</Td>
+                <Td>{item.success}</Td>
                 <Td>{item.student_success}</Td>
-                {/*<Td>{item.classl} класс</Td>*/}
                 <Td>
                   <div
                     onClick={() =>
-                      handleClickGetIdSport && handleClickGetIdSport(item.id)
+                        handleGetPrideId && handleGetPrideId(item.id)
                     }
                   >
                     <PenIcons />

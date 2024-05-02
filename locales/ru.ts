@@ -197,7 +197,9 @@
             fileNotSelected: "Файл не выбран",
             delete: "Удалить",
             save: "Сохранить",
-            close: "Закрыть"
+            close: "Закрыть",
+            type: "Тип",
+            title: "Гордости школы"
         },subjects: {
             subjectName: "Название предмета",
             classLevel: "Уровень занятий",

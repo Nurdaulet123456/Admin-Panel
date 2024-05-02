@@ -162,6 +162,16 @@ export interface ISchoolSport {
   class_id?: string;
 }
 
+export interface ISchoolPride {
+  id?: number;
+  fullname?: string;
+  photo?: string;
+  student_success?: string;
+  classl?: any;
+  school?: number;
+  class_id?: string;
+  success?: string;
+}
 export interface ISchoolOner {
   id?: number;
   fullname?: string;

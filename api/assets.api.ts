@@ -29,7 +29,7 @@ import {
   ISchoolOner,
   ILessons,
   INotification,
-  IExtraLessons, IADopRing, IDopSchedule, IMap, ISlider,
+  IExtraLessons, IADopRing, IDopSchedule, IMap, ISlider, ISchoolPride,
 } from "@/types/assets.type";
 
 export const assetsApi = {
@@ -235,6 +235,22 @@ export const assetsApi = {
 
   async getSchoolOnerId(id?: number): Promise<ISchoolOner> {
     return await instance.get(`https://bilimge.kz/admins/api/Oner_SuccessApi/${id}`, {
+      headers: {
+        Authorization: `Token ${getTokenInLocalStorage()}`,
+      },
+    });
+  },
+
+  async getPride(): Promise<ISchoolPride[]> {
+    return await instance.get(`https://bilimge.kz/admins/api/proudofschool/`, {
+      headers: {
+        Authorization: `Token ${getTokenInLocalStorage()}`,
+      },
+    });
+  },
+
+  async getPrideId(id?: number): Promise<ISchoolPride> {
+    return await instance.get(`https://bilimge.kz/admins/api/proudofschool/${id}`, {
       headers: {
         Authorization: `Token ${getTokenInLocalStorage()}`,
       },

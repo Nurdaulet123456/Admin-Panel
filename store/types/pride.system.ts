@@ -7,7 +7,7 @@ import {
   ISchoolAltyn,
   ISchoolAtest,
   ISchoolOlimp,
-  ISchoolOner,
+  ISchoolOner, ISchoolPride,
   ISchoolSport,
   ITeachers,
 } from "@/types/assets.type";
@@ -35,6 +35,8 @@ export interface IPrideInfo {
   teachers?: ITeachers[];
   news?: INews[];
   newsid?: INews;
+  pride?: ISchoolPride[];
+  prideId?: ISchoolPride;
 }
 
 export const initaialStatePrideInfo: IPrideInfo = {
@@ -60,4 +62,6 @@ export const initaialStatePrideInfo: IPrideInfo = {
   atestid: {},
   altynid: {},
   onerid: {},
+  pride:[],
+  prideId:{},
 };

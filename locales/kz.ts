@@ -194,7 +194,10 @@ export const kz = {
         save: "Сақтау",
         close: "Жабу",
         success: "Сәтті өтті",
-        dataSaved: "Толтырылған дереккөзі сәтті сақталды"
+        dataSaved: "Толтырылған дереккөзі сәтті сақталды",
+        type: "Типі",
+        title: "Мектеп мақтаныштары"
+
     },subjects: {
         subjectName: "Пән атауы",
         classLevel: "Сабақтың деңгейі",

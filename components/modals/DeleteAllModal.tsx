@@ -2,6 +2,9 @@ import { FC } from "react";
 import { SuccesIcons } from "../atoms/Icons";
 import { Button } from "../atoms/UI/Buttons/Button";
 import { Modal, ModalContent, ModalInner } from "../atoms/UI/Modal/Modal";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IProps {
     onClose?: () => void;
@@ -9,6 +12,12 @@ interface IProps {
 }
 
 const DeleteAllModal: FC<IProps> = ({ onClose, handleDelete }) => {
+    const router = useRouter();
+    const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+    const t = translations[router.locale || "kz"] || kz;
     return (
         <>
             <Modal style={{zIndex: "5000"}}>
@@ -19,9 +28,9 @@ const DeleteAllModal: FC<IProps> = ({ onClose, handleDelete }) => {
                         </div>
 
                         <div className="modal_body">
-                            <div className="modal_body-title">Уверены?</div>
+                            <div className="modal_body-title">{t.schedule.confirm}</div>
                             <div className="modal_body-subtitle">
-                                Вы собираетесь удалить все данные! Вы уверены?
+                                {t.schedule.confirmDelete}
                             </div>
                         </div>
 
@@ -38,7 +47,7 @@ const DeleteAllModal: FC<IProps> = ({ onClose, handleDelete }) => {
                                 }}
                                 onClick={onClose}
                             >
-                                Нет
+                                {t.schedule.no}
                             </Button>
                             <Button
                                 background="#4F4F4F"
@@ -52,7 +61,8 @@ const DeleteAllModal: FC<IProps> = ({ onClose, handleDelete }) => {
                                 }}
                                 onClick={handleDelete}
                             >
-                                Да
+                                {t.schedule.yes}
+
                             </Button>
                         </div>
                     </ModalContent>

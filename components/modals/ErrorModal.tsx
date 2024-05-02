@@ -2,12 +2,21 @@ import { FC } from "react";
 import { ErrorIcons } from "../atoms/Icons";
 import { Button } from "../atoms/UI/Buttons/Button";
 import { Modal, ModalContent, ModalInner } from "../atoms/UI/Modal/Modal";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IProps {
   onClose?: () => void;
 }
 
 const ErrorModal: FC<IProps> = ({ onClose }) => {
+    const router = useRouter();
+    const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+    const t = translations[router.locale || "kz"] || kz;
   return (
     <>
       <Modal>
@@ -18,10 +27,13 @@ const ErrorModal: FC<IProps> = ({ onClose }) => {
             </div>
 
             <div className="modal_body">
-              <div className="modal_body-title">Қате</div>
+              <div className="modal_body-title">{router.locale === "kz" ? "Қате" : "Ошибка"}</div>
               <div className="modal_body-subtitle">
-                Толтырылған ақпарат көзінде қателік бар. Қайталап толтыруды
-                сұраймыз.
+                  {
+                      router.locale === "kz" ? " Толтырылған ақпарат көзінде қателік бар. Қайталап толтыруды сұраймыз."
+                          : "В заполненных данных есть ошибка. Пожалуйста, заполните повторно."
+                  }
+
               </div>
             </div>
 

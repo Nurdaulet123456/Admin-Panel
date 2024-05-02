@@ -65,7 +65,7 @@ const sidebar: IType[] = [
   {
     id: 4,
     type: "Гордость школы",
-    link: "prideschool/1",
+    link: "prideschool",
   },
 
   {

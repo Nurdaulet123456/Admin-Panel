@@ -20,13 +20,21 @@ import {
 } from "@/store/thunks/schoolnfo.thunk";
 import { useTypedSelector } from "@/hooks/useTypedSelector";
 import SchoolTableBlock from "@/components/molecules/SchoolTableId/SchoolTableBlock";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
+
 
 const SchoolComponents = () => {
   const [showActive, setShowActive] = useState<boolean>(false);
-  const router = useRouter();
 
   const [editActive, setEditActive] = useState<boolean>(false);
   const [getId, setId] = useState<number>();
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
 
   const dispatch = useAppDispatch();
   const socialid = useTypedSelector((state) => state.system.schoolsocialid);
@@ -35,7 +43,6 @@ const SchoolComponents = () => {
   const schoolPassword = useTypedSelector((state) => state.system.schoolpassport);
   const directorid = useTypedSelector((state) => state.system.schooldirector);
 
-  console.log(typeof(schoolPassword))
 
   const handleAddButtonClick = () => {
     setEditActive(false);
@@ -129,7 +136,7 @@ const SchoolComponents = () => {
                   }}
               >
                 {showActive || editActive ? <LogoutIcons /> : <PlusIcons />}
-                {showActive || editActive ? "Закрыть" : "Добавить"}
+                {showActive || editActive ? t.actions.close : t.actions.add}
               </div>
             </Button>
           </div>

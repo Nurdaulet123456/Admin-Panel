@@ -51,6 +51,18 @@ export const getSchoolOnerIdThunk = createAsyncThunk(
   async (id?: number) => await assetsApi.getSchoolOnerId(id),
 );
 
+export const getPrideThunk = createAsyncThunk(
+    "getPrideThunk",
+    async () => await assetsApi.getPride(),
+);
+
+export const getPrideIDThunk = createAsyncThunk(
+    "getPrideIDThunk",
+    async (id?: number) => await assetsApi.getPrideId(id),
+);
+
+
+
 export const getLessonsThunk = createAsyncThunk(
   "getLessonsThunk",
   async () => await assetsApi.getLessons(),

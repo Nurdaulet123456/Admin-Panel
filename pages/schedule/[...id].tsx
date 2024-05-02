@@ -29,6 +29,8 @@ import DeleteModal from "@/components/modals/DeleteModal";
 import ScheduleTable1 from "@/components/organisms/ScheduleTables/ScheduleTable1";
 import ScheduleTableBlock from "@/components/molecules/ScheduleBlocks/ScheduleTableBlock";
 import DeleteAllModal from "@/components/modals/DeleteAllModal";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 const ScheduleComponents = () => {
   const router = useRouter();
@@ -36,6 +38,11 @@ const ScheduleComponents = () => {
     const [del, setDel] = useState<boolean>(false);
     const [editActive, setEditActive] = useState<boolean>(false);
     const [getId, setId] = useState<number | null>();
+    const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+    const t = translations[router.locale || "kz"] || kz;
     const handleAddButtonClick = () => {
         setEditActive(false);
         setShowActive(!showActive);
@@ -50,8 +57,8 @@ const ScheduleComponents = () => {
                     router.asPath !== "/schedule/1" ? (
                         <>
                             <HeaderSchedule classL={true}/>
-                            <Tables isOsnova={true}/>
-                            <Tables isOsnova={false}/>
+                            <Tables isOsnova={true} t={t}/>
+                            <Tables isOsnova={false} t={t}/>
                         </>
                     ) : (
                         <>
@@ -111,7 +118,7 @@ const ScheduleComponents = () => {
                                         }}
                                     >
                                         {showActive || editActive ? <LogoutIcons/> : <PlusIcons/>}
-                                        {showActive || editActive ? "Закрыть" : "Добавить"}
+                                        {showActive || editActive ? t.actions.close : t.actions.add}
                                     </div>
                                 </Button>
                             </div>
@@ -130,16 +137,15 @@ const ScheduleComponents = () => {
 };
 
 interface TablesProps {
-    isOsnova?: boolean; // Опциональный пропс
+    isOsnova?: boolean;
+    t?: any;
 };
 
-const Tables: FC<TablesProps> = ({isOsnova}) => {
-    console.log(isOsnova)
+const Tables: FC<TablesProps> = ({isOsnova,t}) => {
     const dispatch = useAppDispatch();
     const iaring = useTypedSelector((state) => state.ia.iaring);
     const iaDopRing = useTypedSelector((state) => state.ia.iaDopRing);
     const classess = useTypedSelector((state) => state.ia.iaclass);
-
     const [selectMode, setSelectMode] = useState<boolean>(false);
     const [selectModePaste, setSelectModePaste] = useState<boolean>(false);
     const [selectedCells, setSelectedCells] = useState<
@@ -441,7 +447,7 @@ const Tables: FC<TablesProps> = ({isOsnova}) => {
                     radius="14px"
                     onClick={showAllDelete}
                 >
-                    Удалить все
+                    {t.schedule.deleteAll}
                 </Button>
                 <Button
                     background="#CACACA"
@@ -449,7 +455,7 @@ const Tables: FC<TablesProps> = ({isOsnova}) => {
                     radius="14px"
                     onClick={handleSelectClick}
                 >
-                    {selectMode ? "Отменить" : "Выбрать"}
+                    {selectMode ? t.schedule.cancel : t.schedule.select}
                 </Button>
                 {
                     selectMode &&  <Button
@@ -459,7 +465,7 @@ const Tables: FC<TablesProps> = ({isOsnova}) => {
                         onClick={showDelete}
                         disabled={!selectMode || selectedCells.length === 0}
                     >
-                        Удалить
+                        {t.schedule.delete}
                     </Button>
                 }
                 {
@@ -470,7 +476,7 @@ const Tables: FC<TablesProps> = ({isOsnova}) => {
                         onClick={handleCopyClick}
                         disabled={!selectMode}
                     >
-                        Копировать
+                        {t.schedule.copy}
                     </Button>
                 }
 
@@ -481,7 +487,7 @@ const Tables: FC<TablesProps> = ({isOsnova}) => {
                     onClick={handlePasteClick}
                     disabled={!selectModePaste}
                 >
-                    Вставить
+                    {t.schedule.insert}
                 </Button>
             </div>
             </div>
@@ -506,6 +512,11 @@ interface HeaderScheduleProps {
 
 const HeaderSchedule:FC<HeaderScheduleProps> = ({classL}) => {
     const router = useRouter();
+    const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+    const t = translations[router.locale || "kz"] || kz;
     return(
         <div
             className="flex"
@@ -526,7 +537,7 @@ const HeaderSchedule:FC<HeaderScheduleProps> = ({classL}) => {
             {
                 classL ? (
                     <div className="class_name">
-                        Класс:{" "}
+                        {t.schedule.class}:{" "}
                         {decodeURIComponent(router.asPath.split("/").at(-1) as string)}
                     </div>
                 ) : (

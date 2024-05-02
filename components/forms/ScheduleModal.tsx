@@ -26,6 +26,8 @@ import {XIcon} from "@/components/atoms/Icons";
 import {is} from "immutable";
 import {useModalLogic} from "@/hooks/useModalLogic";
 import DeleteModal from "@/components/modals/DeleteModal";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IProps {
   onReject?: () => void;
@@ -37,6 +39,11 @@ interface IProps {
 const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnova }) => {
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
   const iaschool = useTypedSelector((state) => state.ia.iaschool);
   const iaclass = useTypedSelector((state) => state.ia.iaclass);
   const iaclassrooms = useTypedSelector((state) => state.ia.iaclassrooms);
@@ -240,28 +247,28 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
                 </div>
               </div>
               <div className="modal_header">
-                Расписание
+                {t.schedule.schedule}
               </div>
               <div className="modal_body">
                 <div className="forms flex-grid">
-                  <div>День недели:</div>
+                  <div>{t.schedule.dayOfWeek}:</div>
                   <span>{selectedCell.day}</span>
                 </div>
 
                 <div className="forms flex-grid">
-                  <div>Класс:</div>
+                  <div>{t.schedule.class}:</div>
                   <span>{classnames?.split("")?.join(" ")}</span>
                 </div>
 
                 <div className="forms flex-grid">
-                  <div>Время:</div>
+                  <div>{t.schedule.time}:</div>
                   <span>
                   {selectedCell.start_time}-{selectedCell.end_time}
                 </span>
                 </div>
 
                 <div className="forms flex-grid">
-                  <div>Предмет:</div>
+                  <div>{t.schedule.subject}:</div>
                   <div className="sanaty">
                     <Select {...formik.getFieldProps("subject")}>
                       <option value="">Выберите предмет</option>
@@ -278,7 +285,7 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
                 </div>
 
                 <div className="forms flex-grid">
-                  <div>Преподаватель:</div>
+                  <div>{t.schedule.teacher}:</div>
                   <div className="sanaty">
                     <Select {...formik.getFieldProps("teacher")}>
                       <option value="">Выберите преподавателя</option>
@@ -334,7 +341,7 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
                 </div>
 
                 <div className="forms flex-grid">
-                  <div>Предмет2:</div>
+                  <div>{t.schedule.subject} 2:</div>
                   <div className="sanaty">
                     <Select {...formik.getFieldProps("subject2")}>
                       <option value="">Выберите предмет</option>
@@ -351,7 +358,7 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
                 </div>
 
                 <div className="forms flex-grid">
-                  <div>Преподаватель2:</div>
+                  <div>{t.schedule.teacher} 2:</div>
                   <div className="sanaty">
                     <Select {...formik.getFieldProps("teacher2")}>
                       <option value="">Выберите преподавателя</option>
@@ -368,7 +375,7 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
                 </div>
 
                 <div className="forms flex-grid">
-                  <div>Кабинет2:</div>
+                  <div>Кабинет 2:</div>
                   <div className="sanaty">
                     <Select {...formik.getFieldProps("classroom2")}>
                       <option value="">Выберите кабинет</option>
@@ -407,7 +414,7 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
                 </div>
 
                 <div className="forms flex-grid">
-                  <div>Тип занятия:</div>
+                  <div>{t.schedule.lessonType}:</div>
                   <div className="sanaty">
                     <Select {...formik.getFieldProps("typez")}>
                       <option value="">Выберите тип занятий</option>
@@ -428,7 +435,7 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
                     type="button"
                     onClick={showDelete}
                 >
-                  Удалить
+                  {t.schedule.delete}
                 </Button>
                 <Button
                     background="#27AE60"
@@ -441,7 +448,8 @@ const ScheduleModal: FC<IProps> = ({ onReject, selectedCell, classnames, isOsnov
                     }}
                     type="submit"
                 >
-                  Сохранить
+                  {t.bells.save}
+
                 </Button>
               </div>
             </form>
