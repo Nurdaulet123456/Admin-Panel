@@ -12,7 +12,7 @@ import Link from "next/link";
 
 interface ILayouts {
   children: ReactNode;
-  link: string;
+  link?: string;
 }
 
 const MainLayouts = ({ children, link }: ILayouts) => {
