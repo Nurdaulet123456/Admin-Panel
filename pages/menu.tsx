@@ -53,7 +53,7 @@ const MenuPage = () => {
   };
 
   return (
-    <MainLayouts>
+    <MainLayouts link={"/menu"}>
       <div
         style={{
           width: "100%",

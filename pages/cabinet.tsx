@@ -53,7 +53,7 @@ const CabinetPage = () => {
   };
 
   return (
-    <MainLayouts>
+    <MainLayouts link={"/cabinet"}>
       <div
         style={{
           width: "100%",

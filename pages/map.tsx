@@ -43,7 +43,7 @@ const MapPage = () => {
     };
 
     return (
-        <MainLayouts>
+        <MainLayouts link={"/map"}>
                 <MapTableBlock
                     onReject={setShowActive}
                     getId={getId}

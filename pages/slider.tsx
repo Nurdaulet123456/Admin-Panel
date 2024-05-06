@@ -27,7 +27,6 @@ const SliderPage = () => {
         setId(undefined);
     };
 
-    console.log(slider)
     const handleClickGetId = (id?: number) => {
         setEditActive(true);
 
@@ -39,7 +38,7 @@ const SliderPage = () => {
     };
 
     return (
-        <MainLayouts>
+        <MainLayouts link={"/slider"}>
             <SliderTableBlock
                 onReject={setShowActive}
                 getId={getId}

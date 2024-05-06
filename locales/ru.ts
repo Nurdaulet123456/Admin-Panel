@@ -324,5 +324,103 @@
             manual: "Ручной",
             "facebook": "facebook",
             "instagram": "instagram"
+        },
+        "schoolAdministration": {
+            "title": "Администрация школы",
+            "actions": {
+                "add": "Добавить",
+                "delete": "Удалить",
+                "save": "Сохранить"
+            },
+            "fields": {
+                "position": "Должность",
+                "photo": "Фото",
+                "selectFile": "Выберите файл",
+                "fileNotSelected": "Файл не выбран",
+                "fullName": "ФИО"
+            }
+        },
+        "schoolPassport": {
+            "title": "Паспорт школы",
+            "fields": {
+                "schoolName": "Название школы",
+                "foundationYear": "Год основания школы",
+                "address": "Адрес",
+                "totalChildren": "Общее количество детей",
+                "numberOfBoys": "Количество мальчиков",
+                "numberOfGirls": "Количество девочек",
+                "numberOfFamilies": "Количество семей",
+                "numberOfParents": "Количество родителей",
+                "totalClassGroups": "Общий класс-комплект",
+                "languageOfInstruction": "Язык обучения",
+                "status": "Статус",
+                "capacity": "Вместимость",
+                "actualNumberOfStudents": "Фактическое количество обучающихся"
+            },
+            "actions": {
+                "delete": "Удалить",
+                "save": "Сохранить"
+            }
+        },
+        "schoolClasses": {
+            "title1": "Подготовительный класс",
+            "title2": "Комплект 1-4 класс",
+            "title3": "Комплект 5-9 класс",
+            "title4": "Комплект 10-11 класс",
+            "grades1to4": {
+                "numberOfClasses": "Количество классов",
+                "numberOfStudents": "Количество учащихся"
+            },
+            "grades5to9": {
+                "numberOfClasses": "Количество классов",
+                "numberOfStudents": "Количество учащихся"
+            },
+            "grades10to11": {
+                "numberOfClasses": "Количество классов",
+                "numberOfStudents": "Количество учащихся"
+            }
+        },
+        "schoolTeachers": {
+            "totalNumberOfTeachers": "Общее количество педагогов",
+            "categories": {
+                "masterTeacher": "Педагог-мастер",
+                "researchTeacher": "Педагог-исследователь",
+                "expertTeacher": "Педагог-эксперт",
+                "moderatorTeacher": "Педагог-модератор",
+                "teacher": "Педагог",
+                "internTeacher": "Педагог-стажер",
+                "highestCategory": "Высшая категория",
+                "firstCategory": "І категория",
+                "secondCategory": "ІІ категория",
+                "noCategory": "Без категории"
+            }
+        },
+        "photos": {
+            "addPhoto": "Добавить",
+            "photoTitle": "Название фотографии",
+            "actions": {
+                "delete": "Удалить",
+                "save": "Сохранить"
+            }
+        },
+        "socialMedia": {
+            "add": "Добавить",
+            "fields": {
+                "type": "Тип",
+                "selectType": "Выберите тип",
+                "link": "Ссылка"
+            },
+            "actions": {
+                "delete": "Удалить",
+                "save": "Сохранить",
+                "close": "Закрыть"
+            }
+        },
+        "generalActions": {
+            "delete": "Удалить",
+            "save": "Сохранить",
+            "close": "Закрыть",
+            "successfulCompletion": "Успешно прошел",
+            "dataSuccessfullySaved": "Заполненные данные успешно сохранены"
         }
     }

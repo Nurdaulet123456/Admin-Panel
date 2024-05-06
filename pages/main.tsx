@@ -55,7 +55,7 @@ const MainPage = () => {
   }, [dispatch]);
 
   return (
-    <MainLayouts>
+    <MainLayouts link={"/main"}>
       <div
         style={{
           width: "100%",

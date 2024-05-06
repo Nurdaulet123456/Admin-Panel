@@ -41,7 +41,7 @@ const LessonsPage = () => {
   };
 
   return (
-    <MainLayouts>
+    <MainLayouts link={"/lessons"}>
       <div
         style={{
           width: "100%",

@@ -322,6 +322,104 @@ export const kz = {
         manual: "Қолмен",
         "facebook": "facebook",
         "instagram": "instagram"
-    }
+    },
+    "schoolAdministration": {
+        "title": "Мектеп әкімшілігі",
+        "actions": {
+            "add": "Қосу",
+            "delete": "Өшіру",
+            "save": "Сақтау"
+        },
+        "fields": {
+            "position": "Лауазымы",
+            "photo": "Фото",
+            "selectFile": "Файлды таңдаңыз",
+            "fileNotSelected": "Файл таңдалмаған",
+            "fullName": "Аты-жөні"
+        }
+    },
+    "schoolPassport": {
+        "title": "Мектеп төлқұжаты",
+        "fields": {
+            "schoolName": "Мектептің аты",
+            "foundationYear": "Мектептің құрылған жылы",
+            "address": "Мекен-жайы",
+            "totalChildren": "Жалпы бала саны",
+            "numberOfBoys": "Ұлдың саны",
+            "numberOfGirls": "Қыздың саны",
+            "numberOfFamilies": "Отбасы саны",
+            "numberOfParents": "Ата-ана саны",
+            "totalClassGroups": "Жалпы сынып-комплект",
+            "languageOfInstruction": "Оқыту тілі",
+            "status": "Статусы",
+            "capacity": "Сыйымдылығы",
+            "actualNumberOfStudents": "Нақты оқитын оқушы саны"
+        },
+        "actions": {
+            "delete": "Өшіру",
+            "save": "Сақтау"
+        }
+    },
+    "schoolClasses": {
+        "title1": "Даярлық сынып",
+        "title2": "1-4 сынып комплект",
+        "title3": "5-9 сынып комплект",
+        "title4": "10-11 сынып комплект",
+        "grades1to4": {
+            "numberOfClasses": "Сынып саны",
+            "numberOfStudents": "Оқушы саны"
+        },
+        "grades5to9": {
+            "numberOfClasses": "Сынып саны",
+            "numberOfStudents": "Оқушы саны"
+        },
+        "grades10to11": {
+            "numberOfClasses": "Сынып саны",
+            "numberOfStudents": "Оқушы саны"
+        }
+    },
+    "schoolTeachers": {
+        "totalNumberOfTeachers": "Педагогтардың жалпы саны",
+        "categories": {
+            "masterTeacher": "Педагог-шебер",
+            "researchTeacher": "Педагог-зерттеуші",
+            "expertTeacher": "Педагог-сарапшы",
+            "moderatorTeacher": "Педагог-модератор",
+            "teacher": "Педагог",
+            "internTeacher": "Педагог-тағылымдамашы",
+            "highestCategory": "Жоғары санатты",
+            "firstCategory": "І санатты",
+            "secondCategory": "ІІ санатты",
+            "noCategory": "Санаты жоқ"
+        }
+    },
+    "photos": {
+        "addPhoto": "Қосу",
+        "photoTitle": "Фотосуреттің атауы",
+        "actions": {
+            "delete": "Өшіру",
+            "save": "Сақтау"
+        }
+    },
+    "socialMedia": {
+        "add": "Қосу",
+        "fields": {
+            "type": "Түрі",
+            "selectType": "Түрін таңдаңыз",
+            "link": "Сілтеме"
+        },
+        "actions": {
+            "delete": "Өшіру",
+            "save": "Сақтау",
+            "close": "Жабу"
+        },
 
+    },
+    "generalActions": {
+        "delete": "Өшіру",
+        "save": "Сақтау",
+        "close": "Жабу",
+        "successfulCompletion": "Сәтті өтті",
+        "dataSuccessfullySaved": "Толтырылған дереккөзі сәтті сақталды"
+    }
 };

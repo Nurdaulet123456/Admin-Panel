@@ -50,7 +50,7 @@ const ClassPage = () => {
     const t = translations[router.locale || "kz"] || kz;
 
   return (
-    <MainLayouts>
+    <MainLayouts link={"/class"}>
       <div
         style={{
           width: "100%",

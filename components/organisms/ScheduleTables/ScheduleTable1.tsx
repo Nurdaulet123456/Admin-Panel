@@ -22,7 +22,7 @@ const ScheduleTable1: FC<IProps> = ({ autoDistribution, handleClickGetId }) => {
                 <Table>
                     <Thead>
                         <tr>
-                            <Th>No</Th>
+                            <Th>№</Th>
                             <Th>Преподаватель</Th>
                             <Th>Предмет</Th>
                             <Th>Класс</Th>

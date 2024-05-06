@@ -20,6 +20,9 @@ import ErrorModal from "@/components/modals/ErrorModal";
 import SuccessModal from "@/components/modals/SuccessModal";
 import {useFormik} from "formik";
 import * as Yup from "yup";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
@@ -47,14 +50,21 @@ const SchoolTableBlock4: FC<IProps> = ({
     showError,
   } = useModalLogic();
 
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
+
   const formik = useFormik({
     initialValues: {
       name: "",
       type: ""
     },
     validationSchema: Yup.object({
-      name: Yup.string().required("Обязательно*"),
-      type: Yup.string().required("Обязательно*"),
+      name: Yup.string().required(""),
+      type: Yup.string().required(""),
     }),
     onSubmit: async (values) => {
       if (!getId) {
@@ -151,9 +161,9 @@ const SchoolTableBlock4: FC<IProps> = ({
         <form onSubmit={formik.handleSubmit}>
           <div className="main_table-modal_flex" style={{gap: "1.6rem"}}>
             <div className="main_table-modal_upload sanaty">
-              <div className="login_forms-label_pink">Тип</div>
+              <div className="login_forms-label_pink">{t.socialMedia.fields.type}</div>
               <Select {...formik.getFieldProps("type")}>
-                <option value="">Выберите тип</option>
+                <option value="">{t.socialMedia.fields.selectType}</option>
                 <option value={"website"}>
                   Site
                 </option>
@@ -191,7 +201,7 @@ const SchoolTableBlock4: FC<IProps> = ({
               {/*</div>*/}
 
               <div className="forms">
-                <div className="login_forms-label_pink">Наименование</div>
+                <div className="login_forms-label_pink">{t.socialMedia.fields.link}</div>
 
                 {formik.touched.name && formik.errors.name ? (
                     <div style={{color: "red"}}>{formik.errors.name}</div>
@@ -223,14 +233,14 @@ const SchoolTableBlock4: FC<IProps> = ({
                         getId ? onEdit && onEdit(false) : onReject && onReject(false)
                     }
                 >
-                  Удалить
+                  {t.socialMedia.actions.delete}
                 </Button>
                 <Button
                     background="#27AE60"
                     style={{width: "auto"}}
                     type="submit"
                 >
-                  Сохранить
+                  {t.socialMedia.actions.save}
                 </Button>
               </div>
             </div>

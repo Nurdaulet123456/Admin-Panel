@@ -63,7 +63,7 @@ const PrideSchoolComponents = () => {
 
 
     return (
-        <MainLayouts>
+        <MainLayouts link={"/prideschool"}>
             <div
                 style={{
                     width: "100%",

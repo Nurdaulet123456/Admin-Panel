@@ -12,6 +12,9 @@ import DeleteModal from "@/components/modals/DeleteModal";
 import {getMenuThunk, getSchoolPassportThunk} from "@/store/thunks/schoolnfo.thunk";
 import {useAppDispatch} from "@/hooks/useAppDispatch";
 import {MdClear} from "react-icons/md";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IProps {
     schoolPassport?: ISchoolPassport[];
@@ -33,7 +36,12 @@ const SchoolTableBlock3: FC<IProps> = ({
         showError,
         showDeleteModal, showDelete, onDeleteModalClose,
     } = useModalLogic();
-
+    const router = useRouter();
+    const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+    const t = translations[router.locale || "kz"] || kz;
   const formik = useFormik({
     initialValues: {
         school_name: "",
@@ -290,7 +298,7 @@ const SchoolTableBlock3: FC<IProps> = ({
         <form onSubmit={formik.handleSubmit}>
           <div className="main_table-modal_flex" style={{gap: "1.6rem"}}>
             <div className="main_table-modal_upload">
-              <div className="login_forms-label_pink">Фото *</div>
+              <div className="login_forms-label_pink">Фото</div>
                 {
                     photo ? (
                         <div className="file-item">
@@ -316,7 +324,7 @@ const SchoolTableBlock3: FC<IProps> = ({
                 }
 
                 <div style={{marginTop: "2.7rem"}}>
-                <div className="login_forms-label_pink">Құрылған жылы *</div>
+                <div className="login_forms-label_pink">{t.schoolPassport.fields.foundationYear}</div>
                 {formik.touched.year && formik.errors.year ? (
                     <div style={{color: "red"}}>{formik.errors.year}</div>
                 ) : null}
@@ -337,7 +345,7 @@ const SchoolTableBlock3: FC<IProps> = ({
 
             <div className="main_table-modal_forms">
               <div className="forms">
-                <div className="login_forms-label_pink">Мектеп аты *</div>
+                <div className="login_forms-label_pink">{t.schoolPassport.fields.schoolName}</div>
                   {formik.touched.school_name && formik.errors.school_name ? (
                       <div style={{color: "red"}}>{formik.errors.school_name}</div>
                   ) : null}
@@ -356,7 +364,7 @@ const SchoolTableBlock3: FC<IProps> = ({
               </div>
 
               <div className="forms">
-                <div className="login_forms-label_pink">Адрес *</div>
+                <div className="login_forms-label_pink">{t.schoolPassport.fields.address}</div>
 
                 {formik.touched.school_address && formik.errors.school_address ? (
                     <div style={{color: "red"}}>{formik.errors.school_address}</div>
@@ -390,10 +398,10 @@ const SchoolTableBlock3: FC<IProps> = ({
 
             <div style={{width: "33.33333%"}}>
               <div className="login_forms-label_pink" style={{color: "#E1000E"}}>
-                Мектеп төлқұжаты
+                  {t.schoolPassport.title}
               </div>
               <div className="forms school_table">
-                <div className="login_forms-label_pink">Жалпы бала саны *</div>
+                <div className="login_forms-label_pink">{t.schoolPassport.fields.totalChildren}</div>
                 {formik.touched.childNumber && formik.errors.childNumber ? (
                     <div style={{color: "red"}}>{formik.errors.childNumber}</div>
                 ) : null}
@@ -412,7 +420,7 @@ const SchoolTableBlock3: FC<IProps> = ({
               </div>
 
               <div className="forms school_table">
-                <div className="login_forms-label_pink">Ұлдың саны *</div>
+                <div className="login_forms-label_pink">{t.schoolPassport.fields.numberOfBoys}</div>
                 {formik.touched.boyNumber && formik.errors.boyNumber ? (
                     <div style={{color: "red"}}>{formik.errors.boyNumber}</div>
                 ) : null}
@@ -431,7 +439,7 @@ const SchoolTableBlock3: FC<IProps> = ({
               </div>
 
               <div className="forms school_table">
-                <div className="login_forms-label_pink">Қыздың саны *</div>
+                <div className="login_forms-label_pink">{t.schoolPassport.fields.numberOfGirls}</div>
 
                 {formik.touched.girlNumber && formik.errors.girlNumber ? (
                     <div style={{color: "red"}}>{formik.errors.girlNumber}</div>
@@ -451,7 +459,7 @@ const SchoolTableBlock3: FC<IProps> = ({
               </div>
 
               <div className="forms school_table">
-                <div className="login_forms-label_pink">Отбасы саны *</div>
+                <div className="login_forms-label_pink">{t.schoolPassport.fields.numberOfFamilies}</div>
                 {formik.touched.familyNumber && formik.errors.familyNumber ? (
                     <div style={{color: "red"}}>{formik.errors.familyNumber}</div>
                 ) : null}
@@ -470,7 +478,7 @@ const SchoolTableBlock3: FC<IProps> = ({
               </div>
 
               <div className="forms school_table">
-                <div className="login_forms-label_pink">Ата-ана саны *</div>
+                <div className="login_forms-label_pink">{t.schoolPassport.fields.numberOfParents}</div>
                 {formik.touched.parentsNumber && formik.errors.parentsNumber ? (
                     <div style={{color: "red"}}>{formik.errors.parentsNumber}</div>
                 ) : null}
@@ -493,10 +501,11 @@ const SchoolTableBlock3: FC<IProps> = ({
 
             <div style={{width: "33.33333%"}}>
               <div className="login_forms-label_pink" style={{color: "#E1000E"}}>
-                Жалпы сынып-комплект
+                  {t.schoolPassport.fields.totalClassGroups}
               </div>
               <div className="forms school_table">
-                <div className="login_forms-label_pink">Жалпы сынып комплект *</div>
+                <div className="login_forms-label_pink">                  {t.schoolPassport.fields.totalClassGroups}
+                </div>
                 {formik.touched.classComplect && formik.errors.classComplect ? (
                     <div style={{color: "red"}}>{formik.errors.classComplect}</div>
                 ) : null}
@@ -515,7 +524,7 @@ const SchoolTableBlock3: FC<IProps> = ({
               </div>
 
               <div className="forms school_table">
-                <div className="login_forms-label_pink">Оқыту тілі *</div>
+                <div className="login_forms-label_pink"> {t.schoolPassport.fields.languageOfInstruction}</div>
                 {formik.touched.language && formik.errors.language ? (
                     <div style={{color: "red"}}>{formik.errors.language}</div>
                 ) : null}
@@ -534,7 +543,7 @@ const SchoolTableBlock3: FC<IProps> = ({
               </div>
 
               <div className="forms school_table">
-                <div className="login_forms-label_pink">Статусы *</div>
+                <div className="login_forms-label_pink"> {t.schoolPassport.fields.status}</div>
                 {formik.touched.status && formik.errors.status ? (
                     <div style={{color: "red"}}>{formik.errors.status}</div>
                 ) : null}
@@ -553,7 +562,7 @@ const SchoolTableBlock3: FC<IProps> = ({
               </div>
 
               <div className="forms school_table">
-                <div className="login_forms-label_pink">Сыйымдылығы *</div>
+                <div className="login_forms-label_pink"> {t.schoolPassport.fields.capacity}</div>
                 {formik.touched.capacity && formik.errors.capacity ? (
                     <div style={{color: "red"}}>{formik.errors.capacity}</div>
                 ) : null}
@@ -572,7 +581,7 @@ const SchoolTableBlock3: FC<IProps> = ({
               </div>
 
               <div className="forms school_table">
-                <div className="login_forms-label_pink">Нақты оқитыны *</div>
+                <div className="login_forms-label_pink"> {t.schoolPassport.fields.actualNumberOfStudents}</div>
                 {formik.touched.actualNumber && formik.errors.actualNumber ? (
                     <div style={{color: "red"}}>{formik.errors.actualNumber}</div>
                 ) : null}
@@ -595,11 +604,11 @@ const SchoolTableBlock3: FC<IProps> = ({
 
             <div style={{width: "33.33333%"}}>
               <div className="login_forms-label_pink" style={{color: "#E1000E"}}>
-                Даярлық сынып
+                  {t.schoolClasses.title1}
               </div>
               <div className="flex school_table" style={{gap: "1.6rem"}}>
                 <div className="forms">
-                  <div className="login_forms-label_pink">Сынып саны</div>
+                  <div className="login_forms-label_pink">{t.schoolClasses.grades1to4.numberOfClasses}</div>
                   {formik.touched.preparatoryClassNumber && formik.errors.preparatoryClassNumber ? (
                       <div style={{color: "red"}}>{formik.errors.preparatoryClassNumber}</div>
                   ) : null}
@@ -618,7 +627,7 @@ const SchoolTableBlock3: FC<IProps> = ({
                 </div>
 
                 <div className="forms">
-                  <div className="login_forms-label_pink">Оқушы саны</div>
+                  <div className="login_forms-label_pink">{t.schoolClasses.grades1to4.numberOfStudents}</div>
                   {formik.touched.preparatoryChildNumber && formik.errors.preparatoryChildNumber ? (
                       <div style={{color: "red"}}>{formik.errors.preparatoryChildNumber}</div>
                   ) : null}
@@ -640,11 +649,12 @@ const SchoolTableBlock3: FC<IProps> = ({
                   className="login_forms-label_pink"
                   style={{color: "#E1000E", marginBottom: "1.2rem"}}
               >
-                1-4 сынып комплект
+                  {t.schoolClasses.title2}
+
               </div>
               <div className="flex school_table" style={{gap: "1.6rem"}}>
                 <div className="forms">
-                  <div className="login_forms-label_pink">Сынып саны</div>
+                  <div className="login_forms-label_pink">{t.schoolClasses.grades1to4.numberOfClasses}</div>
                   {formik.touched.elementarySchoolClass && formik.errors.elementarySchoolClass ? (
                       <div style={{color: "red"}}>{formik.errors.elementarySchoolClass}</div>
                   ) : null}
@@ -663,7 +673,7 @@ const SchoolTableBlock3: FC<IProps> = ({
                 </div>
 
                 <div className="forms">
-                  <div className="login_forms-label_pink">Оқушы саны</div>
+                  <div className="login_forms-label_pink">{t.schoolClasses.grades1to4.numberOfStudents}</div>
                   {formik.touched.elementarySchoolChild && formik.errors.elementarySchoolChild ? (
                       <div style={{color: "red"}}>{formik.errors.elementarySchoolChild}</div>
                   ) : null}
@@ -685,11 +695,12 @@ const SchoolTableBlock3: FC<IProps> = ({
                   className="login_forms-label_pink"
                   style={{color: "#E1000E", marginBottom: "1.2rem"}}
               >
-                5-9 сынып комплект
+                  {t.schoolClasses.title3}
+
               </div>
               <div className="flex school_table" style={{gap: "1.6rem"}}>
                 <div className="forms">
-                  <div className="login_forms-label_pink">Сынып саны</div>
+                  <div className="login_forms-label_pink">{t.schoolClasses.grades1to4.numberOfClasses}</div>
                   {formik.touched.middleSchoolClass && formik.errors.middleSchoolClass ? (
                       <div style={{color: "red"}}>{formik.errors.middleSchoolClass}</div>
                   ) : null}
@@ -708,7 +719,7 @@ const SchoolTableBlock3: FC<IProps> = ({
                 </div>
 
                 <div className="forms">
-                  <div className="login_forms-label_pink">Оқушы саны</div>
+                  <div className="login_forms-label_pink">{t.schoolClasses.grades1to4.numberOfStudents}</div>
                   {formik.touched.middleSchoolChild && formik.errors.middleSchoolChild ? (
                       <div style={{color: "red"}}>{formik.errors.middleSchoolChild}</div>
                   ) : null}
@@ -730,11 +741,11 @@ const SchoolTableBlock3: FC<IProps> = ({
                   className="login_forms-label_pink"
                   style={{color: "#E1000E", marginBottom: "1.2rem"}}
               >
-                10-11 сынып комплект
+                  {t.schoolClasses.title4}
               </div>
               <div className="flex school_table" style={{gap: "1.6rem"}}>
                 <div className="forms">
-                  <div className="login_forms-label_pink">Сынып саны</div>
+                  <div className="login_forms-label_pink">{t.schoolClasses.grades1to4.numberOfClasses}</div>
                   {formik.touched.highSchoolClass && formik.errors.highSchoolClass ? (
                       <div style={{color: "red"}}>{formik.errors.highSchoolClass}</div>
                   ) : null}
@@ -753,7 +764,7 @@ const SchoolTableBlock3: FC<IProps> = ({
                 </div>
 
                 <div className="forms">
-                  <div className="login_forms-label_pink">Оқушы саны</div>
+                  <div className="login_forms-label_pink">{t.schoolClasses.grades1to4.numberOfStudents}</div>
                   {formik.touched.highSchoolChild && formik.errors.highSchoolChild ? (
                       <div style={{color: "red"}}>{formik.errors.highSchoolChild}</div>
                   ) : null}
@@ -779,7 +790,7 @@ const SchoolTableBlock3: FC<IProps> = ({
                 className="login_forms-label_pink"
                 style={{color: "#E1000E", marginBottom: "1.2rem", width: "30%"}}
             >
-              Педагогтардың жалпы саны
+                {t.schoolTeachers.totalNumberOfTeachers}
             </div>
             {formik.touched.teachersNumber && formik.errors.teachersNumber ? (
                 <div style={{color: "red"}}>{formik.errors.teachersNumber}</div>
@@ -800,7 +811,7 @@ const SchoolTableBlock3: FC<IProps> = ({
 
           <div className="form flex" style={{marginTop: "2.4rem", gap: "1.6rem"}}>
             <div className="form">
-              <div className="login_forms-label_pink">Педагог-шебер *</div>
+              <div className="login_forms-label_pink">{t.schoolTeachers.categories.masterTeacher}</div>
               {formik.touched.pedagogSheber && formik.errors.pedagogSheber ? (
                   <div style={{color: "red"}}>{formik.errors.pedagogSheber}</div>
               ) : null}
@@ -819,7 +830,7 @@ const SchoolTableBlock3: FC<IProps> = ({
             </div>
 
             <div className="form">
-              <div className="login_forms-label_pink">Педагог-зерттеуші *</div>
+              <div className="login_forms-label_pink">{t.schoolTeachers.categories.researchTeacher}</div>
               {formik.touched.pedagogZertteushi && formik.errors.pedagogZertteushi ? (
                   <div style={{color: "red"}}>{formik.errors.pedagogSheber}</div>
               ) : null}
@@ -838,7 +849,7 @@ const SchoolTableBlock3: FC<IProps> = ({
             </div>
 
             <div className="form">
-              <div className="login_forms-label_pink">Педагог-сарапшы *</div>
+              <div className="login_forms-label_pink">{t.schoolTeachers.categories.expertTeacher}</div>
               {formik.touched.pedagogSarapshy && formik.errors.pedagogSarapshy ? (
                   <div style={{color: "red"}}>{formik.errors.pedagogSarapshy}</div>
               ) : null}
@@ -857,7 +868,7 @@ const SchoolTableBlock3: FC<IProps> = ({
             </div>
 
             <div className="form">
-              <div className="login_forms-label_pink">Педагог-модератор *</div>
+              <div className="login_forms-label_pink">{t.schoolTeachers.categories.moderatorTeacher}</div>
               {formik.touched.pedagogModerator && formik.errors.pedagogModerator ? (
                   <div style={{color: "red"}}>{formik.errors.pedagogModerator}</div>
               ) : null}
@@ -885,7 +896,7 @@ const SchoolTableBlock3: FC<IProps> = ({
               }}
           >
             <div className="form">
-              <div className="login_forms-label_pink">Педагог *</div>
+              <div className="login_forms-label_pink">{t.schoolTeachers.categories.teacher}</div>
               {formik.touched.pedagog && formik.errors.pedagog ? (
                   <div style={{color: "red"}}>{formik.errors.pedagog}</div>
               ) : null}
@@ -904,7 +915,7 @@ const SchoolTableBlock3: FC<IProps> = ({
             </div>
 
             <div className="form">
-              <div className="login_forms-label_pink">Педагог-тағылымдамашы *</div>
+              <div className="login_forms-label_pink">{t.schoolTeachers.categories.internTeacher}</div>
               {formik.touched.pedagogTagylymdamashy && formik.errors.pedagogTagylymdamashy ? (
                   <div style={{color: "red"}}>{formik.errors.pedagogTagylymdamashy}</div>
               ) : null}
@@ -923,7 +934,7 @@ const SchoolTableBlock3: FC<IProps> = ({
             </div>
 
             <div className="form">
-              <div className="login_forms-label_pink">Жоғары *</div>
+              <div className="login_forms-label_pink">{t.schoolTeachers.categories.highestCategory}</div>
               {formik.touched.pedagogHigh && formik.errors.pedagogHigh ? (
                   <div style={{color: "red"}}>{formik.errors.pedagogHigh}</div>
               ) : null}
@@ -951,7 +962,7 @@ const SchoolTableBlock3: FC<IProps> = ({
               }}
           >
             <div className="form">
-              <div className="login_forms-label_pink">I санатты*</div>
+              <div className="login_forms-label_pink">{t.schoolTeachers.categories.firstCategory}</div>
               {formik.touched.sanat1 && formik.errors.sanat1 ? (
                   <div style={{color: "red"}}>{formik.errors.sanat1}</div>
               ) : null}
@@ -970,7 +981,7 @@ const SchoolTableBlock3: FC<IProps> = ({
             </div>
 
             <div className="form">
-              <div className="login_forms-label_pink">II санатты*</div>
+              <div className="login_forms-label_pink">{t.schoolTeachers.categories.secondCategory}</div>
               {formik.touched.sanat2 && formik.errors.sanat2 ? (
                   <div style={{color: "red"}}>{formik.errors.sanat2}</div>
               ) : null}
@@ -989,7 +1000,7 @@ const SchoolTableBlock3: FC<IProps> = ({
             </div>
 
             <div className="form">
-              <div className="login_forms-label_pink">Санаты жоқ *</div>
+              <div className="login_forms-label_pink">{t.schoolTeachers.categories.noCategory}</div>
               {formik.touched.sanatZhok && formik.errors.sanatZhok ? (
                   <div style={{color: "red"}}>{formik.errors.sanatZhok}</div>
               ) : null}
@@ -1009,7 +1020,7 @@ const SchoolTableBlock3: FC<IProps> = ({
           </div>
 
           <div className="forms" style={{marginBlock: "1.6rem", width: "80%"}}>
-            <div className="login_forms-label_pink">Мектеп тарихы *</div>
+            <div className="login_forms-label_pink">{router.locale === "kz" ? "Мектеп тарихы" : "История школы"}</div>
 
             {formik.touched.history && formik.errors.history ? (
                 <div style={{color: "red"}}>{formik.errors.history}</div>
@@ -1044,10 +1055,10 @@ const SchoolTableBlock3: FC<IProps> = ({
                     onClick={showDelete}
                     type="button"
                 >
-                    Удалить
+                    {t.generalActions.delete}
                 </Button>
             <Button background="#27AE60" style={{width: "auto"}} type="submit">
-              Сохранить
+                {t.generalActions.save}
             </Button>
           </div>
         </form>

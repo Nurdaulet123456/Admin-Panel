@@ -96,7 +96,7 @@ const SchoolComponents = () => {
 
 
   return (
-    <MainLayouts>
+    <MainLayouts link={`/school/${router.query.id}`}>
       <div
         style={{
           width: "100%",
@@ -105,7 +105,7 @@ const SchoolComponents = () => {
           marginBottom: "1.6rem",
         }}
       >
-        <Tabs link="school" tabs={tabs} handleAddButtonClick={() => {
+        <Tabs link="school" tabs={router.locale === "kz" ? tabs : tabsRU} handleAddButtonClick={() => {
           setEditActive(false);
           setShowActive(false);
           setId(undefined);
@@ -209,6 +209,33 @@ const tabs: ITabs[] = [
   {
     id: 5,
     type: "Әлеуметтік желілер",
+  },
+];
+
+const tabsRU: ITabs[] = [
+  {
+    id: 1,
+    type: "Директор школы",
+  },
+
+  {
+    id: 2,
+    type: "Администрация школы",
+  },
+
+  {
+    id: 3,
+    type: "Пасспорт школы",
+  },
+
+  {
+    id: 4,
+    type: "Фото",
+  },
+
+  {
+    id: 5,
+    type: "Социальные сети",
   },
 ];
 

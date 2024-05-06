@@ -59,7 +59,7 @@ const CallsComponents = () => {
 
 
     return (
-    <MainLayouts>
+    <MainLayouts link={`/calls/${router.query.id}`}>
       <div
         style={{
           width: "100%",

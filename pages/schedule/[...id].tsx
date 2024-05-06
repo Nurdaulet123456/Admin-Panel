@@ -50,7 +50,7 @@ const ScheduleComponents = () => {
     };
 
     return (
-    <MainLayouts>
+    <MainLayouts link={`/schedule/1`}>
         {router.query.id?.[0] === "1" && (
             <>
                 {

@@ -46,7 +46,7 @@ const TypeLessonsPage = () => {
   };
 
   return (
-    <MainLayouts>
+    <MainLayouts link={"/typelessons"}>
       <div
         style={{
           width: "100%",

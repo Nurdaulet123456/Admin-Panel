@@ -20,6 +20,9 @@ import {useFormik} from "formik";
 import * as Yup from "yup";
 import {getSchoolSportThunk} from "@/store/thunks/pride.thunk";
 import {MdClear} from "react-icons/md";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
@@ -46,7 +49,12 @@ const SchoolTableBlock1: FC<IProps> = ({
   } = useModalLogic();
   const [photo, setPhoto] = useState<File | null>()
   const [photoId, setPhotoId] = useState<string | null>()
-
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
 
   const formik = useFormik({
     initialValues: {
@@ -152,101 +160,95 @@ const SchoolTableBlock1: FC<IProps> = ({
   }
 
   return (
-    <>
-      {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
-      {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
+      <>
+        {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
+        {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
 
-      <div className="main_table-modal">
-        <form onSubmit={formik.handleSubmit}>
-          <div className="main_table-modal_title">Должность</div>
-          <div className="main_table-modal_flex" style={{gap: "1.6rem"}}>
-            <div className="main_table-modal_upload">
-              <div className="login_forms-label_pink">Фото *</div>
-              {
-                photo ? (
-                    <div className="file-item">
-                      <div className="file-info">
-                        <p>{photo.name.substring(0, 14)}</p>
+        <div className="main_table-modal">
+          <form onSubmit={formik.handleSubmit}>
+            <div className="main_table-modal_title">{t.schoolAdministration.fields.position}</div>
+            <div className="main_table-modal_flex" style={{gap: "1.6rem"}}>
+              <div className="main_table-modal_upload">
+                <div className="login_forms-label_pink">{t.schoolAdministration.fields.photo} *</div>
+                {
+                  photo ? (
+                      <div className="file-item">
+                        <div className="file-info">
+                          <p>{photo.name.substring(0, 14)}</p>
+                        </div>
+                        <div className="file-actions">
+                          <MdClear onClick={() => setPhoto(null)}/>
+                        </div>
                       </div>
-                      <div className="file-actions">
-                        <MdClear onClick={() => setPhoto(null)}/>
-                      </div>
-                    </div>
-                ) : (
-                    <Input type="file" name="file" onChange={(event) => {
-                      return setPhoto(event?.target?.files?.[0]);
-                    }}
-                    />
-                )
-              }
-            </div>
-
-            <div className="main_table-modal_forms">
-              <div className="forms">
-                <div className="login_forms-label_pink">ФИО *</div>
-                {formik.touched.name && formik.errors.name ? (
-                    <div style={{color: "red"}}>{formik.errors.name}</div>
-                ) : null}
-                <Input
-                    name={"name"}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values.name}
-                    style={{
-                      borderColor:
-                          formik.touched.name && formik.errors.name
-                              ? "red"
-                              : "#c1bbeb",
-                    }}
-                />
+                  ) : (
+                      <Input type="file" name="file" onChange={(event) => {
+                        return setPhoto(event?.target?.files?.[0]);
+                      }}/>
+                  )
+                }
               </div>
 
-              <div className="forms">
-                <div className="login_forms-label_pink">Должность *</div>
-                {formik.touched.prof && formik.errors.prof ? (
-                    <div style={{color: "red"}}>{formik.errors.prof}</div>
-                ) : null}
-                <Input
-                    name={"prof"}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values.prof}
-                    style={{
-                      borderColor:
-                          formik.touched.prof && formik.errors.prof
-                              ? "red"
-                              : "#c1bbeb",
-                    }}
-                />
-              </div>
+              <div className="main_table-modal_forms">
+                <div className="forms">
+                  <div className="login_forms-label_pink">{t.schoolAdministration.fields.fullName} *</div>
+                  {formik.touched.name && formik.errors.name ? (
+                      <div style={{color: "red"}}>{formik.errors.name}</div>
+                  ) : null}
+                  <Input
+                      name="name"
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.name}
+                      style={{
+                        borderColor: formik.touched.name && formik.errors.name ? "red" : "#c1bbeb",
+                      }}
+                  />
+                </div>
 
-              <div
-                  className="flex"
-                  style={{justifyContent: "flex-end", gap: "1.6rem"}}
-              >
-                <Button
-                    background="#CACACA"
-                    color="#645C5C"
-                    style={{width: "auto"}}
-                    type={"button"}
-                    onClick={onDelete}
+                <div className="forms">
+                  <div className="login_forms-label_pink">{t.schoolAdministration.fields.position} *</div>
+                  {formik.touched.prof && formik.errors.prof ? (
+                      <div style={{color: "red"}}>{formik.errors.prof}</div>
+                  ) : null}
+                  <Input
+                      name="prof"
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.prof}
+                      style={{
+                        borderColor: formik.touched.prof && formik.errors.prof ? "red" : "#c1bbeb",
+                      }}
+                  />
+                </div>
+
+                <div
+                    className="flex"
+                    style={{justifyContent: "flex-end", gap: "1.6rem"}}
                 >
-                  Удалить
-                </Button>
-                <Button
-                    background="#27AE60"
-                    style={{width: "auto"}}
-                    type="submit"
-                >
-                  Сохранить
-                </Button>
+                  <Button
+                      background="#CACACA"
+                      color="#645C5C"
+                      style={{width: "auto"}}
+                      type="button"
+                      onClick={onDelete}
+                  >
+                    {t.schoolAdministration.actions.delete}
+                  </Button>
+                  <Button
+                      background="#27AE60"
+                      style={{width: "auto"}}
+                      type="submit"
+                  >
+                    {t.schoolAdministration.actions.save}
+                  </Button>
+                </div>
               </div>
             </div>
-          </div>
-        </form>
-      </div>
-    </>
-);
+          </form>
+        </div>
+      </>
+
+  );
 };
 
 export default SchoolTableBlock1;

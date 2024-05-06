@@ -12,9 +12,10 @@ import Link from "next/link";
 
 interface ILayouts {
   children: ReactNode;
+  link: string;
 }
 
-const MainLayouts = ({ children }: ILayouts) => {
+const MainLayouts = ({ children, link }: ILayouts) => {
   const router = useRouter();
   const onLogout = async () => {
     try {
@@ -66,12 +67,12 @@ const MainLayouts = ({ children }: ILayouts) => {
                 }}
             >
                 {router.locale === "kz" ? (
-                        <Link href={"/main"} locale="ru">
+                        <Link href={link || ""} locale="ru">
                             <div className={""} >
                                 <span>Русский</span></div>
                         </Link> ) :
                     (
-                        <Link href={"/main"}  locale="kz">
+                        <Link href={link || ""}  locale="kz">
                             <div className={""}>
                                 <span>Қазақша</span></div>
                         </Link>

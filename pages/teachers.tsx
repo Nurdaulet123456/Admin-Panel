@@ -42,7 +42,7 @@ const TeachersPage = () => {
     }
   };
   return (
-    <MainLayouts>
+    <MainLayouts link={"/teachers"}>
       <div
         style={{
           width: "100%",

@@ -6,6 +6,9 @@ import { FC, useEffect } from "react";
 import { getSchoolPhotosThunk } from "@/store/thunks/schoolnfo.thunk";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
+import {useRouter} from "next/router";
 
 interface IProps {
   handleClickGetId2?: (id?: number) => void;
@@ -14,6 +17,13 @@ interface IProps {
 const SchoolTable2: FC<IProps> = ({ handleClickGetId2 }) => {
   const disptach = useAppDispatch();
   const photos = useTypedSelector((state) => state.system.schoolphotos);
+  const router = useRouter();
+
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
 
   useEffect(() => {
     if (photos) {
@@ -45,10 +55,10 @@ const SchoolTable2: FC<IProps> = ({ handleClickGetId2 }) => {
         <Table>
           <Thead>
             <tr>
-              <Th>No</Th>
-              <Th>Фотографии</Th>
-              <Th>Название</Th>
-              <Th>Действие</Th>
+              <Th>№</Th>
+              <Th>Фото</Th>
+              <Th>{t.photos.photoTitle}</Th>
+              <Th>{t.bells.action}</Th>
             </tr>
           </Thead>
 

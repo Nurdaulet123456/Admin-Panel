@@ -29,7 +29,7 @@ const Sidebar = () => {
                 : ""
             }`}
           >
-            <div>{item.type}</div>
+            <div>{router.locale === "kz" ? item.typeKz : item.type}</div>
           </Link>
         ))}
       </nav>
@@ -40,6 +40,7 @@ const Sidebar = () => {
 interface IType {
   id?: number;
   type?: string;
+  typeKz?: string;
   link?: string;
 }
 
@@ -47,90 +48,106 @@ const sidebar: IType[] = [
   {
     id: 1,
     type: "Расписание",
+    typeKz: "Кестесі",
     link: "schedule/1",
   },
 
   {
     id: 2,
     type: "Преподаватели",
+    typeKz: "Мұғалімдер",
     link: "teachers",
   },
 
   {
     id: 3,
     type: "Предметы",
+    typeKz: "Пәндер",
     link: "lessons",
   },
 
   {
     id: 4,
     type: "Гордость школы",
+    typeKz: "Мектептің мақтаныштары",
     link: "prideschool",
   },
 
   {
     id: 5,
     type: "О школе",
+    typeKz: "Мектеп жайлы",
     link: "school/1",
   },
 
   {
     id: 6,
     type: "Новости",
+    typeKz: "Жаңалықтар",
     link: "news",
   },
 
   {
     id: 7,
     type: "Кабинет",
+    typeKz: "Кабинет",
     link: "cabinet",
   },
 
   {
     id: 8,
     type: "Меню",
+    typeKz: "Мәзір",
     link: "menu",
   },
 
   {
     id: 9,
     type: "Кружок",
+    typeKz: "Үйірме",
     link: "main",
   },
 
   {
     id: 10,
     type: "Класс",
+    typeKz: "Сынып",
     link: "class",
   },
 
   {
     id: 11,
     type: "Тип занятий",
+    typeKz: "Сабақ түрі",
     link: "typelessons",
   },
 
   {
     id: 12,
     type: "Звонки",
+    typeKz: "Қоңырау",
     link: "calls/1",
   },
 
   {
     id: 13,
     type: "Уведомления",
+    typeKz: "Хабарламалар",
     link: "notification",
   },
   {
     id: 14,
     type: "Карта школы",
+    typeKz: "Мектеп картасы",
     link: "map",
   },
   {
     id: 15,
     type: "Фото-слайдер",
+    typeKz: "Фото-слайдер",
     link: "slider"
   }
 ];
+
 
 export default Sidebar;

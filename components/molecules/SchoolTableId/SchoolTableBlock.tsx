@@ -21,6 +21,9 @@ import * as Yup from "yup";
 import {getSchoolSportThunk} from "@/store/thunks/pride.thunk";
 import {get} from "immutable";
 import {MdClear} from "react-icons/md";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 interface IProps {
     onReject?: Dispatch<SetStateAction<boolean>>;
@@ -39,6 +42,12 @@ const SchoolTableBlock: FC<IProps> = ({
     const [photo, setPhoto] = useState<File | null>()
     const [photoId, setPhotoId] = useState<string | null>()
     const [loading, setLoading] = useState<boolean>(false);
+    const router = useRouter();
+    const translations: any= {
+        kz: kz,
+        ru: ru,
+    };
+    const t = translations[router.locale || "kz"] || kz;
     const {
         showSuccessModal,
         showErrorModal,
@@ -169,10 +178,10 @@ const SchoolTableBlock: FC<IProps> = ({
 
             <div className="main_table-modal">
                 <form onSubmit={formik.handleSubmit}>
-                    <div className="main_table-modal_title">Должность</div>
+                    <div className="main_table-modal_title">{t.schoolAdministration.fields.position}</div>
                     <div className="main_table-modal_flex" style={{gap: "1.6rem"}}>
                         <div className="main_table-modal_upload">
-                            <div className="login_forms-label_pink">Фото *</div>
+                            <div className="login_forms-label_pink">{t.schoolAdministration.fields.photo} *</div>
                             {
                                 photo ? (
                                     <div className="file-item">
@@ -184,105 +193,90 @@ const SchoolTableBlock: FC<IProps> = ({
                                         </div>
                                     </div>
                                 ) : (
-                                    <Input type="file" name="file"  onChange={(event) => {
+                                    <Input type="file" name="file" onChange={(event) => {
                                         return setPhoto(event?.target?.files?.[0]);
-                                    }}
-                                    />
+                                    }}/>
                                 )
                             }
                         </div>
 
                         <div className="main_table-modal_forms">
                             <div className="forms">
-                                <div className="login_forms-label_pink">ФИО *</div>
+                                <div className="login_forms-label_pink">{t.schoolAdministration.fields.fullName} *</div>
                                 {formik.touched.name && formik.errors.name ? (
                                     <div style={{color: "red"}}>{formik.errors.name}</div>
                                 ) : null}
                                 <Input
-                                    name={"name"}
+                                    name="name"
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     value={formik.values.name}
                                     style={{
-                                        borderColor:
-                                            formik.touched.name && formik.errors.name
-                                                ? "red"
-                                                : "#c1bbeb",
+                                        borderColor: formik.touched.name && formik.errors.name ? "red" : "#c1bbeb",
                                     }}
                                 />
                             </div>
 
                             <div className="forms">
-                                <div className="login_forms-label_pink">Почта *</div>
+                                <div className="login_forms-label_pink">{t.schoolAdministration.fields.email} *</div>
                                 {formik.touched.email && formik.errors.email ? (
                                     <div style={{color: "red"}}>{formik.errors.email}</div>
                                 ) : null}
                                 <Input
-                                    name={"email"}
+                                    name="email"
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     value={formik.values.email}
                                     style={{
-                                        borderColor:
-                                            formik.touched.email && formik.errors.email
-                                                ? "red"
-                                                : "#c1bbeb",
+                                        borderColor: formik.touched.email && formik.errors.email ? "red" : "#c1bbeb",
                                     }}
                                 />
                             </div>
 
                             <div className="forms">
-                                <div className="login_forms-label_pink">Номер телефона *</div>
-
+                                <div className="login_forms-label_pink">{t.schoolAdministration.fields.phoneNumber} *</div>
                                 {formik.touched.tel && formik.errors.tel ? (
                                     <div style={{color: "red"}}>{formik.errors.tel}</div>
                                 ) : null}
                                 <Input
-                                    name={"tel"}
+                                    name="tel"
                                     onChange={formik.handleChange}
                                     onBlur={formik.handleBlur}
                                     value={formik.values.tel}
                                     style={{
-                                        borderColor:
-                                            formik.touched.tel && formik.errors.tel
-                                                ? "red"
-                                                : "#c1bbeb",
+                                        borderColor: formik.touched.tel && formik.errors.tel ? "red" : "#c1bbeb",
                                     }}
                                 />
                             </div>
 
-                            <div
-                                className="flex"
-                                style={{justifyContent: "flex-end", gap: "1.6rem"}}
-                            >
+                            <div className="flex" style={{justifyContent: "flex-end", gap: "1.6rem"}}>
                                 <Button
                                     background="#CACACA"
                                     color="#645C5C"
                                     style={{width: "auto"}}
-                                    type={"button"}
+                                    type="button"
                                     onClick={onDelete}
                                 >
-                                    Удалить
+                                    {t.schoolAdministration.actions.delete}
                                 </Button>
-                                {
-                                    loading ? (
-                                        <span className="loading loading-spinner loading-md"></span>
-                                    ) : (
-                                        <Button
-                                            background="#27AE60"
-                                            style={{width: "auto"}}
-                                            type="submit"
-                                        >
-                                            Сохранить
-                                        </Button>
-                                    )
-                                }
+                                {loading ? (
+                                    <span className="loading loading-spinner loading-md"></span>
+                                ) : (
+                                    <Button
+                                        background="#27AE60"
+                                        style={{width: "auto"}}
+                                        type="submit"
+                                    >
+                                        {t.schoolAdministration.actions.save}
+                                    </Button>
+                                )}
                             </div>
                         </div>
                     </div>
                 </form>
             </div>
         </>
+
     );
 };
 

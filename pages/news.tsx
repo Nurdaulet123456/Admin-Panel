@@ -44,7 +44,7 @@ const NewsPage = () => {
   };
 
   return (
-    <MainLayouts>
+    <MainLayouts link={"/news"}>
       <div
         style={{
           width: "100%",

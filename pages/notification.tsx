@@ -47,7 +47,7 @@ const NotificationsPage = () => {
     const t = translations[router.locale || "kz"] || kz;
 
     return (
-        <MainLayouts>
+        <MainLayouts link={"/notification"}>
             <div
                 style={{
         width: "100%",

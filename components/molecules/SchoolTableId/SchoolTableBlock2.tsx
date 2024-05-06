@@ -20,6 +20,9 @@ import {useFormik} from "formik";
 import * as Yup from "yup";
 import {useDropzone} from 'react-dropzone'
 import {MdClear} from "react-icons/md";
+import {useRouter} from "next/router";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
 
 
 interface UpdateInputProps {
@@ -51,7 +54,12 @@ const SchoolTableBlock2: FC<IProps> = ({
     showError,
   } = useModalLogic();
   const [photo, setPhoto] = useState<File | null>();
-
+  const router = useRouter();
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
   const formik = useFormik({
     initialValues: {
       name: "",
@@ -153,90 +161,91 @@ const SchoolTableBlock2: FC<IProps> = ({
 
 
   return (
-    <>
-      {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
-      {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
-      <div className="main_table-modal">
-        <form onSubmit={formik.handleSubmit}>
-          <div className="main_table-modal_title">Фото-суреттер</div>
-          <div className="main_table-modal_flex" style={{gap: "1.6rem"}}>
-            <div className="main_table-modal_forms">
-              <div className="forms">
-                <div className="login_forms-label_pink">Название</div>
-                {formik.touched.name && formik.errors.name ? (
-                    <div style={{color: "red"}}>{formik.errors.name}</div>
-                ) : null}
-                <Input
-                    name={"name"}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={formik.values.name}
-                    style={{
-                      borderColor:
-                          formik.touched.name && formik.errors.name
-                              ? "red"
-                              : "#c1bbeb",
-                    }}
-                />
-              </div>
+      <>
+        {showErrorModal && <ErrorModal onClose={onErrorModalClose} />}
+        {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
+        <div className="main_table-modal">
+          <form onSubmit={formik.handleSubmit}>
+            <div className="main_table-modal_title">{t.photos.photoTitle}</div>
+            <div className="main_table-modal_flex" style={{gap: "1.6rem"}}>
+              <div className="main_table-modal_forms">
+                <div className="forms">
+                  <div className="login_forms-label_pink">{t.photos.photoTitle}</div>
+                  {formik.touched.name && formik.errors.name ? (
+                      <div style={{color: "red"}}>{formik.errors.name}</div>
+                  ) : null}
+                  <Input
+                      name={"name"}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values.name}
+                      style={{
+                        borderColor:
+                            formik.touched.name && formik.errors.name
+                                ? "red"
+                                : "#c1bbeb",
+                      }}
+                  />
+                </div>
 
-              <div className="forms">
-                <div className="login_forms-label_pink">Фото *</div>
-                <div {...getRootProps()} style={{
-                  border: '2px dashed #ccc', /* Штрихованный бордер */
-                  padding: '20px', /* Паддинг внутри div */
-                  borderRadius: '5px', /* Скругленные углы */
-                  textAlign: 'center', /* Текст по центру */
-                  marginBottom: '20px', /* Отступ снизу */
-                  backgroundColor: "white",
-                }}>
-                  <input {...getInputProps()}/>
-                  {
-                    isDragActive ?
-                        <p>Drop the files here ...</p> :
-                        <p>Drag and drop some files here, or click to select files</p>
+                <div className="forms">
+                  <div className="login_forms-label_pink">{t.schoolAdministration.fields.photo} *</div>
+                  <div {...getRootProps()} style={{
+                    border: '2px dashed #ccc', /* Штрихованный бордер */
+                    padding: '20px', /* Паддинг внутри div */
+                    borderRadius: '5px', /* Скругленные углы */
+                    textAlign: 'center', /* Текст по центру */
+                    marginBottom: '20px', /* Отступ снизу */
+                    backgroundColor: "white",
+                  }}>
+                    <input {...getInputProps()}/>
+                    {
+                      isDragActive ?
+                          <p>{t.photos.dropFilesHere}</p> : /* Предполагая наличие такого ключа */
+                          <p>{t.photos.dragAndDropOrClick}</p> /* Предполагая наличие такого ключа */
+                    }
+                  </div>
+                  {photo && <div className="file-item">
+                    <div className="file-info">
+                      <p>{photo?.name}</p>
+                    </div>
+                    <div className="file-actions">
+                      <MdClear onClick={() => {
+                        setPhoto(null)
+                      }}/>
+                    </div>
+                  </div>
                   }
                 </div>
-                {photo && <div className="file-item">
-                  <div className="file-info">
-                    <p>{photo?.name}</p>
-                  </div>
-                  <div className="file-actions">
-                    <MdClear onClick={() => {
-                      setPhoto(null)
-                    }}/>
-                  </div>
-                </div>
-                }
               </div>
             </div>
-          </div>
 
-          <div
-              className="flex"
-              style={{justifyContent: "flex-end", gap: "1.6rem"}}
-          >
-            <Button
-                background="#CACACA"
-                color="#645C5C"
-                style={{width: "auto"}}
-                onClick={onDelete}
-                type="button"
+            <div
+                className="flex"
+                style={{justifyContent: "flex-end", gap: "1.6rem"}}
             >
-              Удалить
-            </Button>
-            <Button
-                background="#27AE60"
-                style={{width: "auto"}}
-                type="submit"
-            >
-              Сохранить
-            </Button>
-          </div>
-        </form>
-      </div>
-    </>
-);
+              <Button
+                  background="#CACACA"
+                  color="#645C5C"
+                  style={{width: "auto"}}
+                  onClick={onDelete}
+                  type="button"
+              >
+                {t.generalActions.delete}
+              </Button>
+              <Button
+                  background="#27AE60"
+                  style={{width: "auto"}}
+                  type="submit"
+              >
+                {t.generalActions.save}
+              </Button>
+            </div>
+          </form>
+        </div>
+      </>
+
+  );
 };
 
 export default SchoolTableBlock2;

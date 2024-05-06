@@ -6,6 +6,9 @@ import { FC, useEffect } from "react";
 import { getSchoolAdminThunk } from "@/store/thunks/schoolnfo.thunk";
 import { instance } from "@/api/axios.instance";
 import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import {kz} from "@/locales/kz";
+import {ru} from "@/locales/ru";
+import {useRouter} from "next/router";
 
 interface IProps {
   handleClickGetId1?: (id?: number) => void;
@@ -20,6 +23,13 @@ const SchoolTable: FC<IProps> = ({ handleClickGetId1 }) => {
       dispatch(getSchoolAdminThunk());
     }
   }, [dispatch]);
+  const router = useRouter();
+
+  const translations: any= {
+    kz: kz,
+    ru: ru,
+  };
+  const t = translations[router.locale || "kz"] || kz;
 
   const handleDeleteItems = async (id?: number) => {
     await instance
@@ -45,12 +55,11 @@ const SchoolTable: FC<IProps> = ({ handleClickGetId1 }) => {
         <Table>
           <Thead>
             <tr>
-              <Th>No</Th>
-              <Th>ФИО</Th>
+              <Th>№</Th>
+              <Th>{t.schoolAdministration.fields.fullName}</Th>
               <Th>Фото</Th>
-              <Th>Должность</Th>
-              <Th>Номер телефона</Th>
-              <Th>Действие</Th>
+              <Th>{t.schoolAdministration.fields.position}</Th>
+              <Th>{t.bells.action}</Th>
             </tr>
           </Thead>
 
@@ -69,7 +78,6 @@ const SchoolTable: FC<IProps> = ({ handleClickGetId1 }) => {
                   </div>
                 </Td>
                 <Td>{item.position}</Td>
-                <Td>{item.phone_number}</Td>
                 <Td>
                   <div
                     onClick={() =>
