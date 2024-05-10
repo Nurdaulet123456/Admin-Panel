@@ -15,7 +15,7 @@ import {
   getSchoolThunk,
   getUsersThunk,
 } from "@/store/thunks/schoolnfo.thunk";
-import { getTokenInLocalStorage } from "@/utils/assets.utils";
+import {getTokenInLocalStorage, urlToFile} from "@/utils/assets.utils";
 import { ISchoolInfo } from "@/types/assets.type";
 import { useModalLogic } from "@/hooks/useModalLogic";
 import ErrorModal from "@/components/modals/ErrorModal";
@@ -26,6 +26,7 @@ import TextField from "@mui/material/TextField";
 import {useRouter} from "next/router";
 import {kz} from "@/locales/kz";
 import {ru} from "@/locales/ru";
+import {MdClear} from "react-icons/md";
 
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
@@ -56,6 +57,8 @@ const SuperAdminTableBlock: FC<IProps> = ({
     ru: ru,
   };
   const t = translations[router.locale || "kz"] || kz;
+  const [photo, setPhoto] = useState<File | null>()
+
   const {
     showSuccessModal,
     showErrorModal,
@@ -83,20 +86,19 @@ const SuperAdminTableBlock: FC<IProps> = ({
       url: Yup.string().required("Обязательно*"),
     }),
     onSubmit: async (values) => {
+      const formData = new FormData();
+      values.kz && formData.append("school_kz_name", values.kz);
+      values.ru && formData.append("school_ru_name", values.ru);
+      values.eng && formData.append("school_eng_name", values.eng);
+      values.url && formData.append("url", values.url);
+      values.city && formData.append("region", values.city);
+      formData.append("timezone", "GMT+5" );
+      photo && formData.append("school_map", photo);
       if (!getId) {
         await instance
           .post(
             `https://www.bilimge.kz/admins/api/school/`,
-            {
-              school_kz_name: values.kz,
-              school_ru_name: values.ru,
-              school_eng_name: values.eng,
-              url: values.url,
-              region: values.city,
-              timezone: "GMT+5",
-              coordinate_x : values.x,
-              coordinate_y : values.y,
-            },
+            formData,
             {
               headers: {
                 Authorization: `Token ${getTokenInLocalStorage()}`,
@@ -123,16 +125,7 @@ const SuperAdminTableBlock: FC<IProps> = ({
         await instance
           .put(
             `https://www.bilimge.kz/admins/api/school/${getId}/`,
-            {
-              school_kz_name: values.kz,
-              school_ru_name: values.ru,
-              school_eng_name: values.eng,
-              url: values.url,
-              region: values.city,
-              timezone: "GMT+5",
-              coordinate_x : values.x,
-              coordinate_y : values.y,
-            },
+              formData,
             {
               headers: {
                 Authorization: `Token ${getTokenInLocalStorage()}`,
@@ -172,8 +165,15 @@ const SuperAdminTableBlock: FC<IProps> = ({
           y: schoolid.coordinate_y || "",
         },
       });
+      fetchAndSetPhoto(schoolid.school_map);
+
     }
   }, [schoolid, getId, formik.resetForm]);
+
+  async function fetchAndSetPhoto(photoUrl?: string) {
+    const phot = await urlToFile(photoUrl);
+    setPhoto(phot);
+  }
 
   function onDelete() {
     formik.resetForm({
@@ -188,6 +188,8 @@ const SuperAdminTableBlock: FC<IProps> = ({
         y: "",
       },
     });
+    setPhoto(null);
+
   }
 
   return (
@@ -199,6 +201,26 @@ const SuperAdminTableBlock: FC<IProps> = ({
         <form onSubmit={formik.handleSubmit}>
           <div className="main_table-modal_flex">
             <div className="main_table-modal_forms">
+              <div>
+                <div className="login_forms-label_pink">{router.locale === "kz" ? "Карта суреті" : "Фото карты"}</div>
+                {
+                  photo ? (
+                      <div className="file-item">
+                        <div className="file-info">
+                          <p>{photo.name.substring(0, 14)}</p>
+                        </div>
+                        <div className="file-actions">
+                          <MdClear onClick={() => setPhoto(null)}/>
+                        </div>
+                      </div>
+                  ) : (
+                      <Input type="file" name="file" onChange={(event) => {
+                        return setPhoto(event?.target?.files?.[0]);
+                      }}/>
+                  )
+                }
+
+              </div>
               <div className="forms">
                 <div className="login_forms-label_pink">
                   {t.superadmin.schoolNameKZ}
@@ -287,45 +309,6 @@ const SuperAdminTableBlock: FC<IProps> = ({
                       style={{
                         borderColor:
                             formik.touched.url && formik.errors.url
-                                ? "red"
-                                : "#c1bbeb",
-                      }}
-                  />
-                </div>
-              </div>
-              <div className="forms flex">
-                <div>
-                  <div className="login_forms-label_pink">X Координата</div>
-                  {formik.touched.x && formik.errors.x ? (
-                      <div style={{color: "red"}}>{formik.errors.x}</div>
-                  ) : null}
-                  <Input
-                      name={"x"}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      value={formik.values.x}
-                      style={{
-                        borderColor:
-                            formik.touched.x && formik.errors.x
-                                ? "red"
-                                : "#c1bbeb",
-                      }}
-                  />
-                </div>
-
-                <div>
-                  <div className="login_forms-label_pink">Y Координата</div>
-                  {formik.touched.y && formik.errors.y ? (
-                      <div style={{color: "red"}}>{formik.errors.y}</div>
-                  ) : null}
-                  <Input
-                      name={"y"}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      value={formik.values.y}
-                      style={{
-                        borderColor:
-                            formik.touched.y && formik.errors.y
                                 ? "red"
                                 : "#c1bbeb",
                       }}
