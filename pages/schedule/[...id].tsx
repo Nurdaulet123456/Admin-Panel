@@ -69,7 +69,7 @@ const ScheduleComponents = () => {
                                 marginBottom: "1.6rem",
                                 gap: "2.4rem",
                             }}>
-                                <Tabs link="schedule" tabs={tabs}/>
+                                <Tabs link="schedule" tabs={router.locale === "kz" ? tabsKZ : tabs}/>
                             </div>
                             <TabsClass/>
                         </>
@@ -555,11 +555,26 @@ const tabs: ITabs[] = [
     {
         id: 1,
         type: "Ручной",
+        typeKZ: "Қолмен толтыру"
     },
 
     {
         id: 2,
         type: "Автораспределение",
+        typeKZ: "Автоматты генерациялау"
+
+    },
+];
+
+const tabsKZ: ITabs[] = [
+    {
+        id: 1,
+        type: "Қолмен толтыру",
+    },
+
+    {
+        id: 2,
+        type: "Автоматты генерациялау",
     },
 ];
 

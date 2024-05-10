@@ -335,7 +335,9 @@ export const kz = {
             "photo": "Фото",
             "selectFile": "Файлды таңдаңыз",
             "fileNotSelected": "Файл таңдалмаған",
-            "fullName": "Аты-жөні"
+            "fullName": "Аты-жөні",
+            phoneNumber: "Қабылдау бөлмесінің телефон номері"
+
         }
     },
     "schoolPassport": {
@@ -402,6 +404,7 @@ export const kz = {
         }
     },
     "socialMedia": {
+        title:"Әлеуметтік желілер",
         "add": "Қосу",
         "fields": {
             "type": "Түрі",

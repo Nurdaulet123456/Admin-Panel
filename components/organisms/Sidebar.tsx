@@ -48,7 +48,7 @@ const sidebar: IType[] = [
   {
     id: 1,
     type: "Расписание",
-    typeKz: "Кестесі",
+    typeKz: "Сабақ кестесі",
     link: "schedule/1",
   },
 
@@ -69,7 +69,7 @@ const sidebar: IType[] = [
   {
     id: 4,
     type: "Гордость школы",
-    typeKz: "Мектептің мақтаныштары",
+    typeKz: "Мектеп мақтаныштары",
     link: "prideschool",
   },
 
@@ -97,7 +97,7 @@ const sidebar: IType[] = [
   {
     id: 8,
     type: "Меню",
-    typeKz: "Мәзір",
+    typeKz: "Ас мәзірі",
     link: "menu",
   },
 

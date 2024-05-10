@@ -74,7 +74,7 @@ const TeachersTable: FC<IProps> = ({ handleClickGetId }) => {
                           <div className="img-block">
                             {
                               item.photo3x4 ?
-                              <img src={item.photo3x4} alt=""/> : "Нет фото"
+                              <img src={item.photo3x4} alt=""/> : router.locale === "kz" ? "Фото жоқ" : "Нет фото"
 
                             }
                           </div>

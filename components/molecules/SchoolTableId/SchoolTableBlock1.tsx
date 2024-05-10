@@ -206,7 +206,7 @@ const SchoolTableBlock1: FC<IProps> = ({
                 </div>
 
                 <div className="forms">
-                  <div className="login_forms-label_pink">{t.schoolAdministration.fields.position} *</div>
+                  <div className="login_forms-label_pink">{t.schoolAdministration.fields.position}</div>
                   {formik.touched.prof && formik.errors.prof ? (
                       <div style={{color: "red"}}>{formik.errors.prof}</div>
                   ) : null}

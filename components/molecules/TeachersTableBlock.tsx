@@ -8,7 +8,6 @@ import {
 } from "react";
 import { Button } from "../atoms/UI/Buttons/Button";
 import {Input, Select, TextArea} from "../atoms/UI/Inputs/Input";
-import SanatyModalModal from "../modals/SanatyModal";
 import { instance } from "@/api/axios.instance";
 import {getTokenInLocalStorage, urlToFile} from "@/utils/assets.utils";
 import { useAppDispatch } from "@/hooks/useAppDispatch";
@@ -17,30 +16,14 @@ import { ITeachers } from "@/types/assets.type";
 import { AddIcons } from "../atoms/Icons";
 import styled from "@emotion/styled";
 import {FormikErrors, useFormik,} from "formik";
-import * as Yup from "yup";
-import {getKruzhokInfoThunk} from "@/store/thunks/schoolnfo.thunk";
-import {array} from "yup";
 import ErrorModal from "@/components/modals/ErrorModal";
 import SuccessModal from "@/components/modals/SuccessModal";
 import {useModalLogic} from "@/hooks/useModalLogic";
 import {MdClear} from "react-icons/md";
-import * as perf_hooks from "perf_hooks";
 import {useRouter} from "next/router";
 import {kz} from "@/locales/kz";
 import {ru} from "@/locales/ru";
 
-interface IHistoryProps {
-  start_date?: number;
-  end_date?: number;
-  job_characteristic?: string;
-}
-
-interface ISpecificationProps {
-  end_date?: number;
-  speciality_university?: string;
-  mamandygy?: string;
-  degree?: string;
-}
 
 interface IProps {
   onReject?: Dispatch<SetStateAction<boolean>>;
@@ -48,12 +31,6 @@ interface IProps {
   getId?: number;
   teachersid?: ITeachers;
 }
-
-// Функция для проверки, является ли значение объектом ошибок с определенным свойством
-function isErrorWithProperty<T>(value: any, propertyName: keyof T): value is FormikErrors<T> {
-  return typeof value === 'object' && value !== null && propertyName in value;
-}
-
 
 
 const TeachersTableBlock: FC<IProps> = ({

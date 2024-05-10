@@ -92,7 +92,7 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
     initialValues: {
       fullname: "",
       student_success: "",
-      type: ""
+      type: "sport",
     },
     validationSchema: Yup.object({
       fullname: Yup.string().required("*"),
@@ -100,6 +100,7 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
       type: Yup.string().required("*"),
     }),
     onSubmit: async (values) => {
+      console.log(values)
       let headers = photo ? {
         Authorization: `Token ${getTokenInLocalStorage()}`,
         "Content-Type": "multipart/form-data",
@@ -111,7 +112,7 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
                   .post("https://bilimge.kz/admins/api/proudofschool/", {
                     fullname: values.fullname,
                     student_success: values.student_success,
-                    type: values.type,
+                    success: values.type,
                     photo: photo
                   }, {
                     headers: {
@@ -142,7 +143,7 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
                         fullname: values.fullname,
                         // classl: String(values.class_id),
                         student_success: values.student_success,
-                        type: values.type,
+                        success: values.type,
                         photo: photo || null
                       } , {
                     headers: headers,
@@ -165,7 +166,7 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
               }
             }
   });
-
+  console.log(prideId)
   useEffect(() => {
     if (prideId && getId) {
       formik.resetForm({
@@ -230,6 +231,7 @@ const PrideSchoolTableBlock1: FC<IProps> = ({
               <div style={{marginBottom: "2.4rem"}} className="sanaty">
                 <div className="login_forms-label_pink">{t.schoolPride.type}</div>
                 <Select {...formik.getFieldProps("type")}>
+
                   <option value="sport">Спорт</option>
                   <option value="oner">{t.schoolPride.art}</option>
                   <option value="olimpiada">{t.schoolPride.academicOlympiad}</option>

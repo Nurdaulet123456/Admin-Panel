@@ -181,7 +181,7 @@ const SchoolTableBlock: FC<IProps> = ({
                     <div className="main_table-modal_title">{t.schoolAdministration.fields.position}</div>
                     <div className="main_table-modal_flex" style={{gap: "1.6rem"}}>
                         <div className="main_table-modal_upload">
-                            <div className="login_forms-label_pink">{t.schoolAdministration.fields.photo} *</div>
+                            <div className="login_forms-label_pink">{t.schoolAdministration.fields.photo}</div>
                             {
                                 photo ? (
                                     <div className="file-item">
@@ -202,7 +202,7 @@ const SchoolTableBlock: FC<IProps> = ({
 
                         <div className="main_table-modal_forms">
                             <div className="forms">
-                                <div className="login_forms-label_pink">{t.schoolAdministration.fields.fullName} *</div>
+                                <div className="login_forms-label_pink">{t.schoolAdministration.fields.fullName}</div>
                                 {formik.touched.name && formik.errors.name ? (
                                     <div style={{color: "red"}}>{formik.errors.name}</div>
                                 ) : null}
@@ -218,7 +218,7 @@ const SchoolTableBlock: FC<IProps> = ({
                             </div>
 
                             <div className="forms">
-                                <div className="login_forms-label_pink">{t.schoolAdministration.fields.email} *</div>
+                                <div className="login_forms-label_pink">Почта</div>
                                 {formik.touched.email && formik.errors.email ? (
                                     <div style={{color: "red"}}>{formik.errors.email}</div>
                                 ) : null}
@@ -234,7 +234,7 @@ const SchoolTableBlock: FC<IProps> = ({
                             </div>
 
                             <div className="forms">
-                                <div className="login_forms-label_pink">{t.schoolAdministration.fields.phoneNumber} *</div>
+                                <div className="login_forms-label_pink">{t.schoolAdministration.fields.phoneNumber}</div>
                                 {formik.touched.tel && formik.errors.tel ? (
                                     <div style={{color: "red"}}>{formik.errors.tel}</div>
                                 ) : null}

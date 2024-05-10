@@ -337,7 +337,9 @@
                 "photo": "Фото",
                 "selectFile": "Выберите файл",
                 "fileNotSelected": "Файл не выбран",
-                "fullName": "ФИО"
+                "fullName": "ФИО",
+                "email": "Почта",
+                phoneNumber: "Телефон приемной"
             }
         },
         "schoolPassport": {
@@ -404,6 +406,7 @@
             }
         },
         "socialMedia": {
+            title:"Социальные сети",
             "add": "Добавить",
             "fields": {
                 "type": "Тип",

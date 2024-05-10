@@ -1,6 +1,7 @@
 export interface ITabs {
   id?: number;
   type?: string;
+  typeKZ?:string;
 }
 
 // Kruzhok
@@ -59,6 +60,7 @@ export interface ISchoolInfo {
   region?: string;
   coordinate_x?: string;
   coordinate_y?: string;
+  school_map?:string;
 }
 
 // Users
