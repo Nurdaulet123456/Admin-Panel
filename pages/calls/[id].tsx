@@ -69,7 +69,7 @@ const CallsComponents = () => {
         }}
       >
         <div style={{ width: "100%", display: "flex", gap: "2.4rem" }}>
-          <Tabs link="calls" tabs={router.locale === "kz" ? tabsKZ:tabs} />
+          <Tabs link="calls" tabs={router.locale === "kz" ? tabs:tabsRU} />
         </div>
         <Button
             background={showActive || editActive ? "#CACACA" : "#27AE60"}
@@ -131,7 +131,7 @@ const tabs: ITabs[] = [
   },
 ];
 
-const tabsKZ: ITabs[] = [
+const tabsRU: ITabs[] = [
   {
     id: 1,
     type: "Основной урок",
