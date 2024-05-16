@@ -6,7 +6,7 @@ const SuperAdminSidebar = () => {
 
   return (
     <div className="sidebar">
-      <Link href={"/"}>
+      <Link href={"/main"}>
         <div className="sidebar_top">KESTESI.KZ</div>
       </Link>
 
