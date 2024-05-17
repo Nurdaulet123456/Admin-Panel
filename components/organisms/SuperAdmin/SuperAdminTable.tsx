@@ -23,7 +23,7 @@ const SuperAdminTable: FC<IProps> = ({ school, onEdit }) => {
     ru: ru,
   };
   const t = translations[router.locale || "kz"] || kz;
-  const handleDeleteItems = async (id?: number) => {
+  const handleDeleteItems = async (id?: string) => {
     await instance
       .delete(`https://www.bilimge.kz/admins/api/school/${id}/`, {
         headers: {
@@ -63,7 +63,7 @@ const SuperAdminTable: FC<IProps> = ({ school, onEdit }) => {
                     <PenIcons />
                   </div>
 
-                  <div onClick={() => handleDeleteItems(item.id)}>
+                  <div onClick={() => handleDeleteItems(item.url)}>
                     <DeleteIcons />
                   </div>
                 </Td>

@@ -367,7 +367,13 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
                 <div className="login_forms-label_pink">{t.clubs.teacherFullName}</div>
                 <Select {...formik.getFieldProps("teacher")}>
                   <option value="">{t.clubs.selectTeacher}</option>
-                  {teachers?.map((item) => (
+                  {teachers?.slice().sort((a, b) => {
+                    const nameA = a.full_name || '';
+                    const nameB = b.full_name || '';
+
+                    return nameA.localeCompare(nameB);
+                  })
+                      .map((item) => (
                       <option key={item.id} value={item.id}>{item.full_name}</option>
                   ))}
                 </Select>
@@ -425,7 +431,6 @@ const MainTableBlock: FC<IProps> = ({ onReject, kruzhokid, getId, onEdit }) => {
                             </Select>
                           </div>
                         </div>
-
                     ))}
                   </div>
               </div>

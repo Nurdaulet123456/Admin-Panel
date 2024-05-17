@@ -15,6 +15,7 @@ import {MdClear} from "react-icons/md";
 import {useRouter} from "next/router";
 import {kz} from "@/locales/kz";
 import {ru} from "@/locales/ru";
+import SuccessModal from "@/components/modals/SuccessModal";
 
 interface IProps {
     schoolPassport?: ISchoolPassport[];
@@ -26,15 +27,16 @@ const SchoolTableBlock3: FC<IProps> = ({
 
     const dispatch = useAppDispatch();
     const [photo, setPhoto] = useState<File | null>();
-    console.log(schoolPassport)
     const {
         showSuccessModal,
         showErrorModal,
+        showDeleteModal,
+        onDeleteModalClose,
         onSuccessModalClose,
         onErrorModalClose,
         showSuccess,
         showError,
-        showDeleteModal, showDelete, onDeleteModalClose,
+        showDelete,
     } = useModalLogic();
     const router = useRouter();
     const translations: any= {
@@ -149,7 +151,6 @@ const SchoolTableBlock3: FC<IProps> = ({
                 school_history: values.history,
             }
         ;
-        if(photo) {
             if (schoolPassport?.length === 0) {
                 await instance
                     .post(
@@ -164,23 +165,27 @@ const SchoolTableBlock3: FC<IProps> = ({
                     .then(async (res) => {
                         if (res) {
                             const formData = new FormData();
+                            if(photo) {
+                                formData.append("photo", photo ? photo : "");
+                                formData.append("id", String((res as any).id));
 
-                            formData.append("photo", photo ? photo : "");
-                            formData.append("id", String((res as any).id));
-
-                            try {
-                                const uploadPhotoResponse = await instance.post(
-                                    "https://bilimge.kz/admins/api/schoolpasport/upload_photo/",
-                                    formData,
-                                    {
-                                        headers: {
-                                            Authorization: `Token ${getTokenInLocalStorage()}`,
-                                            "Content-Type": "multipart/form-data",
+                                try {
+                                    const uploadPhotoResponse = await instance.post(
+                                        "https://bilimge.kz/admins/api/schoolpasport/upload_photo/",
+                                        formData,
+                                        {
+                                            headers: {
+                                                Authorization: `Token ${getTokenInLocalStorage()}`,
+                                                "Content-Type": "multipart/form-data",
+                                            },
                                         },
-                                    },
-                                );
-                            } catch (err) {
-                                console.log(err);
+                                    );
+                                    if(uploadPhotoResponse) showSuccess();
+                                } catch (err) {
+                                    console.log(err);
+                                }
+                            }else {
+                                showSuccess()
                             }
                         }
                     })
@@ -201,22 +206,28 @@ const SchoolTableBlock3: FC<IProps> = ({
                     .then(async (res) => {
                         if (res) {
                             const formData = new FormData();
-                            if (photo)
+                            if (photo) {
                                 formData.append("photo", photo ? photo : "");
-                            formData.append("id", String((res as any).id));
-                            try {
-                                const uploadPhotoResponse = await instance.put(
-                                    "https://bilimge.kz/admins/api/schoolpasport/upload_photo/",
-                                    formData,
-                                    {
-                                        headers: {
-                                            Authorization: `Token ${getTokenInLocalStorage()}`,
-                                            "Content-Type": "multipart/form-data",
+                                formData.append("id", String((res as any).id));
+                                try {
+                                    const uploadPhotoResponse = await instance.put(
+                                        "https://bilimge.kz/admins/api/schoolpasport/upload_photo/",
+                                        formData,
+                                        {
+                                            headers: {
+                                                Authorization: `Token ${getTokenInLocalStorage()}`,
+                                                "Content-Type": "multipart/form-data",
+                                            },
                                         },
-                                    },
-                                );
-                            } catch (err) {
-                                console.log(err);
+                                    );
+                                    if (uploadPhotoResponse) {
+                                        showSuccess();
+                                    }
+                                } catch (err) {
+                                    console.log(err);
+                                }
+                            }else {
+                                    showSuccess();
                             }
                         }
                     })
@@ -225,7 +236,6 @@ const SchoolTableBlock3: FC<IProps> = ({
                     });
             }
         }
-    }
   });
 
     useEffect(() => {
@@ -293,6 +303,8 @@ const SchoolTableBlock3: FC<IProps> = ({
 
   return (
       <>
+          {showSuccessModal && <SuccessModal onClose={onSuccessModalClose} />}
+
       {showDeleteModal && <DeleteModal onClose={onDeleteModalClose} handleDelete={handleDelete} />}
       <div className="main_table-modal">
         <form onSubmit={formik.handleSubmit}>

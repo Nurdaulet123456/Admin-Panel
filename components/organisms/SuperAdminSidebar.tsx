@@ -6,10 +6,7 @@ const SuperAdminSidebar = () => {
 
   return (
     <div className="sidebar">
-      <Link href={"/main"}>
         <div className="sidebar_top">KESTESI.KZ</div>
-      </Link>
-
       <nav className="sidebar_links">
         {sidebar.map((item) => (
           <Link
